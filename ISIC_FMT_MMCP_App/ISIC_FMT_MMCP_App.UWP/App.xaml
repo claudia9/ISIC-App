@@ -1,0 +1,8 @@
+﻿<Application
+    x:Class="ISIC_FMT_MMCP_App.UWP.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ISIC_FMT_MMCP_App.UWP"
+    RequestedTheme="Light">
+
+</Application>
