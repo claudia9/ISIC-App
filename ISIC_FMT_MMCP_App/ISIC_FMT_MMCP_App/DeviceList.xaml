@@ -1,9 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:ISIC_FMT_MMCP_App"
              x:Class="ISIC_FMT_MMCP_App.DeviceList"
              Title="Device List">
-  
+  <ContentPage.Resources>
+    <ResourceDictionary>
+      <local:GuidConverter x:Key="guidConverter"/>
+      <local:EmptyStringConverter x:Key="strConverter"/>
+    </ResourceDictionary>
+  </ContentPage.Resources>
+
   <ContentPage.ToolbarItems>
     <!--To scan a specific item-->
     <!--ToolbarItem x:Name="ScanHrmButton" Name="Scan" Icon="glyphish_29_heart.png"/-->

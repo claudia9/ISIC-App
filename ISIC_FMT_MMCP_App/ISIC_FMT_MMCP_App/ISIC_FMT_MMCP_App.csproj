@@ -42,6 +42,8 @@
     <Compile Include="DeviceTerminal.xaml.cs">
       <DependentUpon>DeviceTerminal.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EmptyStringConverter.cs" />
+    <Compile Include="GuidConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteControlPage.xaml.cs">
       <DependentUpon>RemoteControlPage.xaml</DependentUpon>
