@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ISIC_FMT_MMCP_App.RemoteControlPage"
+             Title="ISIC FMT MMC Panel App">
+  <ContentPage.Resources>
+    <ResourceDictionary>
+      <Color x:Key="Green">#FF64B22E</Color>
+      <Color x:Key="Border">#FF262626</Color>
+      <Color x:Key="Background">#FF1A1A1A</Color>
+      <Color x:Key="BorderBrushButton">#FF80807E</Color>
+      <!--Light-Grey-->
+      <Color x:Key="DisabledButton">#FF474747</Color>
+      <Color x:Key="DisabledThumb">#FF98B783</Color>
+
+      <Style x:Key="GridStyle" TargetType="Grid">
+        <Setter Property="Padding" Value="30"/>
+      </Style>
+
+      <Style TargetType="Label">
+        <Setter Property="TextColor" Value="{StaticResource BorderBrushButton}"/>
+        <Setter Property="FontSize" Value="Medium"/>
+        <Setter Property="FontFamily" Value="Calibry"/>
+        <Setter Property="HorizontalTextAlignment" Value="Center"/>
+        <Setter Property="VerticalTextAlignment" Value="Start" />
+        <Setter Property="Margin" Value=" 0, 30, 0, 0" />
+
+      </Style>
+
+      <Style TargetType="Button">
+        <Setter Property="TextColor" Value="{StaticResource BorderBrushButton}"/>
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="BorderColor" Value="{StaticResource BorderBrushButton}" />
+      </Style>
+
+      <Style x:Key="SettingsBtnStyle" TargetType="Button">
+        <Setter Property="HorizontalOptions" Value="End" />
+        <Setter Property="VerticalOptions" Value="Start" />
+      </Style>
+      <Style x:Key="IsicLogoStyle" TargetType="Button">
+        <Setter Property="HorizontalOptions" Value="Start" />
+        <Setter Property="VerticalOptions" Value="Start" />
+      </Style>
+
+    </ResourceDictionary>
+  </ContentPage.Resources>
+
+  <StackLayout>
+
+    <!--BLUETOOTH SETTINGS-->
+    <Button x:Name="Settings" Image="settings_icon.png" Style="{StaticResource SettingsBtnStyle}" Clicked="OnSettingsClicked"/>
+
+    <!--MONITORS-->
+    <Label x:Name="Monitor" Text="Monitor" />
+    <StackLayout Orientation="Horizontal">
+      <Button x:Name="Monitor1" Text="1" Margin="10, 0, -5, 0"/>
+      <Button x:Name="Monitor2" Text="2" Margin="-5, 0" />
+      <Button x:Name="Monitor3" Text="3" Margin="-5, 0"/>
+      <Button x:Name="MonitorAll" Text="All" Margin="-5, 0"/>
+    </StackLayout>
+
+    <!--MODES-->
+    <Label x:Name="Mode" Text="ECDIS mode" />
+    <StackLayout Orientation="Horizontal" Margin="40, 0">
+      <Button x:Name="NightMode" Text="Night" />
+      <Button x:Name="DuskMode" Text="Dusk" />
+      <Button x:Name="DayMode" Text="Day" />
+    </StackLayout>
+
+    <!--INPUT-->
+    <Label x:Name="Input" Text="Input" />
+    <StackLayout Orientation="Horizontal" Margin="40, 0">
+      <Button x:Name="VGA" Text="VGA" />
+      <Button x:Name="DVI" Text="DVI" />
+      <Button x:Name="DP" Text="DP" />
+    </StackLayout>
+
+    <!--BACKLIGHT-->
+    <Label x:Name="Backlight" Text="Backlight"/>
+    <Grid x:Name="GridSlider" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="5">
+      <Slider x:Name="Slider" Maximum="255" Minimum="0" ></Slider>
+    </Grid>
+  </StackLayout>
+
+</ContentPage>

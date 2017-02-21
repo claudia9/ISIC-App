@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ISIC_FMT_MMCP_App.DeviceTerminal"
+             Title="Device Terminal">
+  <ContentPage.Resources>
+    <ResourceDictionary>
+
+      <Color x:Key="Green">#FF64B22E</Color>
+      <Color x:Key="Border">#FF262626</Color>
+      <Color x:Key="Background">#FF1A1A1A</Color>
+      <Color x:Key="BorderBrushButton">#FF80807E</Color>
+      <!--Light-Grey-->
+      <Color x:Key="DisabledButton">#FF474747</Color>
+      <Color x:Key="DisabledThumb">#FF98B783</Color>
+
+      <Style TargetType="Label">
+        <Setter Property="FontFamily" Value="Calibry"/>
+        <Setter Property="HorizontalTextAlignment" Value="Start"/>
+        <Setter Property="VerticalTextAlignment" Value="Start" />
+        <Setter Property="Margin" Value=" 10, 30, 10, 30" />
+
+      </Style>
+
+      <Style TargetType="Button">
+        <Setter Property="TextColor" Value="{StaticResource BorderBrushButton}"/>
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="BorderColor" Value="{StaticResource BorderBrushButton}" />
+      </Style>
+
+    </ResourceDictionary>
+  </ContentPage.Resources>
+
+  <StackLayout>
+    <StackLayout HorizontalOptions="End">
+      <Button x:Name="Disconnect" Text="X"/>
+    </StackLayout>
+
+    <Label x:Name="InputHistory" Text="The history of commands will be shown here." Font="Calibri"  Style="{DynamicResource ListItemTextStyle}" LineBreakMode="WordWrap"/>
+    <Button x:Name="ManBtn" Text="MAN"/>
+    <Entry x:Name="Input" Placeholder="Write a command..." />
+    <Button x:Name="SendCmd" Text="SEND" />
+  </StackLayout>
+
+</ContentPage>

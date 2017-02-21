@@ -11,23 +11,7 @@ namespace ISIC_FMT_MMCP_App
     {
         public App()
         {
-            // The root page of your application
-            var content = new ContentPage
-            {
-                Title = "ISIC_FMT_MMCP_App",
-                Content = new StackLayout
-                {
-                    VerticalOptions = LayoutOptions.Center,
-                    Children = {
-                        new Label {
-                            HorizontalTextAlignment = TextAlignment.Center,
-                            Text = "Welcome to Xamarin Forms!"
-                        }
-                    }
-                }
-            };
-
-            MainPage = new NavigationPage(content);
+            MainPage = new NavigationPage(new RemoteControlPage());
         }
 
         protected override void OnStart()
