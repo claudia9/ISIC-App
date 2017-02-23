@@ -119,23 +119,27 @@ namespace ISIC_FMT_MMCP_App
 
         private void sendInputCommand(string input, ICharacteristic characteristic)
         {
-            if (input != null && currentAdapter.ConnectedDevices.Contains(currentDevice))
+            if (currentAdapter.ConnectedDevices.Contains(currentDevice))
             {
-                byte[] bytes = input.GetBytes();
-
-                try
+                if (input != null)
                 {
-                    characteristic.WriteAsync(bytes);
+                    byte[] bytes = input.GetBytes();
 
-                    string command = DateTime.Now.ToString();
-                    commandsHistoryList.Add(command + ": " + input);
+                    try
+                    {
+                        characteristic.WriteAsync(bytes);
 
+                        string command = DateTime.Now.ToString();
+                        commandsHistoryList.Add(command + ": " + input);
+
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine("Exception - SendInputCommand " + e.Message);
+                    }
                 }
-                catch (Exception e)
-                {
-                    Debug.WriteLine("Exception - SendInputCommand " + e.Message);
-                }
-            } else
+            }
+            else
             {
                 DisplayAlert("Device not connected", "Your device is not connected, try to connect again before sending a command", "OK");
             }

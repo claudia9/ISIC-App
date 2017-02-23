@@ -26,7 +26,6 @@
         <Setter Property="TextColor" Value="{StaticResource BorderBrushButton}"/>
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="BorderColor" Value="{StaticResource BorderBrushButton}"/>
-        <Setter Property="Margin" Value="0, 0, 0, 10" />
       </Style>
 
     </ResourceDictionary>
@@ -34,8 +33,8 @@
 
   <StackLayout>
     <StackLayout Orientation="Horizontal">
-      <Label Text="History of last commands" HorizontalTextAlignment="Start" />
-      <Button x:Name="Disconnect" Text="Disconnect"  />
+      <Label Text="History of last commands" Font="Bold" HorizontalTextAlignment="Start" />
+      <Button x:Name="Disconnect" Text="Disconnect" Margin="50 , 0 , 0, 30"/>
     </StackLayout>
 
     

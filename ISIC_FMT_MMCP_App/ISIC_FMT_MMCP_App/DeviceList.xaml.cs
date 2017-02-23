@@ -73,6 +73,7 @@ namespace ISIC_FMT_MMCP_App
                 {
                     devicesList.Add(a.Device);
                     System.Diagnostics.Debug.WriteLine("Device found: " + a.Device.Name);
+                    System.Diagnostics.Debug.WriteLine("Device found: " + a.Device.Id);
                 }
             };
 
