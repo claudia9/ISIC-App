@@ -33,7 +33,7 @@
 
   <StackLayout>
     <StackLayout HorizontalOptions="End">
-      <Button x:Name="Disconnect" Text="X"/>
+      <Button x:Name="Disconnect" Text="X" />
     </StackLayout>
 
     <Label x:Name="InputHistory" Text="The history of commands will be shown here." Font="Calibri"  Style="{DynamicResource ListItemTextStyle}" LineBreakMode="WordWrap"/>

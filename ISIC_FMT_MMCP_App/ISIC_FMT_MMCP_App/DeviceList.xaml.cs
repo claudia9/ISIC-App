@@ -35,7 +35,7 @@ namespace ISIC_FMT_MMCP_App
 
         }
 
-        private async void InitiliazeBluetooth()
+        private void InitiliazeBluetooth()
         {
             //Initiliasing BluetoothLE and BleAdapter
             var ble = CrossBluetoothLE.Current;
@@ -53,13 +53,27 @@ namespace ISIC_FMT_MMCP_App
 
             //Start scanning
             StartScanning(adapter);
-            await adapter.StartScanningForDevicesAsync();
+            adapter.ScanTimeoutElapsed += (s, e) =>
+            {
+                if (devicesList.Count() == 0)
+                {
+                    DisplayAlert("No devices found", "No devices have been found", "OK");
+                }
+                else
+                {
+                    DisplayAlert("Time out", "Time out has been reached. If the target device do not appear, try again", "OK");
+                }
+            };
+
 
             //Initiliase list of devices
             adapter.DeviceDiscovered += (s, a) =>
             {
-                devicesList.Add(a.Device);
-                System.Diagnostics.Debug.WriteLine("Device found: " + a.Device.Name);
+                if (!devicesList.Contains(a.Device))
+                {
+                    devicesList.Add(a.Device);
+                    System.Diagnostics.Debug.WriteLine("Device found: " + a.Device.Name);
+                }
             };
 
             //Event handlers to show the List of devices once found
@@ -77,7 +91,7 @@ namespace ISIC_FMT_MMCP_App
             StopScanning(CrossBluetoothLE.Current.Adapter);
 
             var connectedDevice = e.SelectedItem as IDevice;
-            if (connectedDevice != null)
+            if (connectedDevice != null) 
             {
                 System.Diagnostics.Debug.WriteLine("Selected device: " + connectedDevice.Name);
                 try
@@ -96,18 +110,20 @@ namespace ISIC_FMT_MMCP_App
             }
         }
 
-        void StartScanning(IAdapter adapter)
+        async void StartScanning(IAdapter adapter)
         {
             System.Diagnostics.Debug.WriteLine(" ------- Start scanning -----------");
+            devicesList.Clear();
+
             if (adapter.IsScanning)
             {
-                adapter.StopScanningForDevicesAsync();
-                System.Diagnostics.Debug.WriteLine("Adapter already trying to scan. STOPPING SCAN");
+                await adapter.StopScanningForDevicesAsync();
+                System.Diagnostics.Debug.WriteLine("Adapter already trying to scan. STOPPING LAST SCAN and TRY AGAIN");
+                await adapter.StartScanningForDevicesAsync();
             }
             else
             {
-                devicesList.Clear();
-                adapter.StartScanningForDevicesAsync();
+                await adapter.StartScanningForDevicesAsync();
                 System.Diagnostics.Debug.WriteLine("Cleared list of devices and starting scanning.");
             }
         }
