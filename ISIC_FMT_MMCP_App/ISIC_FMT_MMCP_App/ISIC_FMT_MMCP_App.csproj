@@ -43,6 +43,7 @@
       <DependentUpon>DeviceTerminal.xaml</DependentUpon>
     </Compile>
     <Compile Include="EmptyStringConverter.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="GuidConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteControlPage.xaml.cs">

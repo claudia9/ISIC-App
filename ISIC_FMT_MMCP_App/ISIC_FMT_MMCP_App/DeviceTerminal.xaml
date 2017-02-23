@@ -25,18 +25,33 @@
       <Style TargetType="Button">
         <Setter Property="TextColor" Value="{StaticResource BorderBrushButton}"/>
         <Setter Property="BackgroundColor" Value="Transparent" />
-        <Setter Property="BorderColor" Value="{StaticResource BorderBrushButton}" />
+        <Setter Property="BorderColor" Value="{StaticResource BorderBrushButton}"/>
+        <Setter Property="Margin" Value="0, 0, 0, 10" />
       </Style>
 
     </ResourceDictionary>
   </ContentPage.Resources>
 
   <StackLayout>
-    <StackLayout HorizontalOptions="End">
-      <Button x:Name="Disconnect" Text="X" />
+    <StackLayout Orientation="Horizontal">
+      <Label Text="History of last commands" HorizontalTextAlignment="Start" />
+      <Button x:Name="Disconnect" Text="Disconnect"  />
     </StackLayout>
 
-    <Label x:Name="InputHistory" Text="The history of commands will be shown here." Font="Calibri"  Style="{DynamicResource ListItemTextStyle}" LineBreakMode="WordWrap"/>
+    
+    
+    <ListView x:Name="CommandsHistory" ItemsSource="{Binding commandsHistoryList}" />
+    <!--<ListView.ItemTemplate>
+      <DataTemplate>
+        <ViewCell>
+          <StackLayout HorizontalOptions="StartAndExpand" Orientation="Vertical">
+              <Label Text="{Binding Command}" YAlign="Center" Font="Medium" />>
+          </StackLayout>
+        </ViewCell>
+      </DataTemplate>
+    </ListView.ItemTemplate>
+  </ListView> -->
+  
     <Button x:Name="ManBtn" Text="MAN"/>
     <Entry x:Name="Input" Placeholder="Write a command..." />
     <Button x:Name="SendCmd" Text="SEND" />
