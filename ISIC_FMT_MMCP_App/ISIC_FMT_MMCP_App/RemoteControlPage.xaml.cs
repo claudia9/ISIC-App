@@ -1,4 +1,5 @@
-﻿using Plugin.BLE;
+﻿using Isic.SerialProtocol;
+using Plugin.BLE;
 using Plugin.BLE.Abstractions.Contracts;
 using System;
 using System.Collections.Generic;
@@ -11,27 +12,60 @@ using Xamarin.Forms;
 
 namespace ISIC_FMT_MMCP_App
 {
+    public enum MonitorIdentifier
+    {
+        Monitor1,
+        Monitor2,
+        Monitor3,
+        Monitor4,
+        MonitorBroadcast
+    }
+
     public partial class RemoteControlPage : ContentPage
     {
+        private Dictionary<MonitorIdentifier, MonitorSettings> monitors { get; set; }
+        private MonitorSettings currentMonitor = null;
+
         IAdapter adapter = CrossBluetoothLE.Current.Adapter;
         IDevice currentDevice;
         IService service;
         ICharacteristic characteristic;
-        public RemoteControlPage()
+        public RemoteControlPage(IDevice device)
         {
             NavigationPage.SetHasNavigationBar(this, false);
             InitializeComponent();
 
+            InitializeDictionary();
+
             InitializeButtons();
 
-            InitiliazeBluetooth();
-            
+            InitiliazeBluetooth(device);
+
         }
 
-        private async void InitiliazeBluetooth()
-        {   
+        private void InitializeDictionary()
+        {
+            monitors = new Dictionary<MonitorIdentifier, MonitorSettings>();
+            monitors[MonitorIdentifier.Monitor1] = new MonitorSettings();
+            monitors[MonitorIdentifier.Monitor2] = new MonitorSettings();
+            monitors[MonitorIdentifier.Monitor3] = new MonitorSettings();
+            monitors[MonitorIdentifier.Monitor4] = new MonitorSettings();
+            monitors[MonitorIdentifier.MonitorBroadcast] = new MonitorSettings() { MonAddr = 0xFF } ;
+        }
+
+        private async void InitiliazeBluetooth(IDevice device)
+        {
             //Initiliaze BluetoothLE Known Device
-            currentDevice = await adapter.ConnectToKnownDeviceAsync(Guid.Parse("00000000-0000-0000-0000-f0c77f1c2065"));
+            if (currentDevice == null)
+            {
+                Debug.WriteLine("Connecting to device - Hardcoded.");
+                currentDevice = await adapter.ConnectToKnownDeviceAsync(Guid.Parse("00000000-0000-0000-0000-f0c77f1c2065"));
+            } else
+            {
+
+                Debug.WriteLine("Connecting to device - From list.");
+                currentDevice = device;
+            }
             Debug.WriteLine("Connected to device: " + currentDevice.Name);
 
             //Initialize BluetoothLE Write Characteristic
@@ -71,8 +105,6 @@ namespace ISIC_FMT_MMCP_App
             {
                 isSending = true;
                 Byte value = (Byte)(sender as Slider).Value;
-                //Byte a = (byte)((value >> 4) & 0x0F).ToString("X2")[0];
-                //Byte b = (byte)((value) & 0x0F).ToString("X2")[0];
                 String c = value.ToString("X2");
                 byte[] bytes = { 0x07, 0x01, 0x4D, 0x43, 0x43, 0x03, 0x21, 0x59, (Byte)c[0], (Byte)c[1], 0x46 };
                 //byte[] bytes = new byte[1];
@@ -83,34 +115,63 @@ namespace ISIC_FMT_MMCP_App
 
         }
 
+        #region Input Clicks
         private void DP_Clicked(object sender, EventArgs e)
         {
             Debug.WriteLine("Set DP Command");
-            byte[] bytes = { 0x07, 0x00, 0x4D, 0x43, 0x43, 0x03, 0x22, 0x98, 0x30, 0x32, 0x05 };
-            sendInputData(bytes);
-            
+            sendInputData(ISIC_SCP_IF.BYTE_DATA_MCC_VALUE_MPC_DP);
         }
 
         private void DVI_Clicked(object sender, EventArgs e)
         {
             Debug.WriteLine("Set DVI Command");
-            byte[] bytes = { 0x07, 0x00, 0x4D, 0x43, 0x43, 0x03, 0x22, 0x98, 0x30, 0x31, 0x06 };
-            sendInputData(bytes);
+            sendInputData(ISIC_SCP_IF.BYTE_DATA_MCC_VALUE_MPC_DVI);
         }
 
         private void VGA_Clicked(object sender, EventArgs e)
         {
             Debug.WriteLine("Set VGA Command");
-            byte[] bytes = { 0x07, 0x00, 0x4D, 0x43, 0x43, 0x03, 0x22, 0x98, 0x30, 0x30, 0x07 };
-            sendInputData(bytes);
+            sendInputData(ISIC_SCP_IF.BYTE_DATA_MCC_VALUE_MPC_VGA);
         }
 
-        private void sendInputData(byte[] bytes)
+        private void sendInputData(Byte inputValue)
         {
             try
             {
-                //Write bytes through the Write Characteristic
-                characteristic.WriteAsync(bytes);
+                new Isic.SerialProtocol.Command(currentMonitor.MonAddr, ISIC_SCP_IF.CMD_MCC, ISIC_SCP_IF.BYTE_DATA_MCC_ADDR_MPC, (byte)inputValue.ToString("X2")[0], (byte)inputValue.ToString("X2")[1]).Send(characteristic);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("Error trying to send command" + e.Message);
+            }
+        }
+        #endregion Input Clicks
+
+        #region Mode Clicks
+        private void DayMode_Clicked(object sender, EventArgs e)
+        {
+            Debug.WriteLine("Send Day Command");
+            SendModeData(ISIC_SCP_IF.BYTE_DATA_ECD_DAY);
+        }
+
+        private void DuskMode_Clicked(object sender, EventArgs e)
+        {
+            Debug.WriteLine("Send Dusk Command");
+            SendModeData(ISIC_SCP_IF.BYTE_DATA_ECD_DUSK);
+        }
+
+        private void NightMode_Clicked(object sender, EventArgs e)
+        {
+            Debug.WriteLine("Send Night Command");
+            SendModeData(ISIC_SCP_IF.BYTE_DATA_ECD_NIGHT);
+        }
+
+        private void SendModeData(Byte  mode)
+        {
+            try
+            {
+
+                new Isic.SerialProtocol.Command(currentMonitor.MonAddr, ISIC_SCP_IF.CMD_ECD, mode).Send(characteristic);
             }
             catch (Exception e)
             {
@@ -118,42 +179,47 @@ namespace ISIC_FMT_MMCP_App
             }
         }
 
-        private void DayMode_Clicked(object sender, EventArgs e)
+        #endregion  Mode Clicks
+       /* private void setMonitorSettings(Byte mode)
         {
-            Debug.WriteLine("Send Day Command");
-            byte[] bytes = { 0x07, 0xFF, 0x45, 0x43, 0x44, 0x01, 0x2C, 0x00, 0xFF }; 
-            //byte[] bytes = { 0x07, 0x00, 0x45, 0x43, 0x44, 0x01, 0x2B, 0x00, 0xFF };
-            characteristic.WriteAsync(bytes);
-        }
+            if (currentMonitor != null)
+            {
+                if (currentMonitor.MonAddr = monitors[MonitorIdentifier.MonitorBroadcast].MonAddr)
+                {
+                    foreach (var item in monitors)
+                    {
+                        item.Value.ToD = mode;
+                    }
+                } else
+                {
+                    if (!isMonitorAvailable(currentMonitor.MonAddr))
+                    {
+                        return;
+                    }
+                    currentMonitor.ToD = mode;
+                }
+            }
+            SendModeData(mode);
+            if (currentMonitor.MonAddr != monitors[MonitorIdentifier.MonitorBroadcast].MonAddr)
+            {
+                Task.Delay(100);
+                queryBacklight();
+            }
+        }*/
 
-        private void DuskMode_Clicked(object sender, EventArgs e)
-        {
-            Debug.WriteLine("Send Dusk Command");
-            byte[] bytes = { 0x07, 0xFF, 0x45, 0x43, 0x44, 0x01, 0x2C, 0x01, 0xFE };
-            //byte[] bytes = { 0x07, 0x00, 0x45, 0x43, 0x44, 0x01, 0x2B, 0x01, 0xFE };
-            characteristic.WriteAsync(bytes);
-        }
-
-        private void NightMode_Clicked(object sender, EventArgs e)
-        {
-            Debug.WriteLine("Send Night Command");
-            byte[] bytes = { 0x07, 0xFF, 0x45, 0x43, 0x44, 0x01, 0x2C, 0x02, 0xFD };
-            //byte[] bytes = { 0x07, 0x00, 0x45, 0x43, 0x44, 0x01, 0x2B, 0x02, 0xFD };
-            characteristic.WriteAsync(bytes);
-        }
 
         void OnSettingsClicked(object sender, EventArgs e)
         {
+            Debug.WriteLine("OnSettingsClicked");
             if (currentDevice != null)
             {
+                Debug.WriteLine("OnSettingsClicked - currentDevice: " + currentDevice.Name + " is not null");
                 adapter.DisconnectDeviceAsync(currentDevice);
             }
+
+            Debug.WriteLine("OnSettingsClicked - currentDevice is null");
             Navigation.PushAsync(new DeviceList());
         }
 
-    }
-    public class ISIC_SCP_IF
-    {
-        byte[] BYTE_DATA_MMC_VALUE_MPC_DP = { 0x07, 0x00, 0x4D, 0x43, 0x43, 0x03, 0x22, 0x98, 0x30, 0x32, 0x05 };
     }
 }

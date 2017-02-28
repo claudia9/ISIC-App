@@ -35,19 +35,36 @@ namespace ISIC_FMT_MMCP_App
             return sb.ToString();
         }
 
-        /*public static async Task<ICharacteristic> GetCharacteristic(this IDevice device)
+        public static String GetHexString(this byte[] bArr, char separator = ' ')
         {
-            Guid WRITE_SERVICE = Guid.Parse("0000ffe0-0000-1000-8000-00805f9b34fb");
-            Guid WRITE_CHARACTERISTIC = Guid.Parse("0000ffe1-0000-1000-8000-00805f9b34fb");
+            StringBuilder sb = new StringBuilder();
+            if (bArr == null)
+            {
+                return String.Empty;
+            }
+            if (separator == '\0')
+            {
+                foreach (byte b in bArr)
+                {
+                    sb.AppendFormat("{0:X2}", b);
+                }
+            }
+            else
+            {
+                foreach (byte b in bArr)
+                {
+                    sb.AppendFormat("{0:X2}{1}", b, separator);
+                }
+            }
+            return sb.ToString();
+        }
 
-
-            IService writeService = await device.GetServiceAsync(WRITE_SERVICE);
-            System.Diagnostics.Debug.WriteLine("Write service found: " + writeService.ToString());
-
-            ICharacteristic writeCharacteristic = writeService.GetCharacteristicAsync(WRITE_CHARACTERISTIC);
-            Debug.WriteLine("Write characteristic found: " + writeCharacteristic.ToString());
-            return writeCharacteristic;
-        }*/
+        public static T[] SubArray<T>(this T[] data, int index, int length)
+        {
+            T[] result = new T[length];
+            Array.Copy(data, index, result, 0, length);
+            return result;
+        }
 
     }
 }

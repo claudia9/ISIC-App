@@ -14,6 +14,20 @@ namespace ISIC_FMT_MMCP_App
 {
     public partial class DeviceList : ContentPage
     {
+        public event EventHandler bleDeviceSelected;
+        public event EventHandler bleDeviceNOTSelected;
+
+        private void onDeviceSelected()
+        {
+            bleDeviceSelected?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void onDeviceNOTSelected()
+        {
+            bleDeviceNOTSelected?.Invoke(this, EventArgs.Empty);
+        }
+
+
         //Collection of IDevice to collect each device encountered
         ObservableCollection<IDevice> devicesList = new ObservableCollection<IDevice>();
 
@@ -96,7 +110,8 @@ namespace ISIC_FMT_MMCP_App
 
                 ((ListView)sender).SelectedItem = null;
 
-                await Navigation.PushAsync(new DeviceTerminal(CrossBluetoothLE.Current.Adapter, connectedDevice));
+                await Navigation.PopToRootAsync();
+                //await Navigation.PushAsync(new RemoteControlPage(connectedDevice));
             }
         }
 

@@ -45,6 +45,7 @@
     <Compile Include="EmptyStringConverter.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="GuidConverter.cs" />
+    <Compile Include="MonitorSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -54,6 +55,13 @@
     <Compile Include="RemoteControlPage.xaml.cs">
       <DependentUpon>RemoteControlPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SerialProtocol\Checksum.cs" />
+    <Compile Include="SerialProtocol\Command.cs" />
+    <Compile Include="SerialProtocol\Config.cs" />
+    <Compile Include="SerialProtocol\Exceptions\BoardNotRecognisedException.cs" />
+    <Compile Include="SerialProtocol\Exceptions\PartNoNotValidException.cs" />
+    <Compile Include="SerialProtocol\ICS_SCP_SB.cs" />
+    <Compile Include="SerialProtocol\ISIC_SCP_IF.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Plugin.BLE, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">

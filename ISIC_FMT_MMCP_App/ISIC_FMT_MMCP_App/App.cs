@@ -11,7 +11,7 @@ namespace ISIC_FMT_MMCP_App
     {
         public App()
         {
-            MainPage = new NavigationPage(new RemoteControlPage());
+            MainPage = new NavigationPage(new RemoteControlPage(null));
         }
 
         protected override void OnStart()
