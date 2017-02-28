@@ -63,6 +63,11 @@ namespace ISIC_FMT_MMCP_App
             Disconnect.Clicked += Disconnect_Clicked;
         }
 
+        protected override bool OnBackButtonPressed()
+        {
+            return BackButtonFunction();
+        }
+
         private void Disconnect_Clicked(object sender, EventArgs e)
         {
             currentAdapter.DisconnectDeviceAsync(currentDevice);
@@ -119,31 +124,39 @@ namespace ISIC_FMT_MMCP_App
 
         private void sendInputCommand(string input, ICharacteristic characteristic)
         {
-            if (currentAdapter.ConnectedDevices.Contains(currentDevice))
+            if (input != null && currentAdapter.ConnectedDevices.Contains(currentDevice))
             {
-                if (input != null)
+                byte[] bytes = input.GetBytes();
+
+                try
                 {
-                    byte[] bytes = input.GetBytes();
+                    characteristic.WriteAsync(bytes);
 
-                    try
-                    {
-                        characteristic.WriteAsync(bytes);
+                    string command = DateTime.Now.ToString();
+                    commandsHistoryList.Add(command + ": " + input);
 
-                        string command = DateTime.Now.ToString();
-                        commandsHistoryList.Add(command + ": " + input);
-
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.WriteLine("Exception - SendInputCommand " + e.Message);
-                    }
                 }
-            }
-            else
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Exception - SendInputCommand " + e.Message);
+                }
+            } else
             {
                 DisplayAlert("Device not connected", "Your device is not connected, try to connect again before sending a command", "OK");
             }
         }
+
+        private bool BackButtonFunction()
+        {
+            Debug.WriteLine("BackButtonFunction. - Disconnecting ");
+            for (int i = 0; i < currentAdapter.ConnectedDevices.Count; i++) {
+                currentAdapter.DisconnectDeviceAsync(currentAdapter.ConnectedDevices[i]);
+            }
+            base.OnBackButtonPressed();
+            return true;
+        }
+
+
     }
 
 }

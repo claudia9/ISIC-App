@@ -78,7 +78,7 @@
     <!--BACKLIGHT-->
     <Label x:Name="Backlight" Text="Backlight"/>
     <Grid x:Name="GridSlider" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="5">
-      <Slider x:Name="Slider" Maximum="255" Minimum="0" ></Slider>
+      <Slider x:Name="Slider" Maximum="255" Minimum="0"  ></Slider>
     </Grid>
   </StackLayout>
 

@@ -37,19 +37,7 @@
       <Button x:Name="Disconnect" Text="Disconnect" Margin="50 , 0 , 0, 30"/>
     </StackLayout>
 
-    
-    
-    <ListView x:Name="CommandsHistory" ItemsSource="{Binding commandsHistoryList}" />
-    <!--<ListView.ItemTemplate>
-      <DataTemplate>
-        <ViewCell>
-          <StackLayout HorizontalOptions="StartAndExpand" Orientation="Vertical">
-              <Label Text="{Binding Command}" YAlign="Center" Font="Medium" />>
-          </StackLayout>
-        </ViewCell>
-      </DataTemplate>
-    </ListView.ItemTemplate>
-  </ListView> -->
+      <ListView x:Name="CommandsHistory" ItemsSource="{Binding commandsHistoryList}"/>
   
     <Button x:Name="ManBtn" Text="MAN"/>
     <Entry x:Name="Input" Placeholder="Write a command..." />

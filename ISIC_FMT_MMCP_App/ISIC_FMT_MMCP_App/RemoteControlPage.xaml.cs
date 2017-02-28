@@ -25,8 +25,7 @@ namespace ISIC_FMT_MMCP_App
             InitializeButtons();
 
             InitiliazeBluetooth();
-
-
+            
         }
 
         private async void InitiliazeBluetooth()
@@ -64,12 +63,24 @@ namespace ISIC_FMT_MMCP_App
             Slider.ValueChanged += Slider_ValueChanged;
         }
 
-        private void Slider_ValueChanged(object sender, ValueChangedEventArgs e)
+        bool isSending;
+
+        private async void Slider_ValueChanged(object sender, ValueChangedEventArgs e)
         {
-            Byte b = (Byte)(sender as Slider).Value;
-            byte[] bytes = new byte[1];
-            bytes[0] = b;
-            characteristic.WriteAsync(bytes);
+            if (!isSending)
+            {
+                isSending = true;
+                Byte value = (Byte)(sender as Slider).Value;
+                //Byte a = (byte)((value >> 4) & 0x0F).ToString("X2")[0];
+                //Byte b = (byte)((value) & 0x0F).ToString("X2")[0];
+                String c = value.ToString("X2");
+                byte[] bytes = { 0x07, 0x01, 0x4D, 0x43, 0x43, 0x03, 0x21, 0x59, (Byte)c[0], (Byte)c[1], 0x46 };
+                //byte[] bytes = new byte[1];
+                //bytes[0] = b;
+                await characteristic.WriteAsync(bytes);
+                isSending = false;
+            }
+
         }
 
         private void DP_Clicked(object sender, EventArgs e)
@@ -110,27 +121,33 @@ namespace ISIC_FMT_MMCP_App
         private void DayMode_Clicked(object sender, EventArgs e)
         {
             Debug.WriteLine("Send Day Command");
-            byte[] bytes = { 0x07, 0x00, 0x45, 0x43, 0x44, 0x01, 0x2B, 0x00, 0xFF };
+            byte[] bytes = { 0x07, 0xFF, 0x45, 0x43, 0x44, 0x01, 0x2C, 0x00, 0xFF }; 
+            //byte[] bytes = { 0x07, 0x00, 0x45, 0x43, 0x44, 0x01, 0x2B, 0x00, 0xFF };
             characteristic.WriteAsync(bytes);
         }
 
         private void DuskMode_Clicked(object sender, EventArgs e)
         {
             Debug.WriteLine("Send Dusk Command");
-            byte[] bytes = { 0x07, 0x00, 0x45, 0x43, 0x44, 0x01, 0x2B, 0x01, 0xFE };
+            byte[] bytes = { 0x07, 0xFF, 0x45, 0x43, 0x44, 0x01, 0x2C, 0x01, 0xFE };
+            //byte[] bytes = { 0x07, 0x00, 0x45, 0x43, 0x44, 0x01, 0x2B, 0x01, 0xFE };
             characteristic.WriteAsync(bytes);
         }
 
         private void NightMode_Clicked(object sender, EventArgs e)
         {
             Debug.WriteLine("Send Night Command");
-            byte[] bytes = { 0x07, 0x00, 0x45, 0x43, 0x44, 0x01, 0x2B, 0x02, 0xFD };
+            byte[] bytes = { 0x07, 0xFF, 0x45, 0x43, 0x44, 0x01, 0x2C, 0x02, 0xFD };
+            //byte[] bytes = { 0x07, 0x00, 0x45, 0x43, 0x44, 0x01, 0x2B, 0x02, 0xFD };
             characteristic.WriteAsync(bytes);
         }
 
         void OnSettingsClicked(object sender, EventArgs e)
         {
-            adapter.DisconnectDeviceAsync(currentDevice);
+            if (currentDevice != null)
+            {
+                adapter.DisconnectDeviceAsync(currentDevice);
+            }
             Navigation.PushAsync(new DeviceList());
         }
 

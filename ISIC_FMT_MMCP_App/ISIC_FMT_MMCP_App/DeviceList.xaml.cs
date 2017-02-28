@@ -53,17 +53,6 @@ namespace ISIC_FMT_MMCP_App
 
             //Start scanning
             StartScanning(adapter);
-            adapter.ScanTimeoutElapsed += (s, e) =>
-            {
-                if (devicesList.Count() == 0)
-                {
-                    DisplayAlert("No devices found", "No devices have been found", "OK");
-                }
-                else
-                {
-                    DisplayAlert("Time out", "Time out has been reached. If the target device do not appear, try again", "OK");
-                }
-            };
 
 
             //Initiliase list of devices
@@ -127,6 +116,18 @@ namespace ISIC_FMT_MMCP_App
                 await adapter.StartScanningForDevicesAsync();
                 System.Diagnostics.Debug.WriteLine("Cleared list of devices and starting scanning.");
             }
+            adapter.ScanTimeoutElapsed += (s, e) =>
+            {
+                if (devicesList.Count() == 0)
+                {
+                    DisplayAlert("No devices found", "No devices have been found", "OK");
+                }
+                else
+                {
+                    DisplayAlert("Time out", "Time out has been reached. If the target device do not appear, try again", "OK");
+                }
+            };
+
         }
 
         void StopScanning(IAdapter adapter)

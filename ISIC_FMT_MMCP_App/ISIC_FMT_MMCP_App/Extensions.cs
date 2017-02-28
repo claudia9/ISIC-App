@@ -48,5 +48,6 @@ namespace ISIC_FMT_MMCP_App
             Debug.WriteLine("Write characteristic found: " + writeCharacteristic.ToString());
             return writeCharacteristic;
         }*/
+
     }
 }
