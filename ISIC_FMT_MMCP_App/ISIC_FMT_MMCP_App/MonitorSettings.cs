@@ -15,9 +15,9 @@ namespace ISIC_FMT_MMCP_App
 
         public MonitorSettings()
         {
-            MonAddr = 0xFF;
-            ToD = -1;
-            ToDBacklightValue = -1;
+            MonAddr = 0x00;
+            ToD = 0;
+            ToDBacklightValue = 0;
         }
     }
 }

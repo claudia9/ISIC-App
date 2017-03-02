@@ -168,18 +168,32 @@ namespace Isic.SerialProtocol
 		/// <returns>status of the transmission</returns>
 		public async void Send(ICharacteristic characteristic, Action<bool> callback = null)
 		{
-
-			try
-			{
-                Byte[] bytes = GetBytes();
-				Debug.WriteLine("Sending: {0}: " + bytes[0]);
-                await characteristic.WriteAsync(bytes);
-                //callback?.Invoke(await characteristic.WriteAsync(bytes));
-            }
-			catch (Exception ex)
-			{
-				Debug.WriteLine("Error sending:\nMessage: {0}\nStackTrace:\n{1}\nInner ex:\n{3}\nData:\n{4}", ex.Message, ex.StackTrace , ex.InnerException, ex.Data);
-                callback?.Invoke(false);
+            if(characteristic.CanWrite)
+            {
+                try
+                {
+                    Byte[] bytes = GetBytes();
+                    Debug.WriteLine("Sending: " + bytes.GetHexString() + " Characteristic params: " + characteristic.Name + characteristic.Value);
+                    //System.FormatException: Index (zero based) must be greater than or equal to zero and less than the size of the argument list.
+                    try
+                    {
+                        await characteristic.WriteAsync(bytes);
+                        Debug.WriteLine("Sent successfully");
+                    } catch (Exception e)
+                    {
+                        Debug.WriteLine("Command not send! - " + e.Message);
+                    }
+                    //callback?.Invoke(await characteristic.WriteAsync(bytes));
+                    //Debug.WriteLine("After callback of WriteAsync.");
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("Error sending:\nMessage: {0}\nStackTrace:\n{1}\nInner ex:\n{2}\nData:\n{3}", ex.Message, ex.StackTrace, ex.InnerException, ex.Data);
+                    //callback?.Invoke(false);
+                }
+            } else
+            {
+                Debug.WriteLine("Characteristic " + characteristic.Value + " cannot write right now.");
             }
 		}
 
