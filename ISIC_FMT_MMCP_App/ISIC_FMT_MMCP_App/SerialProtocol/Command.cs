@@ -173,7 +173,7 @@ namespace Isic.SerialProtocol
                 try
                 {
                     Byte[] bytes = GetBytes();
-                    Debug.WriteLine("Sending: " + bytes.GetHexString() + " Characteristic params: " + characteristic.Name + characteristic.Value);
+                    Debug.WriteLine("Sending: " + bytes.GetHexString() + " Characteristic params: " + characteristic.Name + characteristic.Id);
                     //System.FormatException: Index (zero based) must be greater than or equal to zero and less than the size of the argument list.
                     try
                     {

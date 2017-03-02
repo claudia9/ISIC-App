@@ -82,7 +82,20 @@ namespace ISIC_FMT_MMCP_App
             //Initiliaze BluetoothLE Known Device
             if (currentDevice == null)
             {
-                Debug.WriteLine("Connecting to device - Hardcoded.");
+                //If we ever can pair to the devices -> Use this function to connect to the paired ones.!
+                /*var systemDevices = adapter.GetSystemConnectedOrPairedDevices();
+                foreach(var knowndevice in systemDevices)
+                {
+                    try
+                    {
+                        currentDevice = await adapter.ConnectToKnownDeviceAsync(knowndevice.Id);
+                        Debug.WriteLine("Connected to known device: " + knowndevice.Name);
+                    } catch (Exception ex)
+                    {
+                        Debug.WriteLine("Could not connect to known or paired device" + ex.Message);
+                    }
+                }*/
+
                 //currentDevice = await adapter.ConnectToKnownDeviceAsync(Guid.Parse("00000000-0000-0000-0000-f0c77f1c2065"));    //bleCACA
 
                 currentDevice = await adapter.ConnectToKnownDeviceAsync(Guid.Parse("00000000-0000-0000-0000-a81b6aaec165"));      //HELLOMISTER
@@ -319,9 +332,10 @@ namespace ISIC_FMT_MMCP_App
             if (currentDevice != null)
             {
                 Debug.WriteLine("OnSettingsClicked - currentDevice: " + currentDevice.Name + " is not null");
-                adapter.DisconnectDeviceAsync(currentDevice);
+                
                 for (int i = 0; i < adapter.ConnectedDevices.Count(); i++)
                 {
+                    adapter.DisconnectDeviceAsync(adapter.ConnectedDevices[i]);
                     adapter.ConnectedDevices.Remove(adapter.ConnectedDevices[i]);
                 }
             }

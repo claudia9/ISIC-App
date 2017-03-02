@@ -1,12 +1,9 @@
 ﻿using Plugin.BLE;
 using Plugin.BLE.Abstractions.Contracts;
 using Plugin.BLE.Abstractions.Exceptions;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using Xamarin.Forms;
 
@@ -14,20 +11,6 @@ namespace ISIC_FMT_MMCP_App
 {
     public partial class DeviceList : ContentPage
     {
-        public event EventHandler bleDeviceSelected;
-        public event EventHandler bleDeviceNOTSelected;
-
-        private void onDeviceSelected()
-        {
-            bleDeviceSelected?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void onDeviceNOTSelected()
-        {
-            bleDeviceNOTSelected?.Invoke(this, EventArgs.Empty);
-        }
-
-
         //Collection of IDevice to collect each device encountered
         ObservableCollection<IDevice> devicesList = new ObservableCollection<IDevice>();
 
@@ -55,11 +38,11 @@ namespace ISIC_FMT_MMCP_App
             var ble = CrossBluetoothLE.Current;
             var adapter = CrossBluetoothLE.Current.Adapter;
 
-            System.Diagnostics.Debug.WriteLine("BluetoothLE initiliased correctly.");
+            Debug.WriteLine("BluetoothLE initiliased correctly.");
 
             ble.StateChanged += (s, e) =>
             {
-                System.Diagnostics.Debug.WriteLine("The bluetooth state changed to {e.NewState}");
+                Debug.WriteLine("The bluetooth state changed to {e.NewState}");
             };
 
             //Delete any rests of the last Bluetooth scans
@@ -75,8 +58,8 @@ namespace ISIC_FMT_MMCP_App
                 if (!devicesList.Contains(a.Device))
                 {
                     devicesList.Add(a.Device);
-                    System.Diagnostics.Debug.WriteLine("Device found: " + a.Device.Name);
-                    System.Diagnostics.Debug.WriteLine("Device found: " + a.Device.Id);
+                    Debug.WriteLine("Device found: " + a.Device.Name);
+                    Debug.WriteLine("Device found: " + a.Device.Id);
                 }
             };
 
@@ -97,39 +80,42 @@ namespace ISIC_FMT_MMCP_App
             var connectedDevice = e.SelectedItem as IDevice;
             if (connectedDevice != null) 
             {
-                System.Diagnostics.Debug.WriteLine("Selected device: " + connectedDevice.Name);
+                Debug.WriteLine("Selected device: " + connectedDevice.Name);
                 try
                 {
                     await CrossBluetoothLE.Current.Adapter.ConnectToDeviceAsync(connectedDevice);
-                    System.Diagnostics.Debug.WriteLine("Connected to device " + connectedDevice.Name);
+                    Debug.WriteLine("Connected to device " + connectedDevice.Name);
                 }
                 catch (DeviceConnectionException ex)
                 {
-                    System.Diagnostics.Debug.WriteLine("Could not connect to device: " + connectedDevice.Name);
+                    Debug.WriteLine("Could not connect to device: " + connectedDevice.Name);
                 }
 
                 ((ListView)sender).SelectedItem = null;
 
-                await Navigation.PopToRootAsync();
-                //await Navigation.PushAsync(new RemoteControlPage(connectedDevice));
+                for (int i = 0; i < Navigation.NavigationStack.Count(); i++)
+                {
+                    Debug.WriteLine("Navigation stack: " +  Navigation.NavigationStack[i].Id);
+                }
+                await Navigation.PushAsync(new RemoteControlPage(connectedDevice));
             }
         }
 
         async void StartScanning(IAdapter adapter)
         {
-            System.Diagnostics.Debug.WriteLine(" ------- Start scanning -----------");
+            Debug.WriteLine(" ------- Start scanning -----------");
             devicesList.Clear();
 
             if (adapter.IsScanning)
             {
                 await adapter.StopScanningForDevicesAsync();
-                System.Diagnostics.Debug.WriteLine("Adapter already trying to scan. STOPPING LAST SCAN and TRY AGAIN");
+                Debug.WriteLine("Adapter already trying to scan. STOPPING LAST SCAN and TRY AGAIN");
                 await adapter.StartScanningForDevicesAsync();
             }
             else
             {
                 await adapter.StartScanningForDevicesAsync();
-                System.Diagnostics.Debug.WriteLine("Cleared list of devices and starting scanning.");
+                Debug.WriteLine("Cleared list of devices and starting scanning.");
             }
             adapter.ScanTimeoutElapsed += (s, e) =>
             {
@@ -150,7 +136,7 @@ namespace ISIC_FMT_MMCP_App
             if (adapter.IsScanning)
             {
                 adapter.StopScanningForDevicesAsync();
-                System.Diagnostics.Debug.WriteLine("Still scanning, stopping the scan");
+                Debug.WriteLine("Still scanning, stopping the scan");
             }
         }
     }
