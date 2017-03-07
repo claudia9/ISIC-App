@@ -2,16 +2,52 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ISIC_FMT_MMCP_App.MonitorSettingsPage">
+
+  <ContentPage.Resources>
+    <ResourceDictionary>
+
+      <Style TargetType="NavigationPage">
+        <Setter Property="BarBackgroundColor" Value="#FF1A1A1A" />
+      </Style>
+
+      <Style TargetType="Button">
+        <Setter Property="TextColor" Value="Black"/>
+        <Setter Property="FontAttributes" Value="Bold" />
+      </Style>
+
+      <Style TargetType="Label">
+        <Setter Property="FontFamily" Value="Calibry"/>
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="HorizontalTextAlignment" Value="Center"/>
+        <Setter Property="VerticalTextAlignment" Value="Center" />
+        <Setter Property="Margin" Value=" 0, 30, 0, 0" />
+      </Style>
+
+    </ResourceDictionary>
+  </ContentPage.Resources>
   
-  <StackLayout>
+  <StackLayout Padding="20">
     <Label x:Name="MonitorAddrs"></Label>
 
-    <Grid>
+    <Grid ColumnSpacing="5">
       <Grid.ColumnDefinitions>
-        <ColumnDefinition/>
-        <ColumnDefinition/>
+        <ColumnDefinition />
+        <ColumnDefinition />
+        <ColumnDefinition />
+        <ColumnDefinition />
+        <ColumnDefinition />
+        <ColumnDefinition />
       </Grid.ColumnDefinitions>
+      <Label x:Name="Mon1" Text="1" Grid.Column="0" />
+      <Picker x:Name="Mon1Addr" Grid.Column="1">
+      </Picker>
+      <Label x:Name="Mon2" Text="2" Grid.Column="2"/>
+      <Picker x:Name="Mon2Addr" Grid.Column="3" />
+      <Label x:Name="Mon3" Text="3" Grid.Column="4"/>
+      <Picker x:Name="Mon3Addr" Grid.Column="5" />
 
     </Grid>
+
+    <Button x:Name="Commit" Text="Save" />
   </StackLayout>
 </ContentPage>

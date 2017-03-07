@@ -1,3 +1,4 @@
+using Android.Graphics;
 using Android.Graphics.Drawables;
 using ISIC_FMT_MMCP_App;
 using ISIC_FMT_MMCP_App.Droid;
@@ -18,12 +19,9 @@ namespace ISIC_FMT_MMCP_App.Droid
 
             if (Control != null)
             {
-                Control.SetTextSize(Android.Util.ComplexUnitType.Px, 40);
+                Control.SetTextSize(Android.Util.ComplexUnitType.Px, 42);
                 Control.SetTextColor(Android.Graphics.Color.White);
-                Control.SetPadding(-10, -10, -10, -10);
-
-
-                var density = Math.Max(1, Resources.DisplayMetrics.Density);
+                Control.SetTypeface(Typeface.DefaultBold, TypefaceStyle.Bold);
 
                 var button = e.NewElement;
                 var mode = MeasureSpec.GetMode((int)button.BorderRadius);
@@ -35,20 +33,20 @@ namespace ISIC_FMT_MMCP_App.Droid
 
                 if(button.BackgroundColor.R == -1.0 && button.BackgroundColor.G == -1.0 && button.BackgroundColor.B == -1.0)
                 {
-                    normal.SetColor(Android.Graphics.Color.ParseColor("#262626"));
+                    normal.SetColor(Android.Graphics.Color.ParseColor("#444444"));
                 } else
                 {
                     normal.SetColor(button.BackgroundColor.ToAndroid());
                 }
 
-                normal.SetStroke((int)borderWidth, Android.Graphics.Color.ParseColor("#4D4D4D"));
+                normal.SetStroke((int)borderWidth, Android.Graphics.Color.ParseColor("#808080"));
                 normal.SetCornerRadius(borderRadius);
 
                 //New drawwable for the button's pressed state
                 clicked = new GradientDrawable();
                 var highlight = Context.ObtainStyledAttributes(new int[] {
                     Android.Resource.Attribute.ColorAccent
-                }).GetColor(0, Android.Graphics.Color.ParseColor("#64B22E"));
+                }).GetColor(0, Android.Graphics.Color.LightGreen);
 
                 clicked.SetColor(highlight);
                 clicked.SetStroke((int)borderWidth, button.BorderColor.ToAndroid());

@@ -4,30 +4,30 @@
              xmlns:local="clr-namespace:ISIC_FMT_MMCP_App;assembly=ISIC_FMT_MMCP_App"
              x:Class="ISIC_FMT_MMCP_App.RemoteControlPage"
              Title="ISIC FMT MMC Panel App"
-             BackgroundColor="#FF1A1A1A">
+             BackgroundColor="#444444">
 
   <ContentPage.Resources>
     <ResourceDictionary>
       <Color x:Key="Green">#64B22E</Color>
       <Color x:Key="Border">#FF262626</Color>
-      <Color x:Key="Background">#262626</Color>
+      <Color x:Key="Background">#444444</Color>
       <Color x:Key="BorderBrushButton">#808080</Color>
       <Color x:Key="DisabledButton">#808080</Color>
       <Color x:Key="Label">#808080</Color>
-
 
       <Style TargetType="NavigationPage">
         <Setter Property="BarBackgroundColor" Value="#FF1A1A1A" />
       </Style>
 
       <Style TargetType="Button">
-        <Setter Property="TextColor" Value="White"/>
+        <Setter Property="TextColor" Value="Black"/>
         <Setter Property="FontAttributes" Value="Bold" />
       </Style>
 
       <Style x:Key="ScanBtnStyle" TargetType="Button">
         <Setter Property="HorizontalOptions" Value="Start" />
-        <Setter Property="VerticalOptions" Value="Start" />
+        <Setter Property="VerticalOptions" Value="Start"/>
+        <Setter Property="TextColor" Value="Red"/>
       </Style>
 
       <Style x:Key="SettingsBtnStyle" TargetType="Button">
@@ -47,7 +47,6 @@
         <Setter Property="HorizontalTextAlignment" Value="Center"/>
         <Setter Property="VerticalTextAlignment" Value="Start" />
         <Setter Property="Margin" Value=" 0, 30, 0, 0" />
-
       </Style>
 
     </ResourceDictionary>
@@ -63,25 +62,25 @@
         <ColumnDefinition/>
       </Grid.ColumnDefinitions>
       <Grid.RowDefinitions>
-        <RowDefinition Height="40"/>
+        <RowDefinition Height="60"/>
       </Grid.RowDefinitions>
       <!--BLUETOOTH SCAN-->
-      <Button x:Name="ScanButton" Text="List devices" TextColor="White" Style="{StaticResource ScanBtnStyle}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+      <local:RoundedButton x:Name="ScanButton" Text="List devices" Style="{StaticResource ScanBtnStyle}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
       <!--BLUETOOTH SETTINGS-->
-      <Button x:Name="SettingsButton" Image="settings_icon.png" Style="{StaticResource SettingsBtnStyle}" Grid.Row="0" Grid.Column="3"/>
+      <local:RoundedButton x:Name="SettingsButton" Image="settings_icon.png" Style="{StaticResource SettingsBtnStyle}" Grid.Row="0" Grid.Column="3"/>
     </Grid>
 
     <!--MONITORS-->
-    <Label x:Name="Monitor" Text="MONITOR" />
-    <Grid>
+    <Label x:Name="Monitor" Text="MONITOR"/>
+    <Grid ColumnSpacing="20">
       <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="60"/>
-        <ColumnDefinition Width="60"/>
-        <ColumnDefinition Width="60"/>
-        <ColumnDefinition  Width="60"/>
+        <ColumnDefinition Width="70"/>
+        <ColumnDefinition Width="70"/>
+        <ColumnDefinition Width="70"/>
+        <ColumnDefinition  Width="70"/>
       </Grid.ColumnDefinitions>
       <Grid.RowDefinitions>
-        <RowDefinition Height="60"/>
+        <RowDefinition Height="70"/>
       </Grid.RowDefinitions>
 
       <local:RoundedButton x:Name="Monitor1" Text="1" Grid.Column="0" Grid.Row="0"/>
@@ -93,14 +92,14 @@
 
     <!--MODES-->
     <Label x:Name="Mode" Text="ECDIS MODE" />
-    <Grid>
+    <Grid ColumnSpacing="25" Margin="40, 0, 0, 0">
       <Grid.ColumnDefinitions>
-        <ColumnDefinition/>
-        <ColumnDefinition/>
-        <ColumnDefinition/>
+        <ColumnDefinition Width="70"/>
+        <ColumnDefinition Width="70"/>
+        <ColumnDefinition Width="70"/>
       </Grid.ColumnDefinitions>
       <Grid.RowDefinitions>
-        <RowDefinition Height="60"/>
+        <RowDefinition Height="70"/>
       </Grid.RowDefinitions>
       <local:RoundedButton x:Name="NightMode" Text="Night" Grid.Column="0" Grid.Row="0"/>
       <local:RoundedButton x:Name="DuskMode" Text="Dusk" Grid.Column="1" Grid.Row="0"/>
@@ -109,14 +108,14 @@
 
     <!--INPUT-->
     <Label x:Name="Input" Text="INPUT" />
-    <Grid>
+    <Grid ColumnSpacing="25" Margin="40, 0, 0, 0">
       <Grid.ColumnDefinitions>
-        <ColumnDefinition/>
-        <ColumnDefinition/>
-        <ColumnDefinition/>
+        <ColumnDefinition Width="70"/>
+        <ColumnDefinition Width="70"/>
+        <ColumnDefinition Width="70"/>
       </Grid.ColumnDefinitions>
       <Grid.RowDefinitions>
-        <RowDefinition Height="60"/>
+        <RowDefinition Height="70"/>
       </Grid.RowDefinitions>
       <local:RoundedButton x:Name="VGA" Text="VGA" Grid.Column="0" Grid.Row="0"/>
       <local:RoundedButton x:Name="DVI" Text="DVI" Grid.Column="1" Grid.Row="0"/>
@@ -126,7 +125,7 @@
     <!--BACKLIGHT-->
     <Label x:Name="Backlight" Text="BACKLIGHT"/>
     <Grid x:Name="GridSlider" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="5">
-      <Slider x:Name="Slider" Maximum="255" Minimum="0"  ></Slider>
+      <Slider x:Name="Slider" Maximum="255" Minimum="0" ></Slider>
     </Grid>
 
   </StackLayout>

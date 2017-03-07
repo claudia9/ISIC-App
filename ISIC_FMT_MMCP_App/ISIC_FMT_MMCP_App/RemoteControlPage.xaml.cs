@@ -107,29 +107,7 @@ namespace ISIC_FMT_MMCP_App
 
         #endregion Initializers
 
-        #region SetAddresses
-        private void setMonitor1Address(Byte address)
-        {
-            SetMonitorAddress(address, MonitorIdentifier.Monitor1);
-        }
-        private void setMonitor2Address(Byte address)
-        {
-            SetMonitorAddress(address, MonitorIdentifier.Monitor2);
-        }
-        private void setMonitor3Address(Byte address)
-        {
-            SetMonitorAddress(address, MonitorIdentifier.Monitor3);
-        }
-        private void setMonitor4Address(Byte address)
-        {
-            SetMonitorAddress(address, MonitorIdentifier.Monitor4);
-        }
-
-        private void SetMonitorAddress(Byte address, MonitorIdentifier monIdentifier)
-        {
-            monitors[monIdentifier].MonAddr = address;
-        }
-        #endregion
+        
 
         #region Monitor Clicks
 
