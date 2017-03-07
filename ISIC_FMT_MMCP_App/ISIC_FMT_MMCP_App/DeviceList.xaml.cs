@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 
 using Xamarin.Forms;
+using System;
 
 namespace ISIC_FMT_MMCP_App
 {
@@ -14,13 +15,18 @@ namespace ISIC_FMT_MMCP_App
         //Collection of IDevice to collect each device encountered
         ObservableCollection<IDevice> devicesList = new ObservableCollection<IDevice>();
 
+
+        //Bluetooth Settings
+        IAdapter adapter = CrossBluetoothLE.Current.Adapter;
+        IDevice currentDevice;
+
         public DeviceList()
         {
             //Automatically written to get the XAML
             InitializeComponent();
-
+            
             //Bluetooth Connection
-            InitiliazeBluetooth();
+            InitiliazeDefaultBluetooth();
 
             //Event handler for the Scan Button
             ScanAllButton.Clicked += (sender, e) =>
@@ -28,8 +34,38 @@ namespace ISIC_FMT_MMCP_App
                 InitiliazeBluetooth();
 
             };
+        }
 
+        private async void InitiliazeDefaultBluetooth()
+        {
+            //If we ever can pair to the devices -> Use this function to connect to the paired ones.!
+            /*var systemDevices = adapter.GetSystemConnectedOrPairedDevices();
+            foreach(var knowndevice in systemDevices)
+            {
+                try
+                {
+                    currentDevice = await adapter.ConnectToKnownDeviceAsync(knowndevice.Id);
+                    Debug.WriteLine("Connected to known device: " + knowndevice.Name);
+                } catch (Exception ex)
+                {
+                    Debug.WriteLine("Could not connect to known or paired device" + ex.Message);
+                }
+            }*/
+            try
+            {
+                currentDevice = await adapter.ConnectToKnownDeviceAsync(Guid.Parse("00000000-0000-0000-0000-f0c77f1c2065"));        //bleCACA
+                //currentDevice = await adapter.ConnectToKnownDeviceAsync(Guid.Parse("00000000-0000-0000-0000-a81b6aaec165"));        //HELLOMISTER
+                if (currentDevice != null)
+                {
 
+                    Debug.WriteLine("Connected to device: " + currentDevice.Name);
+                    await Navigation.PushAsync(new RemoteControlPage(currentDevice));
+                }
+            } catch (Exception e)
+            {
+                Debug.WriteLine("Could not connect to default device!! Exception: " + e); 
+            }
+            
         }
 
         private void InitiliazeBluetooth()
@@ -47,6 +83,11 @@ namespace ISIC_FMT_MMCP_App
 
             //Delete any rests of the last Bluetooth scans
             devicesList.Clear();
+            if(currentDevice != null)
+            {
+                Debug.WriteLine("Disconnecting from current device: " + currentDevice.Name);
+                adapter.DisconnectDeviceAsync(currentDevice);
+            }
 
             //Start scanning
             StartScanning(adapter);
@@ -78,7 +119,7 @@ namespace ISIC_FMT_MMCP_App
             StopScanning(CrossBluetoothLE.Current.Adapter);
 
             var connectedDevice = e.SelectedItem as IDevice;
-            if (connectedDevice != null) 
+            if (connectedDevice != null)
             {
                 Debug.WriteLine("Selected device: " + connectedDevice.Name);
                 try
@@ -93,10 +134,6 @@ namespace ISIC_FMT_MMCP_App
 
                 ((ListView)sender).SelectedItem = null;
 
-                for (int i = 0; i < Navigation.NavigationStack.Count(); i++)
-                {
-                    Debug.WriteLine("Navigation stack: " +  Navigation.NavigationStack[i].Id);
-                }
                 await Navigation.PushAsync(new RemoteControlPage(connectedDevice));
             }
         }
@@ -139,5 +176,7 @@ namespace ISIC_FMT_MMCP_App
                 Debug.WriteLine("Still scanning, stopping the scan");
             }
         }
+
+
     }
 }

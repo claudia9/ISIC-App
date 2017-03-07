@@ -26,27 +26,47 @@ namespace ISIC_FMT_MMCP_App
         private Dictionary<MonitorIdentifier, MonitorSettings> monitors { get; set; }
         private MonitorSettings currentMonitor = null;
 
-        IAdapter adapter = CrossBluetoothLE.Current.Adapter;
         IDevice currentDevice;
-        IService service;
-        ICharacteristic characteristic;
+        ICharacteristic currentCharacteristic;
 
         public RemoteControlPage(IDevice device)
         {
-            InitiliazeScreen();             //Hide Navigation Bar
-            InitializeDictionary();         //Create object of MonitorSettings for each monitor
+            Debug.WriteLine("Initiliasing Remote Control Page with Device: " + device.Name);
+
+            InitilizeScreen();             //Hide Navigation Bar
             InitializeComponent();          //Create visual interface
+            InitializeBluetooth(device);
+            InitializeDictionary();         //Create object of MonitorSettings for each monitor
             InitiliazeMonitor();            //Create current monitor
             InitializeButtons();            //Create event handlers for each button
-            InitiliazeBluetooth(device);    //Create bluetooth interface and connection
 
+            Debug.WriteLine("Finished initiliazations");
         }
 
         #region Initializers
-        private void InitiliazeScreen()
+        private void InitilizeScreen()
         {
             NavigationPage.SetHasNavigationBar(this, false);
         }
+
+        private void InitializeBluetooth(IDevice device)
+        {
+            currentDevice = device;
+            findWriteCharacteristic(currentDevice);
+        }
+
+        private async void findWriteCharacteristic(IDevice currentDevice)
+        {
+            Guid WRITE_SERVICE = Guid.Parse("0000ffe0-0000-1000-8000-00805f9b34fb");
+            Guid WRITE_CHARACTERISTIC = Guid.Parse("0000ffe1-0000-1000-8000-00805f9b34fb");
+
+            var service = await currentDevice.GetServiceAsync(WRITE_SERVICE);
+            Debug.WriteLine("Write service found: " + service.ToString());
+
+            currentCharacteristic = await service.GetCharacteristicAsync(WRITE_CHARACTERISTIC);
+            Debug.WriteLine("Write characteristic found: " + currentCharacteristic.ToString());
+        }
+
 
         private void InitializeDictionary()
         {
@@ -66,6 +86,11 @@ namespace ISIC_FMT_MMCP_App
 
         private void InitializeButtons()
         {
+            Monitor1.Clicked += Monitor1_Clicked;
+            Monitor2.Clicked += Monitor2_Clicked;
+            Monitor3.Clicked += Monitor3_Clicked;
+            MonitorAll.Clicked += MonitorAll_Clicked;
+
             NightMode.Clicked += NightMode_Clicked;
             DuskMode.Clicked += DuskMode_Clicked;
             DayMode.Clicked += DayMode_Clicked;
@@ -75,55 +100,11 @@ namespace ISIC_FMT_MMCP_App
             DP.Clicked += DP_Clicked;
 
             Slider.ValueChanged += Slider_ValueChanged;
+
+            SettingsButton.Clicked += SettingsButton_Clicked;
+            ScanButton.Clicked += ScanAllButton_Clicked;
         }
 
-        private async void InitiliazeBluetooth(IDevice device)
-        {
-            //Initiliaze BluetoothLE Known Device
-            if (currentDevice == null)
-            {
-                //If we ever can pair to the devices -> Use this function to connect to the paired ones.!
-                /*var systemDevices = adapter.GetSystemConnectedOrPairedDevices();
-                foreach(var knowndevice in systemDevices)
-                {
-                    try
-                    {
-                        currentDevice = await adapter.ConnectToKnownDeviceAsync(knowndevice.Id);
-                        Debug.WriteLine("Connected to known device: " + knowndevice.Name);
-                    } catch (Exception ex)
-                    {
-                        Debug.WriteLine("Could not connect to known or paired device" + ex.Message);
-                    }
-                }*/
-
-                //currentDevice = await adapter.ConnectToKnownDeviceAsync(Guid.Parse("00000000-0000-0000-0000-f0c77f1c2065"));    //bleCACA
-
-                currentDevice = await adapter.ConnectToKnownDeviceAsync(Guid.Parse("00000000-0000-0000-0000-a81b6aaec165"));      //HELLOMISTER
-            }
-            else
-            {
-
-                Debug.WriteLine("Connecting to device - From list.");
-                currentDevice = device;
-            }
-            Debug.WriteLine("Connected to device: " + currentDevice.Name);
-
-            //Initialize BluetoothLE Write Characteristic
-            findWriteCharacteristic(currentDevice);
-        }
-
-
-        private async void findWriteCharacteristic(IDevice currentDevice)
-        {
-            Guid WRITE_SERVICE = Guid.Parse("0000ffe0-0000-1000-8000-00805f9b34fb");
-            Guid WRITE_CHARACTERISTIC = Guid.Parse("0000ffe1-0000-1000-8000-00805f9b34fb");
-
-            service = await currentDevice.GetServiceAsync(WRITE_SERVICE);
-            Debug.WriteLine("Write service found: " + service.ToString());
-
-            characteristic = await service.GetCharacteristicAsync(WRITE_CHARACTERISTIC);
-            Debug.WriteLine("Write characteristic found: " + characteristic.ToString());
-        }
         #endregion Initializers
 
         #region SetAddresses
@@ -151,26 +132,27 @@ namespace ISIC_FMT_MMCP_App
         #endregion
 
         #region Monitor Clicks
-        private void Monitor1_Click()
+
+        private void Monitor1_Clicked(object sender, EventArgs e)
         {
             SetMonitor(MonitorIdentifier.Monitor1);
         }
-        private void Monitor2_Click()
+
+        private void Monitor2_Clicked(object sender, EventArgs e)
         {
             SetMonitor(MonitorIdentifier.Monitor2);
         }
-        private void Monitor3_Click()
+        private void Monitor3_Clicked(object sender, EventArgs e)
         {
             SetMonitor(MonitorIdentifier.Monitor3);
         }
-        private void Monitor4_Click()
-        {
-            SetMonitor(MonitorIdentifier.Monitor4);
-        }
-        private void MonitorBroadcast_Click()
+
+        private void MonitorAll_Clicked(object sender, EventArgs e)
         {
             SetMonitor(MonitorIdentifier.MonitorBroadcast);
         }
+
+
 
         private void SetMonitor(MonitorIdentifier monIdentifier)
         {
@@ -181,13 +163,13 @@ namespace ISIC_FMT_MMCP_App
         #region Slider
         bool isSending;
 
-        private async void Slider_ValueChanged(object sender, ValueChangedEventArgs e)
+        private void Slider_ValueChanged(object sender, ValueChangedEventArgs e)
         {
             if (!isSending)
             {
                 isSending = true;
                 Byte value = (Byte)(sender as Slider).Value;
-                new Isic.SerialProtocol.Command(currentMonitor.MonAddr, ISIC_SCP_IF.CMD_BRT, value).Send(characteristic);
+                new Isic.SerialProtocol.Command(currentMonitor.MonAddr, ISIC_SCP_IF.CMD_BRT, value).Send(currentCharacteristic);
                 //String c = value.ToString("X2");
                 //byte[] bytes = { 0x07, 0x01, 0x4D, 0x43, 0x43, 0x03, 0x21, 0x59, (Byte)c[0], (Byte)c[1], 0x46 };
                 //await characteristic.WriteAsync(bytes);
@@ -220,7 +202,7 @@ namespace ISIC_FMT_MMCP_App
         {
             try
             {
-                new Isic.SerialProtocol.Command(currentMonitor.MonAddr, ISIC_SCP_IF.CMD_MCC, ISIC_SCP_IF.BYTE_DATA_MCC_ADDR_MPC, (byte)inputValue.ToString("X2")[0], (byte)inputValue.ToString("X2")[1]).Send(characteristic);
+                new Isic.SerialProtocol.Command(currentMonitor.MonAddr, ISIC_SCP_IF.CMD_MCC, ISIC_SCP_IF.BYTE_DATA_MCC_ADDR_MPC, (byte)inputValue.ToString("X2")[0], (byte)inputValue.ToString("X2")[1]).Send(currentCharacteristic);
             }
             catch (Exception e)
             {
@@ -284,7 +266,7 @@ namespace ISIC_FMT_MMCP_App
             try
             {
                 Debug.WriteLine("- SENDING MODE DATA: Command: " + ISIC_SCP_IF.CMD_ECD + ", Mon addr: " + currentMonitor.MonAddr + ", Mode: " + mode.ToString());
-                new Isic.SerialProtocol.Command(currentMonitor.MonAddr, ISIC_SCP_IF.CMD_ECD, mode).Send(characteristic);
+                new Isic.SerialProtocol.Command(currentMonitor.MonAddr, ISIC_SCP_IF.CMD_ECD, mode).Send(currentCharacteristic);
             }
             catch (Exception e)
             {
@@ -297,14 +279,14 @@ namespace ISIC_FMT_MMCP_App
         #region Check Availability Monitors
         private async Task<bool> isMonitorAvailable(byte monAddr)
         {
-            if (characteristic.CanRead)
+            if (currentCharacteristic.CanRead)
             {
                 Debug.WriteLine("Sending data to monitor to make sure isMonitorAvailable?");
                 try
                 {
                     Byte[] rArr;
-                    new Isic.SerialProtocol.Command(monAddr, ISIC_SCP_IF.CMD_MCC, ISIC_SCP_IF.BYTE_DATA_MCC_ADDR_BKL, 0x3F).Send(characteristic);
-                    rArr = await characteristic.ReadAsync();
+                    new Isic.SerialProtocol.Command(monAddr, ISIC_SCP_IF.CMD_MCC, ISIC_SCP_IF.BYTE_DATA_MCC_ADDR_BKL, 0x3F).Send(currentCharacteristic);
+                    rArr = await currentCharacteristic.ReadAsync();
                     if (rArr == null || rArr.Length == 0)
                     {
                         return false;
@@ -325,14 +307,22 @@ namespace ISIC_FMT_MMCP_App
         #endregion
 
 
-        void OnSettingsClicked(object sender, EventArgs e)
-
+        private void SettingsButton_Clicked(object sender, EventArgs e)
         {
-            Debug.WriteLine("OnSettingsClicked");
+            Navigation.PushAsync(new  MonitorSettingsPage(), true);
+        }
+
+
+        private void ScanAllButton_Clicked(object sender, EventArgs e)
+        {
+            Debug.WriteLine("OnBackButtonPressed");
             if (currentDevice != null)
             {
                 Debug.WriteLine("OnSettingsClicked - currentDevice: " + currentDevice.Name + " is not null");
-                
+
+                IAdapter adapter = CrossBluetoothLE.Current.Adapter;
+
+
                 for (int i = 0; i < adapter.ConnectedDevices.Count(); i++)
                 {
                     adapter.DisconnectDeviceAsync(adapter.ConnectedDevices[i]);
@@ -341,7 +331,7 @@ namespace ISIC_FMT_MMCP_App
             }
 
             Debug.WriteLine("OnSettingsClicked - currentDevice is null");
-            Navigation.PushAsync(new DeviceList());
+            Navigation.PopAsync(true);
         }
 
     }

@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:ISIC_FMT_MMCP_App"
              x:Class="ISIC_FMT_MMCP_App.DeviceList"
-             Title="Device List">
+             Title="Devices List">
+  
   <ContentPage.Resources>
     <ResourceDictionary>
       <local:GuidConverter x:Key="guidConverter"/>
@@ -13,7 +14,6 @@
 
   <ContentPage.ToolbarItems>
     <!--To scan a specific item-->
-    <!--ToolbarItem x:Name="ScanHrmButton" Name="Scan" Icon="glyphish_29_heart.png"/-->
     <ToolbarItem x:Name="ScanAllButton" Name="Scan" Icon="bluetooth_icon.png"/>
   </ContentPage.ToolbarItems>
 
