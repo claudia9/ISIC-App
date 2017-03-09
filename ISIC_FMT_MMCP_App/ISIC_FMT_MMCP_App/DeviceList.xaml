@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:local="clr-namespace:ISIC_FMT_MMCP_App"
+             xmlns:local="clr-namespace:ISIC_FMT_MMCP_App;assembly=ISIC_FMT_MMCP_App"
              x:Class="ISIC_FMT_MMCP_App.DeviceList"
-             Title="Devices List">
-  
+             BackgroundColor="#444444">
+
   <ContentPage.Resources>
     <ResourceDictionary>
       <local:GuidConverter x:Key="guidConverter"/>
@@ -12,23 +12,27 @@
     </ResourceDictionary>
   </ContentPage.Resources>
 
-  <ContentPage.ToolbarItems>
-    <!--To scan a specific item-->
-    <ToolbarItem x:Name="ScanAllButton" Name="Scan" Icon="bluetooth_icon.png"/>
-  </ContentPage.ToolbarItems>
+  <StackLayout>
+    <StackLayout Orientation="Horizontal">
+      <Label x:Name="Title" Text="Devices List" TextColor="White" FontAttributes="Bold"/>
+      <local:RoundedButton x:Name="ScanAllButton" Image="ble_icon.png"/>
 
-  <ListView x:Name="listView">
-    <ListView.ItemTemplate>
-      <DataTemplate>
-        <ViewCell>
-          <StackLayout HorizontalOptions="StartAndExpand" Orientation="Horizontal">
-            <StackLayout Padding="5,0,0,0" VerticalOptions="StartAndExpand" Orientation="Vertical">
-              <Label Text="{Binding Name, Converter={StaticResource strConverter}}" YAlign="Center" Font="Medium" />
-              <Label Text="{Binding Path=Id, Converter={StaticResource guidConverter}}" YAlign="Center" Font="Micro" />
+    </StackLayout>
+    <!--To scan -->
+
+    <ListView x:Name="listView">
+      <ListView.ItemTemplate>
+        <DataTemplate>
+          <ViewCell>
+            <StackLayout HorizontalOptions="StartAndExpand" Orientation="Horizontal">
+              <StackLayout Padding="5,0,0,0" VerticalOptions="StartAndExpand" Orientation="Vertical">
+                <Label Text="{Binding Name, Converter={StaticResource strConverter}}" YAlign="Center" Font="Medium" TextColor="White" FontAttributes="Bold"/>
+                <Label Text="{Binding Path=Id, Converter={StaticResource guidConverter}}" YAlign="Center" Font="Micro" TextColor="White"/>
+              </StackLayout>
             </StackLayout>
-          </StackLayout>
-        </ViewCell>
-      </DataTemplate>
-    </ListView.ItemTemplate>
-  </ListView>
+          </ViewCell>
+        </DataTemplate>
+      </ListView.ItemTemplate>
+    </ListView>
+  </StackLayout>
 </ContentPage>

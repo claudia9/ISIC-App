@@ -1,7 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="ISIC_FMT_MMCP_App.MonitorSettingsPage">
+             xmlns:local="clr-namespace:ISIC_FMT_MMCP_App;assembly=ISIC_FMT_MMCP_App"
+             x:Class="ISIC_FMT_MMCP_App.MonitorSettingsPage"
+              BackgroundColor="#444444">
 
   <ContentPage.Resources>
     <ResourceDictionary>
@@ -25,29 +27,45 @@
 
     </ResourceDictionary>
   </ContentPage.Resources>
-  
+
   <StackLayout Padding="20">
-    <Label x:Name="MonitorAddrs"></Label>
+
+    <local:RoundedButton x:Name="Back" Image="home_icon.png"/>
+
+    <Label x:Name="MonitorAddrs" Text="Monitor addresses" TextColor="White" />
 
     <Grid ColumnSpacing="5">
       <Grid.ColumnDefinitions>
         <ColumnDefinition />
         <ColumnDefinition />
-        <ColumnDefinition />
-        <ColumnDefinition />
-        <ColumnDefinition />
-        <ColumnDefinition />
       </Grid.ColumnDefinitions>
-      <Label x:Name="Mon1" Text="1" Grid.Column="0" />
-      <Picker x:Name="Mon1Addr" Grid.Column="1">
-      </Picker>
-      <Label x:Name="Mon2" Text="2" Grid.Column="2"/>
-      <Picker x:Name="Mon2Addr" Grid.Column="3" />
-      <Label x:Name="Mon3" Text="3" Grid.Column="4"/>
-      <Picker x:Name="Mon3Addr" Grid.Column="5" />
+      <Grid.RowDefinitions>
+        <RowDefinition />
+        <RowDefinition />
+        <RowDefinition />
+      </Grid.RowDefinitions>
+      <Label x:Name="Mon1" Text="Monitor 1" TextColor="White" Grid.Column="0" Grid.Row="0"/>
+      <Picker x:Name="Mon1Addr" TextColor="White" Grid.Column="1" Grid.Row="0"/>
+      <Label x:Name="Mon2" Text="Monitor 2" TextColor="White" Grid.Column="0" Grid.Row="1"/>
+      <Picker x:Name="Mon2Addr" TextColor="White" Grid.Column="1" Grid.Row="1"/>
+      <Label x:Name="Mon3" Text="Monitor 3" TextColor="White" Grid.Column="0" Grid.Row="2"/>
+      <Picker x:Name="Mon3Addr" TextColor="White" Grid.Column="1" Grid.Row="2"/>
 
     </Grid>
 
-    <Button x:Name="Commit" Text="Save" />
+    <Label x:Name="BaudLabel" Text="Baud" TextColor="White" />
+
+    <Grid ColumnSpacing="5">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition />
+        <ColumnDefinition />
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition />
+      </Grid.RowDefinitions>
+      <Label x:Name="BaudTitle" Text="Baud" TextColor="White" Grid.Column="0" Grid.Row="0"/>
+      <Picker x:Name="Baud" TextColor="White" Grid.Column="1" Grid.Row="0" />
+
+    </Grid>
   </StackLayout>
 </ContentPage>

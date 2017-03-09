@@ -13,52 +13,22 @@ namespace ISIC_FMT_MMCP_App
     {
 
         private Dictionary<MonitorIdentifier, MonitorSettings> monitors { get; set; }
-        private Dictionary<int, byte> AddressDictionary = new Dictionary<int, byte>
-        {
-            { 0, 0x00 }, {1, 0x01 }, {2, 0x02 }, {3, 0x03 }, {4, 0x04 }, {5, 0x05 }, {6, 0x06 }, {255, 0xFF }
-        };
 
         public MonitorSettingsPage()
         {
+            InitializeScreen();
             InitializeComponent();
             InitializeDictionary();
             InitializeComboBoxes();
 
-            Commit.Clicked += Commit_Clicked;
-
             Debug.WriteLine("On MonitorSettingsPage");
         }
 
-        private void Commit_Clicked(object sender, EventArgs e)
+        private void InitializeScreen()
         {
-            setMonitor1Address((byte)Mon1Addr.SelectedIndex);
-            setMonitor2Address((byte)Mon2Addr.SelectedIndex);
-            setMonitor3Address((byte)Mon3Addr.SelectedIndex);
+            NavigationPage.SetHasNavigationBar(this, false);
         }
 
-        #region SetAddresses
-        private void setMonitor1Address(Byte address)
-        {
-            SetMonitorAddress(address, MonitorIdentifier.Monitor1);
-        }
-        private void setMonitor2Address(Byte address)
-        {
-            SetMonitorAddress(address, MonitorIdentifier.Monitor2);
-        }
-        private void setMonitor3Address(Byte address)
-        {
-            SetMonitorAddress(address, MonitorIdentifier.Monitor3);
-        }
-        private void setMonitor4Address(Byte address)
-        {
-            SetMonitorAddress(address, MonitorIdentifier.Monitor4);
-        }
-
-        private void SetMonitorAddress(Byte address, MonitorIdentifier monIdentifier)
-        {
-            monitors[monIdentifier].MonAddr = address;
-        }
-        #endregion
 
         private void InitializeDictionary()
         {
@@ -68,28 +38,57 @@ namespace ISIC_FMT_MMCP_App
             monitors[MonitorIdentifier.Monitor3] = new MonitorSettings();
             monitors[MonitorIdentifier.Monitor4] = new MonitorSettings();
             monitors[MonitorIdentifier.MonitorBroadcast] = new MonitorSettings() { MonAddr = 0xFF };
+
         }
 
         private void InitializeComboBoxes()
         {
             Picker mon1 = Mon1Addr;
-            foreach (int address in AddressDictionary.Keys)
-            {
-                mon1.Items.Add(address.ToString());
-            }
-
             Picker mon2 = Mon2Addr;
-            foreach (int address in AddressDictionary.Keys)
-            {
-                mon2.Items.Add(address.ToString());
-            }
-
-
             Picker mon3 = Mon3Addr;
-            foreach (int address in AddressDictionary.Keys)
+            for (int i = 0; i < 255; i++)
             {
-                mon3.Items.Add(address.ToString());
+                mon1.Items.Add(i.ToString());
+                mon2.Items.Add(i.ToString());
+                mon3.Items.Add(i.ToString());
             }
+
+            Picker baud = Baud;
+            baud.Items.Add("9K6");
+            baud.Items.Add("19K2");
+            baud.Items.Add("115K2");
+            baud.Items.Add("460K8");
+
+            Mon1Addr.SelectedIndex = monitors[MonitorIdentifier.Monitor1].MonAddr;
+            Mon2Addr.SelectedIndex = monitors[MonitorIdentifier.Monitor2].MonAddr;
+            Mon3Addr.SelectedIndex = monitors[MonitorIdentifier.Monitor3].MonAddr;
+
+            Mon1Addr.SelectedIndexChanged += Mon1Addr_SelectedIndexChanged;
+            Mon2Addr.SelectedIndexChanged += Mon2Addr_SelectedIndexChanged;
+            Mon3Addr.SelectedIndexChanged += Mon3Addr_SelectedIndexChanged;
         }
+        #region Set Addresses from ComboBoxes
+        private void Mon1Addr_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SetMonitorAddress(sender, MonitorIdentifier.Monitor1);
+        }
+        private void Mon2Addr_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SetMonitorAddress(sender, MonitorIdentifier.Monitor2);
+        }
+
+        private void Mon3Addr_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SetMonitorAddress(sender, MonitorIdentifier.Monitor3);
+        }
+
+        private void SetMonitorAddress(object sender, MonitorIdentifier monIdentifier)
+        {
+            monitors[monIdentifier].MonAddr = (Byte)(sender as Picker).SelectedIndex;
+
+            Debug.WriteLine("Setting Monitor" + monIdentifier + " addres: " + monitors[monIdentifier].MonAddr);
+        }
+        #endregion
+
     }
 }

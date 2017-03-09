@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
@@ -106,7 +105,6 @@ namespace ISIC_FMT_MMCP_App
         }
 
         #endregion Initializers
-
         
 
         #region Monitor Clicks
@@ -130,11 +128,154 @@ namespace ISIC_FMT_MMCP_App
             SetMonitor(MonitorIdentifier.MonitorBroadcast);
         }
 
-
-
         private void SetMonitor(MonitorIdentifier monIdentifier)
         {
             currentMonitor = monitors[monIdentifier];
+            if (monIdentifier == MonitorIdentifier.Monitor1)
+            {
+                Monitor1.TextColor = Color.FromHex("#64B22E");
+                Monitor2.TextColor = Color.FromHex("#FFFFFF");
+                Monitor3.TextColor = Color.FromHex("#FFFFFF");
+            } else if (monIdentifier == MonitorIdentifier.Monitor2)
+            {
+                Monitor2.TextColor = Color.FromHex("#64B22E");
+                Monitor1.TextColor = Color.FromHex("#FFFFFF");
+                Monitor3.TextColor = Color.FromHex("#FFFFFF");
+            } else if (monIdentifier == MonitorIdentifier.Monitor3)
+            {
+                Monitor3.TextColor = Color.FromHex("#64B22E");
+                Monitor1.TextColor = Color.FromHex("#FFFFFF");
+                Monitor2.TextColor = Color.FromHex("#FFFFFF");
+            }
+
+            /*if (monIdentifier == MonitorIdentifier.MonitorBroadcast)
+            {
+                availableButtons();
+            }
+            else if (await isMonitorAvailable(currentMonitor.MonAddr))
+            {
+                availableButtons();
+                setModeButtons();
+                queryBacklight();
+                await queryInput();
+            }
+            else
+            {
+                monitorNotAvailable();
+            }*/
+        }
+
+        private async void queryBacklight()
+        {
+            try
+            {
+                Stopwatch watch = new Stopwatch();
+                byte[] rArr;
+                int sliderDecValue;
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+
+                do
+                {
+                    new Isic.SerialProtocol.Command(currentMonitor.MonAddr, ISIC_SCP_IF.CMD_MCC, ISIC_SCP_IF.BYTE_DATA_MCC_ADDR_BKL, 0x3F).Send(currentCharacteristic);
+                    rArr = await currentCharacteristic.ReadAsync();
+
+
+                    if (sw.ElapsedMilliseconds > 7000)
+                    {
+                        Debug.WriteLine("Backlight query time out");
+                        //throw new TimeoutException();
+                    }
+
+                } while (rArr == null || rArr.Length == 0);
+
+                sw.Reset();
+
+                Slider.ValueChanged -= Slider_ValueChanged;
+
+                sliderDecValue = Convert.ToInt32(rArr.GetHexString().Substring(ISIC_SCP_IF.BYTE_INDEX_IHCHK + 3, 2), 16);
+                Debug.WriteLine("Transformed backlight Data to value: {0}(dec)", sliderDecValue);
+                currentMonitor.ToDBacklightValue = sliderDecValue;
+                Slider.Value = sliderDecValue;
+                Slider.ValueChanged += Slider_ValueChanged;
+            } catch (Exception ex)
+            {
+                Debug.WriteLine("Not able to send or receive the Backlight data", ex);
+            }
+
+        }
+
+        private async Task<bool> queryInput()
+        {
+            int currentInput;
+            try
+            {
+                new Isic.SerialProtocol.Command(currentMonitor.MonAddr, ISIC_SCP_IF.CMD_MCC, ISIC_SCP_IF.BYTE_DATA_MCC_ADDR_MPC, 0x3F).Send(currentCharacteristic);
+                byte[] rArr = await currentCharacteristic.ReadAsync();
+
+                if (rArr != null)
+                {
+                    Debug.WriteLine("Received input Data: {0}", rArr.GetHexString());
+                    currentInput = Convert.ToInt32(rArr.GetString().Substring(ISIC_SCP_IF.BYTE_INDEX_IHCHK + 3, 2), 16);
+                    Debug.WriteLine("Transpormed input data to value: {0}", currentInput);
+                    return true;
+                } else
+                {
+                    Debug.WriteLine("Not receiving any Input data from the monitor");
+                    return false;
+                }
+            } catch (Exception ex)
+            {
+                Debug.WriteLine("Not able to send or receive input data.", ex);
+                return false;
+            }
+        }
+
+        private void setModeButtons()
+        {
+            if (currentMonitor != null)
+            {
+                if (currentMonitor.ToD == ISIC_SCP_IF.BYTE_DATA_ECD_DAY)
+                {
+                    Debug.WriteLine("currentMonitor.ToD = Day");
+                    DayMode.TextColor = Color.FromHex("#64B22E");
+                    DuskMode.TextColor = Color.FromHex("#FFFFFF");
+                    NightMode.TextColor = Color.FromHex("#FFFFFF");
+                } else if(currentMonitor.ToD == ISIC_SCP_IF.BYTE_DATA_ECD_DUSK) {
+                    Debug.WriteLine("currentMonitor.ToD = Dusk");
+                    DuskMode.TextColor = Color.FromHex("#64B22E");
+                    DayMode.TextColor = Color.FromHex("#FFFFFF");
+                    NightMode.TextColor = Color.FromHex("#FFFFFF");
+                } else if (currentMonitor.ToD == ISIC_SCP_IF.BYTE_DATA_ECD_NIGHT) {
+                    Debug.WriteLine("currentMonitor.ToD = NIght");
+                    NightMode.TextColor = Color.FromHex("#64B22E");
+                    DayMode.TextColor = Color.FromHex("#FFFFFF");
+                    DuskMode.TextColor = Color.FromHex("#FFFFFF");
+                }
+            }
+        }
+
+        private void availableButtons()
+        {
+            Slider.IsEnabled = true;
+            DayMode.IsEnabled = true;
+            DuskMode.IsEnabled = true;
+            NightMode.IsEnabled = true;
+            DVI.IsEnabled = true;
+            VGA.IsEnabled = true;
+            DP.IsEnabled = true;
+        }
+
+        private void monitorNotAvailable()
+        {
+            Slider.Value = 0;
+            GridSlider.IsEnabled = false;
+            DayMode.IsEnabled = false;
+            DuskMode.IsEnabled = false;
+            NightMode.IsEnabled = false;
+            DVI.IsEnabled = false;
+            VGA.IsEnabled = false;
+            DP.IsEnabled = false;
         }
         #endregion
 

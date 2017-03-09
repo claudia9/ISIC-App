@@ -9,11 +9,11 @@
   <ContentPage.Resources>
     <ResourceDictionary>
       <Color x:Key="Green">#64B22E</Color>
-      <Color x:Key="Border">#FF262626</Color>
+      <Color x:Key="Border">#FF2626</Color>
       <Color x:Key="Background">#444444</Color>
       <Color x:Key="BorderBrushButton">#808080</Color>
       <Color x:Key="DisabledButton">#808080</Color>
-      <Color x:Key="Label">#808080</Color>
+      <Color x:Key="Label">#9C9C9C</Color>
 
       <Style TargetType="NavigationPage">
         <Setter Property="BarBackgroundColor" Value="#FF1A1A1A" />
@@ -40,7 +40,7 @@
       </Style>
 
       <Style TargetType="Label">
-        <Setter Property="TextColor" Value="{StaticResource BorderBrushButton}"/>
+        <Setter Property="TextColor" Value="{StaticResource Label}"/>
         <Setter Property="FontSize" Value="Small"/>
         <Setter Property="FontFamily" Value="Calibry"/>
         <Setter Property="FontAttributes" Value="Bold" />
@@ -65,7 +65,9 @@
         <RowDefinition Height="60"/>
       </Grid.RowDefinitions>
       <!--BLUETOOTH SCAN-->
-      <local:RoundedButton x:Name="ScanButton" Text="List devices" Style="{StaticResource ScanBtnStyle}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+      <local:RoundedButton x:Name="ScanButton" Image="ble_icon.png" Style="{StaticResource ScanBtnStyle}" Grid.Row="0" Grid.Column="0"/>
+      <!--ISIC LOGO-->
+      <Image x:Name="Logo" Source="isic_logo.png"  Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"/>
       <!--BLUETOOTH SETTINGS-->
       <local:RoundedButton x:Name="SettingsButton" Image="settings_icon.png" Style="{StaticResource SettingsBtnStyle}" Grid.Row="0" Grid.Column="3"/>
     </Grid>

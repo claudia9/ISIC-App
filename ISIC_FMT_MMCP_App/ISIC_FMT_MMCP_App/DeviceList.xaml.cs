@@ -22,6 +22,9 @@ namespace ISIC_FMT_MMCP_App
 
         public DeviceList()
         {
+            //Delete Navigation Bar
+            InitializeScreen();
+
             //Automatically written to get the XAML
             InitializeComponent();
             
@@ -34,6 +37,10 @@ namespace ISIC_FMT_MMCP_App
                 InitiliazeBluetooth();
 
             };
+        }
+        private void InitializeScreen()
+        {
+            NavigationPage.SetHasNavigationBar(this, false);
         }
 
         private async void InitiliazeDefaultBluetooth()
