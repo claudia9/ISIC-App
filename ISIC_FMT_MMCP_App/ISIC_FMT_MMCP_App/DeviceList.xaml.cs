@@ -7,6 +7,7 @@ using System.Linq;
 
 using Xamarin.Forms;
 using System;
+using Acr.UserDialogs;
 
 namespace ISIC_FMT_MMCP_App
 {
@@ -27,20 +28,59 @@ namespace ISIC_FMT_MMCP_App
 
             //Automatically written to get the XAML
             InitializeComponent();
-            
+
+            var ble = CrossBluetoothLE.Current;
+            CheckAvailabilityBluetooth(ble.State);
+
+            ble.StateChanged += (s, e) =>
+            {
+                Debug.WriteLine("Bluetooth LE changed it's state from " + e.NewState + " to " + e.OldState);
+                if(e.NewState == BluetoothState.Off)
+                {
+                    ToastConfig toast = new ToastConfig("Your Bluetooth has turned off, please turn it on againg before proceding");
+                    UserDialogs.Instance.Toast(toast);
+                } else if (e.NewState == BluetoothState.On)
+                {
+                    ToastConfig toast = new ToastConfig("Your Bluetooth has turned on, enjoy the features of this app ;)");
+                    UserDialogs.Instance.Toast(toast);
+                }
+            };
+
+
             //Bluetooth Connection
             InitiliazeDefaultBluetooth();
 
             //Event handler for the Scan Button
             ScanAllButton.Clicked += (sender, e) =>
             {
+                CheckAvailabilityBluetooth(ble.State);
                 InitiliazeBluetooth();
 
             };
+
         }
+
+
         private void InitializeScreen()
         {
             NavigationPage.SetHasNavigationBar(this, false);
+            devicesList.Clear();
+        }
+
+        private void CheckAvailabilityBluetooth(BluetoothState state)
+        {
+            if (state == BluetoothState.Off)
+            {
+                UserDialogs.Instance.Alert("Please, turn on the Bluetooth on the device before proceed.");
+            }
+            else if (state == BluetoothState.Unavailable)
+            {
+                UserDialogs.Instance.Alert("This device doesn't support Bluetooth LE.");
+            }
+            else if (state == BluetoothState.Unauthorized)
+            {
+                UserDialogs.Instance.Alert("Please, allow the app to have access to the Bluetooth through the settings in your device.");
+            }
         }
 
         private async void InitiliazeDefaultBluetooth()
@@ -60,8 +100,8 @@ namespace ISIC_FMT_MMCP_App
             }*/
             try
             {
-                currentDevice = await adapter.ConnectToKnownDeviceAsync(Guid.Parse("00000000-0000-0000-0000-f0c77f1c2065"));        //bleCACA
-                //currentDevice = await adapter.ConnectToKnownDeviceAsync(Guid.Parse("00000000-0000-0000-0000-a81b6aaec165"));        //HELLOMISTER
+                //currentDevice = await adapter.ConnectToKnownDeviceAsync(Guid.Parse("00000000-0000-0000-0000-f0c77f1c2065"));        //bleCACA
+                currentDevice = await adapter.ConnectToKnownDeviceAsync(Guid.Parse("00000000-0000-0000-0000-a81b6aaec165"));        //HELLOMISTER
                 if (currentDevice != null)
                 {
 
@@ -77,16 +117,7 @@ namespace ISIC_FMT_MMCP_App
 
         private void InitiliazeBluetooth()
         {
-            //Initiliasing BluetoothLE and BleAdapter
-            var ble = CrossBluetoothLE.Current;
-            var adapter = CrossBluetoothLE.Current.Adapter;
-
             Debug.WriteLine("BluetoothLE initiliased correctly.");
-
-            ble.StateChanged += (s, e) =>
-            {
-                Debug.WriteLine("The bluetooth state changed to {e.NewState}");
-            };
 
             //Delete any rests of the last Bluetooth scans
             devicesList.Clear();
@@ -123,25 +154,31 @@ namespace ISIC_FMT_MMCP_App
                 return;
             }
 
-            StopScanning(CrossBluetoothLE.Current.Adapter);
-
-            var connectedDevice = e.SelectedItem as IDevice;
-            if (connectedDevice != null)
+            if (CrossBluetoothLE.Current.IsOn && CrossBluetoothLE.Current.IsAvailable)
             {
-                Debug.WriteLine("Selected device: " + connectedDevice.Name);
-                try
-                {
-                    await CrossBluetoothLE.Current.Adapter.ConnectToDeviceAsync(connectedDevice);
-                    Debug.WriteLine("Connected to device " + connectedDevice.Name);
-                }
-                catch (DeviceConnectionException ex)
-                {
-                    Debug.WriteLine("Could not connect to device: " + connectedDevice.Name);
-                }
+                StopScanning(CrossBluetoothLE.Current.Adapter);
 
-                ((ListView)sender).SelectedItem = null;
+                var connectedDevice = e.SelectedItem as IDevice;
+                if (connectedDevice != null)
+                {
+                    Debug.WriteLine("Selected device: " + connectedDevice.Name);
+                    try
+                    {
+                        await CrossBluetoothLE.Current.Adapter.ConnectToDeviceAsync(connectedDevice);
+                        Debug.WriteLine("Connected to device " + connectedDevice.Name);
+                    }
+                    catch (DeviceConnectionException ex)
+                    {
+                        Debug.WriteLine("Could not connect to device: " + connectedDevice.Name);
+                    }
 
-                await Navigation.PushAsync(new RemoteControlPage(connectedDevice));
+                    ((ListView)sender).SelectedItem = null;
+
+                    await Navigation.PushAsync(new RemoteControlPage(connectedDevice));
+                }
+            } else
+            {
+                CheckAvailabilityBluetooth(CrossBluetoothLE.Current.State);
             }
         }
 

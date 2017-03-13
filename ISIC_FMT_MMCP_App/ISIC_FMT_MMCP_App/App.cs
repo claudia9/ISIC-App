@@ -1,4 +1,6 @@
-﻿using Xamarin.Forms;
+﻿using Android.Content;
+using Android.Preferences;
+using Xamarin.Forms;
 
 namespace ISIC_FMT_MMCP_App
 {

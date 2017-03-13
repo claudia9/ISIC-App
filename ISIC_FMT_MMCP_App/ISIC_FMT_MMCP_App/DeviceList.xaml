@@ -12,9 +12,9 @@
     </ResourceDictionary>
   </ContentPage.Resources>
 
-  <StackLayout>
-    <StackLayout Orientation="Horizontal">
-      <Label x:Name="Title" Text="Devices List" TextColor="White" FontAttributes="Bold"/>
+  <StackLayout Padding="20">
+    <StackLayout Orientation="Horizontal" Spacing="100">
+      <Label x:Name="Title" Text="Devices List" VerticalTextAlignment="Center" TextColor="White" FontAttributes="Bold" FontSize="24" />
       <local:RoundedButton x:Name="ScanAllButton" Image="ble_icon.png"/>
 
     </StackLayout>

@@ -44,13 +44,12 @@ namespace ISIC_FMT_MMCP_App.Droid
 
                 //New drawwable for the button's pressed state
                 clicked = new GradientDrawable();
-                var highlight = Context.ObtainStyledAttributes(new int[] {
-                    Android.Resource.Attribute.ColorAccent
-                }).GetColor(0, Android.Graphics.Color.Rgb(100, 178, 46));
 
-                clicked.SetColor(highlight);
+                clicked.SetColor(Android.Graphics.Color.ParseColor("#64B22E"));
                 clicked.SetStroke((int)borderWidth, button.BorderColor.ToAndroid(Xamarin.Forms.Color.FromHex("#64B22E")));
                 clicked.SetCornerRadius(borderRadius);
+
+                
 
                 //Add the new drawables to a state list and assign it to the button
                 var sld = new StateListDrawable();

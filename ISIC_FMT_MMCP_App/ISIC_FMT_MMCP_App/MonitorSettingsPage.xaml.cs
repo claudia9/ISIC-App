@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Acr.UserDialogs;
+using Android.Widget;
+using Plugin.BLE;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -11,7 +14,6 @@ namespace ISIC_FMT_MMCP_App
 {
     public partial class MonitorSettingsPage : ContentPage
     {
-
         private Dictionary<MonitorIdentifier, MonitorSettings> monitors { get; set; }
 
         public MonitorSettingsPage()
@@ -21,6 +23,14 @@ namespace ISIC_FMT_MMCP_App
             InitializeDictionary();
             InitializeComboBoxes();
 
+            var ble = CrossBluetoothLE.Current;
+            if (ble.State == Plugin.BLE.Abstractions.Contracts.BluetoothState.Off)
+            {
+
+            }
+
+            Back.Clicked += Back_Clicked;
+
             Debug.WriteLine("On MonitorSettingsPage");
         }
 
@@ -29,6 +39,16 @@ namespace ISIC_FMT_MMCP_App
             NavigationPage.SetHasNavigationBar(this, false);
         }
 
+        private void Back_Clicked(object sender, EventArgs e)
+        {
+            SetPreferences();
+            Navigation.PopAsync();
+        }
+
+        private void SetPreferences()
+        {
+            //SetPreferences -> Need implementation
+        }
 
         private void InitializeDictionary()
         {

@@ -1,4 +1,5 @@
-﻿using Isic.SerialProtocol;
+﻿using Acr.UserDialogs;
+using Isic.SerialProtocol;
 using Plugin.BLE;
 using Plugin.BLE.Abstractions.Contracts;
 using System;
@@ -34,13 +35,14 @@ namespace ISIC_FMT_MMCP_App
 
             InitilizeScreen();             //Hide Navigation Bar
             InitializeComponent();          //Create visual interface
-            InitializeBluetooth(device);
+            InitializeBluetooth(device);    //Create instance of BluetoothLe.
             InitializeDictionary();         //Create object of MonitorSettings for each monitor
             InitiliazeMonitor();            //Create current monitor
             InitializeButtons();            //Create event handlers for each button
 
             Debug.WriteLine("Finished initiliazations");
         }
+
 
         #region Initializers
         private void InitilizeScreen()
@@ -50,20 +52,27 @@ namespace ISIC_FMT_MMCP_App
 
         private void InitializeBluetooth(IDevice device)
         {
-            currentDevice = device;
-            findWriteCharacteristic(currentDevice);
+            if(device != null)
+            {
+                currentDevice = device;
+                findWriteCharacteristic(device);
+            }
         }
 
-        private async void findWriteCharacteristic(IDevice currentDevice)
+        private async void findWriteCharacteristic(IDevice device)
         {
-            Guid WRITE_SERVICE = Guid.Parse("0000ffe0-0000-1000-8000-00805f9b34fb");
-            Guid WRITE_CHARACTERISTIC = Guid.Parse("0000ffe1-0000-1000-8000-00805f9b34fb");
+            if (device != null)
+            {
+                Guid WRITE_SERVICE = Guid.Parse("0000ffe0-0000-1000-8000-00805f9b34fb");
+                Guid WRITE_CHARACTERISTIC = Guid.Parse("0000ffe1-0000-1000-8000-00805f9b34fb");
 
-            var service = await currentDevice.GetServiceAsync(WRITE_SERVICE);
-            Debug.WriteLine("Write service found: " + service.ToString());
+                var service = await device.GetServiceAsync(WRITE_SERVICE);
+                Debug.WriteLine("Write service found: " + service.ToString());
 
-            currentCharacteristic = await service.GetCharacteristicAsync(WRITE_CHARACTERISTIC);
-            Debug.WriteLine("Write characteristic found: " + currentCharacteristic.ToString());
+                currentCharacteristic = await service.GetCharacteristicAsync(WRITE_CHARACTERISTIC);
+                Debug.WriteLine("Write characteristic found: " + currentCharacteristic.ToString());
+            }
+
         }
 
 
@@ -136,16 +145,25 @@ namespace ISIC_FMT_MMCP_App
                 Monitor1.TextColor = Color.FromHex("#64B22E");
                 Monitor2.TextColor = Color.FromHex("#FFFFFF");
                 Monitor3.TextColor = Color.FromHex("#FFFFFF");
+                MonitorAll.TextColor = Color.FromHex("#FFFFFF");
             } else if (monIdentifier == MonitorIdentifier.Monitor2)
             {
                 Monitor2.TextColor = Color.FromHex("#64B22E");
                 Monitor1.TextColor = Color.FromHex("#FFFFFF");
                 Monitor3.TextColor = Color.FromHex("#FFFFFF");
+                MonitorAll.TextColor = Color.FromHex("#FFFFFF");
             } else if (monIdentifier == MonitorIdentifier.Monitor3)
             {
                 Monitor3.TextColor = Color.FromHex("#64B22E");
                 Monitor1.TextColor = Color.FromHex("#FFFFFF");
                 Monitor2.TextColor = Color.FromHex("#FFFFFF");
+                MonitorAll.TextColor = Color.FromHex("#FFFFFF");
+            } else if (monIdentifier == MonitorIdentifier.MonitorBroadcast)
+            {
+                MonitorAll.TextColor = Color.FromHex("#64B22E");
+                Monitor1.TextColor = Color.FromHex("#FFFFFF");
+                Monitor2.TextColor = Color.FromHex("#FFFFFF");
+                Monitor3.TextColor = Color.FromHex("#FFFFFF");
             }
 
             /*if (monIdentifier == MonitorIdentifier.MonitorBroadcast)
@@ -450,7 +468,7 @@ namespace ISIC_FMT_MMCP_App
             }
 
             Debug.WriteLine("OnSettingsClicked - currentDevice is null");
-            Navigation.PopAsync(true);
+            Navigation.PopToRootAsync(true);
         }
 
     }
