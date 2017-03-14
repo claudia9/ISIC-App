@@ -15,7 +15,7 @@
   <StackLayout Padding="20">
     <StackLayout Orientation="Horizontal" Spacing="100">
       <Label x:Name="Title" Text="Devices List" VerticalTextAlignment="Center" TextColor="White" FontAttributes="Bold" FontSize="24" />
-      <local:RoundedButton x:Name="ScanAllButton" Image="ble_icon.png"/>
+      <local:RoundedButton x:Name="ScanAllButton" Image="ble_icon.png" Command="{Binding LoadCommand}"/>
 
     </StackLayout>
     <!--To scan -->
@@ -34,5 +34,6 @@
         </DataTemplate>
       </ListView.ItemTemplate>
     </ListView>
+    
   </StackLayout>
 </ContentPage>

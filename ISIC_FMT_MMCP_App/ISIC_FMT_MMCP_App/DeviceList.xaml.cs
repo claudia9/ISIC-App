@@ -9,6 +9,8 @@ using Xamarin.Forms;
 using System;
 using Acr.UserDialogs;
 using Isic.Debugger;
+using Isic.ViewModels;
+using System.Windows.Input;
 
 namespace ISIC_FMT_MMCP_App
 {
@@ -51,13 +53,13 @@ namespace ISIC_FMT_MMCP_App
                 }
             };
 
-
             //Bluetooth Connection
             InitiliazeDefaultBluetooth();
 
             //Event handler for the Scan Button
             ScanAllButton.Clicked += (sender, e) =>
             {
+                this.BindingContext = new LoadingViewModel(UserDialogs.Instance);
                 CheckAvailabilityBluetooth(Ble.State);
                 InitiliazeBluetooth();
 
@@ -76,15 +78,15 @@ namespace ISIC_FMT_MMCP_App
         {
             if (state == BluetoothState.Off)
             {
-                UserDialogs.Instance.Alert("Please, turn on the Bluetooth on the device before proceed.");
+                DisplayAlert("Bluetooth is off", "Please, turn on the Bluetooth on the device before proceed", "Ok");
             }
             else if (state == BluetoothState.Unavailable)
             {
-                UserDialogs.Instance.Alert("This device doesn't support Bluetooth LE.");
+                DisplayAlert("Bluetooth not supported", "This device doesn't support Bluetooth LE", "Ok");
             }
             else if (state == BluetoothState.Unauthorized)
             {
-                UserDialogs.Instance.Alert("Please, allow the app to have access to the Bluetooth through the settings in your device.");
+                DisplayAlert("Bluetooth permissions", "Please, allow the app to have access to the Bluetooth through the settings in your device", "Ok");
             }
         }
 

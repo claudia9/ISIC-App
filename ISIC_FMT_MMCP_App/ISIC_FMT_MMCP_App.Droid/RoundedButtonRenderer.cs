@@ -1,5 +1,6 @@
 using Android.Graphics;
 using Android.Graphics.Drawables;
+using Isic.ViewModels;
 using ISIC_FMT_MMCP_App;
 using ISIC_FMT_MMCP_App.Droid;
 using Java.Lang;
