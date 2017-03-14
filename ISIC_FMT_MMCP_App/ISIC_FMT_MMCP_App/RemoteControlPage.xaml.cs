@@ -1,4 +1,5 @@
 ﻿using Acr.UserDialogs;
+using Isic.Debugger;
 using Isic.SerialProtocol;
 using Plugin.BLE;
 using Plugin.BLE.Abstractions.Contracts;
@@ -12,35 +13,29 @@ using Xamarin.Forms;
 
 namespace ISIC_FMT_MMCP_App
 {
-    public enum MonitorIdentifier
-    {
-        Monitor1,
-        Monitor2,
-        Monitor3,
-        Monitor4,
-        MonitorBroadcast
-    }
+
 
     public partial class RemoteControlPage : ContentPage
     {
-        private Dictionary<MonitorIdentifier, MonitorSettings> monitors { get; set; }
-        private MonitorSettings currentMonitor = null;
+        private Dictionary<MonitorIdentifier, MonitorSettings> Monitors { get; set; }
+        private MonitorSettings CurrentMonitor = null;
 
-        IDevice currentDevice;
-        ICharacteristic currentCharacteristic;
+        IDevice CurrentDevice;
+        ICharacteristic CurrentCharacteristic;
 
         public RemoteControlPage(IDevice device)
         {
-            Debug.WriteLine("Initiliasing Remote Control Page with Device: " + device.Name);
+            CurrentDevice = device;
+            IsicDebug.DebugGeneral(String.Format("Initiliasing Remote Control Page with Device: {0}", CurrentDevice.Name));
 
             InitilizeScreen();             //Hide Navigation Bar
             InitializeComponent();          //Create visual interface
-            InitializeBluetooth(device);    //Create instance of BluetoothLe.
+            InitializeBluetooth();          //Check characteristics of the BluetoothLe Device.
             InitializeDictionary();         //Create object of MonitorSettings for each monitor
             InitiliazeMonitor();            //Create current monitor
             InitializeButtons();            //Create event handlers for each button
 
-            Debug.WriteLine("Finished initiliazations");
+            IsicDebug.DebugGeneral(String.Format("Finished initiliazations"));
         }
 
 
@@ -50,46 +45,50 @@ namespace ISIC_FMT_MMCP_App
             NavigationPage.SetHasNavigationBar(this, false);
         }
 
-        private void InitializeBluetooth(IDevice device)
+        private void InitializeBluetooth()
         {
-            if(device != null)
-            {
-                currentDevice = device;
-                findWriteCharacteristic(device);
-            }
+            findWriteCharacteristic();
         }
 
-        private async void findWriteCharacteristic(IDevice device)
+        private async void findWriteCharacteristic()
         {
-            if (device != null)
+            if (CurrentDevice != null)
             {
-                Guid WRITE_SERVICE = Guid.Parse("0000ffe0-0000-1000-8000-00805f9b34fb");
-                Guid WRITE_CHARACTERISTIC = Guid.Parse("0000ffe1-0000-1000-8000-00805f9b34fb");
+                try
+                {
+                    Guid WRITE_SERVICE = Guid.Parse("0000ffe0-0000-1000-8000-00805f9b34fb");
+                    Guid WRITE_CHARACTERISTIC = Guid.Parse("0000ffe1-0000-1000-8000-00805f9b34fb");
 
-                var service = await device.GetServiceAsync(WRITE_SERVICE);
-                Debug.WriteLine("Write service found: " + service.ToString());
+                    var Service = await CurrentDevice.GetServiceAsync(WRITE_SERVICE);
+                    if (Service != null) IsicDebug.DebugBluetooth(String.Format("Write service found: {0}", Service.Name));
 
-                currentCharacteristic = await service.GetCharacteristicAsync(WRITE_CHARACTERISTIC);
-                Debug.WriteLine("Write characteristic found: " + currentCharacteristic.ToString());
+                    CurrentCharacteristic = await Service.GetCharacteristicAsync(WRITE_CHARACTERISTIC);
+                    IsicDebug.DebugBluetooth(String.Format("Write characteristic found: {0}", CurrentCharacteristic.Name));
+
+                } catch (Exception ex)
+                {
+                    IsicDebug.DebugException(String.Format("Could not find Characteristics. {0}", ex));
+                    UserDialogs.Instance.Alert("This Bluetooth device does not allow to send Serial Data, please, choose another Bluetooth device of the list", null, "Ok");
+                    await Navigation.PopToRootAsync();
+                }
             }
 
         }
-
 
         private void InitializeDictionary()
         {
-            monitors = new Dictionary<MonitorIdentifier, MonitorSettings>();
-            monitors[MonitorIdentifier.Monitor1] = new MonitorSettings();
-            monitors[MonitorIdentifier.Monitor2] = new MonitorSettings();
-            monitors[MonitorIdentifier.Monitor3] = new MonitorSettings();
-            monitors[MonitorIdentifier.Monitor4] = new MonitorSettings();
-            monitors[MonitorIdentifier.MonitorBroadcast] = new MonitorSettings() { MonAddr = 0xFF };
+            Monitors = new Dictionary<MonitorIdentifier, MonitorSettings>();
+            Monitors[MonitorIdentifier.Monitor1] = new MonitorSettings();
+            Monitors[MonitorIdentifier.Monitor2] = new MonitorSettings();
+            Monitors[MonitorIdentifier.Monitor3] = new MonitorSettings();
+            Monitors[MonitorIdentifier.Monitor4] = new MonitorSettings();
+            Monitors[MonitorIdentifier.MonitorBroadcast] = new MonitorSettings() { MonAddr = 0xFF };
         }
 
         private void InitiliazeMonitor()
         {
-            currentMonitor = monitors[MonitorIdentifier.Monitor1];
-            Debug.WriteLine("- INITIALIZE MONITOR: currentMonitor.MonAddr = " + currentMonitor.MonAddr + "currentMonitor.ToD = " + currentMonitor.ToD + " currentMonitor.Backlight = " + currentMonitor.ToDBacklightValue);
+            CurrentMonitor = Monitors[MonitorIdentifier.Monitor1];
+            IsicDebug.DebugMonitor(String.Format("Initiliasing monitor: CurrentMonitor.MonAddr = {0}, CurrentMonitor.ToD = {1}, CurrentMonitor.ToDBacklightValue = {2}", CurrentMonitor.MonAddr, CurrentMonitor.ToD, CurrentMonitor.ToDBacklightValue));
         }
 
         private void InitializeButtons()
@@ -110,7 +109,7 @@ namespace ISIC_FMT_MMCP_App
             Slider.ValueChanged += Slider_ValueChanged;
 
             SettingsButton.Clicked += SettingsButton_Clicked;
-            ScanButton.Clicked += ScanAllButton_Clicked;
+            ScanButton.Clicked += ScanButton_Clicked;
         }
 
         #endregion Initializers
@@ -137,28 +136,28 @@ namespace ISIC_FMT_MMCP_App
             SetMonitor(MonitorIdentifier.MonitorBroadcast);
         }
 
-        private void SetMonitor(MonitorIdentifier monIdentifier)
+        private void SetMonitor(MonitorIdentifier MonIdentifier)
         {
-            currentMonitor = monitors[monIdentifier];
-            if (monIdentifier == MonitorIdentifier.Monitor1)
+            CurrentMonitor = Monitors[MonIdentifier];
+            if (MonIdentifier == MonitorIdentifier.Monitor1)
             {
                 Monitor1.TextColor = Color.FromHex("#64B22E");
                 Monitor2.TextColor = Color.FromHex("#FFFFFF");
                 Monitor3.TextColor = Color.FromHex("#FFFFFF");
                 MonitorAll.TextColor = Color.FromHex("#FFFFFF");
-            } else if (monIdentifier == MonitorIdentifier.Monitor2)
+            } else if (MonIdentifier == MonitorIdentifier.Monitor2)
             {
                 Monitor2.TextColor = Color.FromHex("#64B22E");
                 Monitor1.TextColor = Color.FromHex("#FFFFFF");
                 Monitor3.TextColor = Color.FromHex("#FFFFFF");
                 MonitorAll.TextColor = Color.FromHex("#FFFFFF");
-            } else if (monIdentifier == MonitorIdentifier.Monitor3)
+            } else if (MonIdentifier == MonitorIdentifier.Monitor3)
             {
                 Monitor3.TextColor = Color.FromHex("#64B22E");
                 Monitor1.TextColor = Color.FromHex("#FFFFFF");
                 Monitor2.TextColor = Color.FromHex("#FFFFFF");
                 MonitorAll.TextColor = Color.FromHex("#FFFFFF");
-            } else if (monIdentifier == MonitorIdentifier.MonitorBroadcast)
+            } else if (MonIdentifier == MonitorIdentifier.MonitorBroadcast)
             {
                 MonitorAll.TextColor = Color.FromHex("#64B22E");
                 Monitor1.TextColor = Color.FromHex("#FFFFFF");
@@ -174,7 +173,7 @@ namespace ISIC_FMT_MMCP_App
             {
                 availableButtons();
                 setModeButtons();
-                queryBacklight();
+                QueryBacklight();
                 await queryInput();
             }
             else
@@ -183,7 +182,7 @@ namespace ISIC_FMT_MMCP_App
             }*/
         }
 
-        private async void queryBacklight()
+        private async void QueryBacklight()
         {
             try
             {
@@ -195,13 +194,13 @@ namespace ISIC_FMT_MMCP_App
 
                 do
                 {
-                    new Isic.SerialProtocol.Command(currentMonitor.MonAddr, ISIC_SCP_IF.CMD_MCC, ISIC_SCP_IF.BYTE_DATA_MCC_ADDR_BKL, 0x3F).Send(currentCharacteristic);
-                    rArr = await currentCharacteristic.ReadAsync();
+                    new Isic.SerialProtocol.Command(CurrentMonitor.MonAddr, ISIC_SCP_IF.CMD_MCC, ISIC_SCP_IF.BYTE_DATA_MCC_ADDR_BKL, 0x3F).Send(CurrentCharacteristic);
+                    rArr = await CurrentCharacteristic.ReadAsync();
 
 
                     if (sw.ElapsedMilliseconds > 7000)
                     {
-                        Debug.WriteLine("Backlight query time out");
+                        IsicDebug.DebugSerial(String.Format("Backlight query time out"));
                         //throw new TimeoutException();
                     }
 
@@ -212,60 +211,60 @@ namespace ISIC_FMT_MMCP_App
                 Slider.ValueChanged -= Slider_ValueChanged;
 
                 sliderDecValue = Convert.ToInt32(rArr.GetHexString().Substring(ISIC_SCP_IF.BYTE_INDEX_IHCHK + 3, 2), 16);
-                Debug.WriteLine("Transformed backlight Data to value: {0}(dec)", sliderDecValue);
-                currentMonitor.ToDBacklightValue = sliderDecValue;
+                IsicDebug.DebugSerial(String.Format("Transformed backlight Data to value: {0}(dec)", sliderDecValue));
+                CurrentMonitor.ToDBacklightValue = sliderDecValue;
                 Slider.Value = sliderDecValue;
                 Slider.ValueChanged += Slider_ValueChanged;
             } catch (Exception ex)
             {
-                Debug.WriteLine("Not able to send or receive the Backlight data", ex);
+                IsicDebug.DebugException(String.Format("Not able to send or receive the Backlight data", ex));
             }
 
         }
 
-        private async Task<bool> queryInput()
+        private async Task<bool> QueryInput()
         {
             int currentInput;
             try
             {
-                new Isic.SerialProtocol.Command(currentMonitor.MonAddr, ISIC_SCP_IF.CMD_MCC, ISIC_SCP_IF.BYTE_DATA_MCC_ADDR_MPC, 0x3F).Send(currentCharacteristic);
-                byte[] rArr = await currentCharacteristic.ReadAsync();
+                new Isic.SerialProtocol.Command(CurrentMonitor.MonAddr, ISIC_SCP_IF.CMD_MCC, ISIC_SCP_IF.BYTE_DATA_MCC_ADDR_MPC, 0x3F).Send(CurrentCharacteristic);
+                byte[] rArr = await CurrentCharacteristic.ReadAsync();
 
                 if (rArr != null)
                 {
-                    Debug.WriteLine("Received input Data: {0}", rArr.GetHexString());
+                    IsicDebug.DebugSerial(String.Format("Received input Data: {0}", rArr.GetHexString()));
                     currentInput = Convert.ToInt32(rArr.GetString().Substring(ISIC_SCP_IF.BYTE_INDEX_IHCHK + 3, 2), 16);
-                    Debug.WriteLine("Transpormed input data to value: {0}", currentInput);
+                    IsicDebug.DebugSerial(String.Format("Transpormed input data to value: {0}", currentInput));
                     return true;
                 } else
                 {
-                    Debug.WriteLine("Not receiving any Input data from the monitor");
+                    IsicDebug.DebugSerial(String.Format("Not receiving any Input data from the monitor"));
                     return false;
                 }
             } catch (Exception ex)
             {
-                Debug.WriteLine("Not able to send or receive input data.", ex);
+                IsicDebug.DebugException(String.Format("Not able to send or receive input data.", ex));
                 return false;
             }
         }
 
-        private void setModeButtons()
+        private void SetModeButtons()
         {
-            if (currentMonitor != null)
+            if (CurrentMonitor != null)
             {
-                if (currentMonitor.ToD == ISIC_SCP_IF.BYTE_DATA_ECD_DAY)
+                if (CurrentMonitor.ToD == ISIC_SCP_IF.BYTE_DATA_ECD_DAY)
                 {
-                    Debug.WriteLine("currentMonitor.ToD = Day");
+                    IsicDebug.DebugMonitor(String.Format("currentMonitor.ToD = Day"));
                     DayMode.TextColor = Color.FromHex("#64B22E");
                     DuskMode.TextColor = Color.FromHex("#FFFFFF");
                     NightMode.TextColor = Color.FromHex("#FFFFFF");
-                } else if(currentMonitor.ToD == ISIC_SCP_IF.BYTE_DATA_ECD_DUSK) {
-                    Debug.WriteLine("currentMonitor.ToD = Dusk");
+                } else if(CurrentMonitor.ToD == ISIC_SCP_IF.BYTE_DATA_ECD_DUSK) {
+                    IsicDebug.DebugMonitor(String.Format("currentMonitor.ToD = Dusk"));
                     DuskMode.TextColor = Color.FromHex("#64B22E");
                     DayMode.TextColor = Color.FromHex("#FFFFFF");
                     NightMode.TextColor = Color.FromHex("#FFFFFF");
-                } else if (currentMonitor.ToD == ISIC_SCP_IF.BYTE_DATA_ECD_NIGHT) {
-                    Debug.WriteLine("currentMonitor.ToD = NIght");
+                } else if (CurrentMonitor.ToD == ISIC_SCP_IF.BYTE_DATA_ECD_NIGHT) {
+                    IsicDebug.DebugMonitor(String.Format("currentMonitor.ToD = NIght"));
                     NightMode.TextColor = Color.FromHex("#64B22E");
                     DayMode.TextColor = Color.FromHex("#FFFFFF");
                     DuskMode.TextColor = Color.FromHex("#FFFFFF");
@@ -273,7 +272,7 @@ namespace ISIC_FMT_MMCP_App
             }
         }
 
-        private void availableButtons()
+        private void AvailableButtons()
         {
             Slider.IsEnabled = true;
             DayMode.IsEnabled = true;
@@ -284,7 +283,7 @@ namespace ISIC_FMT_MMCP_App
             DP.IsEnabled = true;
         }
 
-        private void monitorNotAvailable()
+        private void MonitorNotAvailable()
         {
             Slider.Value = 0;
             GridSlider.IsEnabled = false;
@@ -306,7 +305,7 @@ namespace ISIC_FMT_MMCP_App
             {
                 isSending = true;
                 Byte value = (Byte)(sender as Slider).Value;
-                new Isic.SerialProtocol.Command(currentMonitor.MonAddr, ISIC_SCP_IF.CMD_BRT, value).Send(currentCharacteristic);
+                new Isic.SerialProtocol.Command(CurrentMonitor.MonAddr, ISIC_SCP_IF.CMD_BRT, value).Send(CurrentCharacteristic);
                 //String c = value.ToString("X2");
                 //byte[] bytes = { 0x07, 0x01, 0x4D, 0x43, 0x43, 0x03, 0x21, 0x59, (Byte)c[0], (Byte)c[1], 0x46 };
                 //await characteristic.WriteAsync(bytes);
@@ -319,19 +318,19 @@ namespace ISIC_FMT_MMCP_App
         #region Input Clicks
         private void DP_Clicked(object sender, EventArgs e)
         {
-            Debug.WriteLine("Set DP Command");
+            IsicDebug.DebugSerial(String.Format("Set DP Command"));
             sendInputData(ISIC_SCP_IF.BYTE_DATA_MCC_VALUE_MPC_DP);
         }
 
         private void DVI_Clicked(object sender, EventArgs e)
         {
-            Debug.WriteLine("Set DVI Command");
+            IsicDebug.DebugSerial(String.Format("Set DVI Command"));
             sendInputData(ISIC_SCP_IF.BYTE_DATA_MCC_VALUE_MPC_DVI);
         }
 
         private void VGA_Clicked(object sender, EventArgs e)
         {
-            Debug.WriteLine("Set VGA Command");
+            IsicDebug.DebugSerial(String.Format("Set VGA Command"));
             sendInputData(ISIC_SCP_IF.BYTE_DATA_MCC_VALUE_MPC_VGA);
         }
 
@@ -339,11 +338,11 @@ namespace ISIC_FMT_MMCP_App
         {
             try
             {
-                new Isic.SerialProtocol.Command(currentMonitor.MonAddr, ISIC_SCP_IF.CMD_MCC, ISIC_SCP_IF.BYTE_DATA_MCC_ADDR_MPC, (byte)inputValue.ToString("X2")[0], (byte)inputValue.ToString("X2")[1]).Send(currentCharacteristic);
+                new Isic.SerialProtocol.Command(CurrentMonitor.MonAddr, ISIC_SCP_IF.CMD_MCC, ISIC_SCP_IF.BYTE_DATA_MCC_ADDR_MPC, (byte)inputValue.ToString("X2")[0], (byte)inputValue.ToString("X2")[1]).Send(CurrentCharacteristic);
             }
             catch (Exception e)
             {
-                Debug.WriteLine("Error trying to send command" + e.Message);
+                IsicDebug.DebugException(String.Format("Error trying to send command. {0}", e.Message));
             }
         }
         #endregion Input Clicks
@@ -351,47 +350,47 @@ namespace ISIC_FMT_MMCP_App
         #region Mode Clicks
         private void DayMode_Clicked(object sender, EventArgs e)
         {
-            Debug.WriteLine("Send Day Command");
+            IsicDebug.DebugSerial(String.Format("Send Day Command"));
             SetMonitorSettings(ISIC_SCP_IF.BYTE_DATA_ECD_DAY);
         }
 
         private void DuskMode_Clicked(object sender, EventArgs e)
         {
-            Debug.WriteLine("Send Dusk Command");
+            IsicDebug.DebugSerial(String.Format("Send Dusk Command"));
             SetMonitorSettings(ISIC_SCP_IF.BYTE_DATA_ECD_DUSK);
         }
 
         private void NightMode_Clicked(object sender, EventArgs e)
         {
-            Debug.WriteLine("Send Night Command");
+            IsicDebug.DebugSerial(String.Format("Send Night Command"));
             SetMonitorSettings(ISIC_SCP_IF.BYTE_DATA_ECD_NIGHT);
         }
         private async void SetMonitorSettings(Byte mode)
         {
-            Debug.WriteLine("Setting Monitor Settings");
-            if (currentMonitor != null)
+            IsicDebug.DebugMonitor(String.Format("Setting Monitor Settings"));
+            if (CurrentMonitor != null)
             {
-                if (currentMonitor.MonAddr == monitors[MonitorIdentifier.MonitorBroadcast].MonAddr)
+                if (CurrentMonitor.MonAddr == Monitors[MonitorIdentifier.MonitorBroadcast].MonAddr)
                 {
-                    foreach (var item in monitors)
+                    foreach (var item in Monitors)
                     {
                         item.Value.ToD = mode;
                     }
                 }
                 else
                 {
-                    Debug.WriteLine("Setting single monitor -> MonAddr: " + currentMonitor.MonAddr);
+                    IsicDebug.DebugMonitor(String.Format("Setting single monitor -> MonAddr: {0}", CurrentMonitor.MonAddr));
                     /*if (!await isMonitorAvailable(currentMonitor.MonAddr))
                     {
                         Debug.WriteLine("currentMonitor not replying!");
                         return;
                     }*/
-                    Debug.WriteLine("Set currentMonitor to mode: " + mode);
-                    currentMonitor.ToD = mode;
+                    IsicDebug.DebugMonitor(String.Format("Set currentMonitor to mode: {0}", mode));
+                    CurrentMonitor.ToD = mode;
                 }
             }
             SendModeData(mode);
-            if (currentMonitor.MonAddr != monitors[MonitorIdentifier.MonitorBroadcast].MonAddr)
+            if (CurrentMonitor.MonAddr != Monitors[MonitorIdentifier.MonitorBroadcast].MonAddr)
             {
                 await Task.Delay(100);
                 //queryBacklight();
@@ -402,12 +401,12 @@ namespace ISIC_FMT_MMCP_App
         {
             try
             {
-                Debug.WriteLine("- SENDING MODE DATA: Command: " + ISIC_SCP_IF.CMD_ECD + ", Mon addr: " + currentMonitor.MonAddr + ", Mode: " + mode.ToString());
-                new Isic.SerialProtocol.Command(currentMonitor.MonAddr, ISIC_SCP_IF.CMD_ECD, mode).Send(currentCharacteristic);
+                IsicDebug.DebugMonitor(String.Format("Sending mode data: Command: {0}, MonAddr: {1}, Mode: {2}", ISIC_SCP_IF.CMD_ECD, CurrentMonitor.MonAddr, mode.ToString()));
+                new Isic.SerialProtocol.Command(CurrentMonitor.MonAddr, ISIC_SCP_IF.CMD_ECD, mode).Send(CurrentCharacteristic);
             }
             catch (Exception e)
             {
-                Debug.WriteLine("Error trying to send command" + e.Message);
+                IsicDebug.DebugException(String.Format("Error trying to send command. {0}", e.Message));
             }
         }
 
@@ -416,29 +415,29 @@ namespace ISIC_FMT_MMCP_App
         #region Check Availability Monitors
         private async Task<bool> isMonitorAvailable(byte monAddr)
         {
-            if (currentCharacteristic.CanRead)
+            if (CurrentCharacteristic.CanRead)
             {
-                Debug.WriteLine("Sending data to monitor to make sure isMonitorAvailable?");
+                IsicDebug.DebugSerial(String.Format("Sending data to monitor to make sure isMonitorAvailable?"));
                 try
                 {
                     Byte[] rArr;
-                    new Isic.SerialProtocol.Command(monAddr, ISIC_SCP_IF.CMD_MCC, ISIC_SCP_IF.BYTE_DATA_MCC_ADDR_BKL, 0x3F).Send(currentCharacteristic);
-                    rArr = await currentCharacteristic.ReadAsync();
+                    new Isic.SerialProtocol.Command(monAddr, ISIC_SCP_IF.CMD_MCC, ISIC_SCP_IF.BYTE_DATA_MCC_ADDR_BKL, 0x3F).Send(CurrentCharacteristic);
+                    rArr = await CurrentCharacteristic.ReadAsync();
                     if (rArr == null || rArr.Length == 0)
                     {
                         return false;
                     }
-                    Debug.WriteLine("Received data from monitor: " + rArr.GetHexString());
+                    IsicDebug.DebugMonitor(String.Format("Received data from monitor: {0}", rArr.GetHexString()));
                     return true;
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine("Could not send query to the monitor. Ex -> " + ex.Message);
+                    IsicDebug.DebugException(String.Format("Could not send query to the monitor. {0}", ex.Message));
                     return false;
                 }
 
             }
-            Debug.WriteLine("Characteristic could not read, returning false");
+            IsicDebug.DebugSerial(String.Format("No data received from monitor, returning false"));
             return false;
         }
         #endregion
@@ -450,24 +449,21 @@ namespace ISIC_FMT_MMCP_App
         }
 
 
-        private void ScanAllButton_Clicked(object sender, EventArgs e)
+        private void ScanButton_Clicked(object sender, EventArgs e)
         {
-            Debug.WriteLine("OnBackButtonPressed");
-            if (currentDevice != null)
+            IsicDebug.DebugGeneral(String.Format("Scan button clicked"));
+
+            IAdapter adapter = CrossBluetoothLE.Current.Adapter;
+
+            if (adapter != null)
             {
-                Debug.WriteLine("OnSettingsClicked - currentDevice: " + currentDevice.Name + " is not null");
-
-                IAdapter adapter = CrossBluetoothLE.Current.Adapter;
-
-
                 for (int i = 0; i < adapter.ConnectedDevices.Count(); i++)
                 {
                     adapter.DisconnectDeviceAsync(adapter.ConnectedDevices[i]);
-                    adapter.ConnectedDevices.Remove(adapter.ConnectedDevices[i]);
                 }
+                IsicDebug.DebugBluetooth(String.Format("Adapter not connected to any device. Number of connected devices is: {0}", adapter.ConnectedDevices.Count));
             }
 
-            Debug.WriteLine("OnSettingsClicked - currentDevice is null");
             Navigation.PopToRootAsync(true);
         }
 

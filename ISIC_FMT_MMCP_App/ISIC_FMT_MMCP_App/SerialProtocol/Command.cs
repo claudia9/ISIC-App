@@ -1,4 +1,5 @@
-﻿using ISIC_FMT_MMCP_App;
+﻿using Isic.Debugger;
+using ISIC_FMT_MMCP_App;
 using Plugin.BLE.Abstractions.Contracts;
 using System;
 using System.Collections.Generic;
@@ -173,15 +174,15 @@ namespace Isic.SerialProtocol
                 try
                 {
                     Byte[] bytes = GetBytes();
-                    Debug.WriteLine("Sending: " + bytes.GetHexString() + " Characteristic params: " + characteristic.Name + characteristic.Id);
+                    IsicDebug.DebugSerial(String.Format("Sending: {0}, Characteristic Name: {1}, Id: {2}", bytes.GetHexString(), characteristic.Name, characteristic.Id));
                     //System.FormatException: Index (zero based) must be greater than or equal to zero and less than the size of the argument list.
                     try
                     {
                         await characteristic.WriteAsync(bytes);
-                        Debug.WriteLine("Sent successfully");
+                        IsicDebug.DebugSerial(String.Format("Sent successfully"));
                     } catch (Exception e)
                     {
-                        Debug.WriteLine("Command not send! - " + e.Message);
+                        IsicDebug.DebugSerial(String.Format("Command not send! - " + e.Message));
                     }
                     //callback?.Invoke(await characteristic.WriteAsync(bytes));
                     //Debug.WriteLine("After callback of WriteAsync.");

@@ -4,6 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
+//Monitors Enumeration
+public enum MonitorIdentifier
+{
+    Monitor1,
+    Monitor2,
+    Monitor3,
+    Monitor4,
+    MonitorBroadcast
+}
+
 namespace ISIC_FMT_MMCP_App
 {
     public class MonitorSettings

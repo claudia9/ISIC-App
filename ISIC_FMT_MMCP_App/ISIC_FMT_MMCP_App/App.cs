@@ -1,4 +1,5 @@
-﻿using Android.Content;
+﻿using Acr.UserDialogs;
+using Android.Content;
 using Android.Preferences;
 using Xamarin.Forms;
 

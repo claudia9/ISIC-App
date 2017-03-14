@@ -1,12 +1,7 @@
-﻿using Acr.UserDialogs;
-using Android.Widget;
+﻿using Isic.Debugger;
 using Plugin.BLE;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using Xamarin.Forms;
 
@@ -31,7 +26,9 @@ namespace ISIC_FMT_MMCP_App
 
             Back.Clicked += Back_Clicked;
 
-            Debug.WriteLine("On MonitorSettingsPage");
+            IsicDebug.DebugGeneral("On MonitorSettingsPage");
+            
+            //retrieveSettings();
         }
 
         private void InitializeScreen()
@@ -106,9 +103,36 @@ namespace ISIC_FMT_MMCP_App
         {
             monitors[monIdentifier].MonAddr = (Byte)(sender as Picker).SelectedIndex;
 
-            Debug.WriteLine("Setting Monitor" + monIdentifier + " addres: " + monitors[monIdentifier].MonAddr);
+            IsicDebug.DebugMonitor("Setting Monitor" + monIdentifier + " addres: " + monitors[monIdentifier].MonAddr);
         }
         #endregion
 
     }
+
+    /*private void retrieveSettings()
+    {
+        //Retrieve
+        var prefs = Application.Context.GetSharedPreferences("IsicApp", Android.Content.FileCreationMode.Private);
+        var mon1Addr = prefs.GetString("mon1Addr", null);
+        var mon2Addr = prefs.GetString("mon2Addr", null);
+        var mon3Addr = prefs.GetString("mon3Addr", null);
+
+        var baud = prefs.GetString("baud", null);
+
+        //Show a toast with the values
+        RunOnUiThread(() => Toast.MakeText(this, mon1Addr + mon2Addr + mon3Addr + baud, ToastLength.Long).Show());
+    }
+    
+             private void SaveSettings()
+        {
+            //Store
+            var prefs = Application.Context.GetSharedPreferences("IsicApp", Android.Content.FileCreationMode.Private);
+            var prefEditor = prefs.Edit();
+            prefEditor.PutString("mon1Addr", "1");
+            prefEditor.PutString("mon2Addr", "140");
+            prefEditor.PutString("mon3Addr", "33");
+            prefEditor.PutString("baud", "19K2");
+
+            prefEditor.Commit();
+        }*/
 }

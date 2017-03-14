@@ -36,15 +36,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
+    <Compile Include="Debug\Debug.cs" />
     <Compile Include="DeviceList.xaml.cs">
       <DependentUpon>DeviceList.xaml</DependentUpon>
     </Compile>
     <Compile Include="DeviceTerminal.xaml.cs">
       <DependentUpon>DeviceTerminal.xaml</DependentUpon>
     </Compile>
-    <Compile Include="EmptyStringConverter.cs" />
-    <Compile Include="Extensions.cs" />
-    <Compile Include="GuidConverter.cs" />
+    <Compile Include="Extensions\EmptyStringConverter.cs" />
+    <Compile Include="Extensions\Extensions.cs" />
+    <Compile Include="Extensions\GuidConverter.cs" />
     <Compile Include="MonitorSettings.cs" />
     <Compile Include="MonitorSettingsPage.xaml.cs">
       <DependentUpon>MonitorSettingsPage.xaml</DependentUpon>
@@ -58,7 +59,7 @@
     <Compile Include="RemoteControlPage.xaml.cs">
       <DependentUpon>RemoteControlPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="RoundedButton.cs" />
+    <Compile Include="Renderers\RoundedButton.cs" />
     <Compile Include="SerialProtocol\Checksum.cs" />
     <Compile Include="SerialProtocol\Command.cs" />
     <Compile Include="SerialProtocol\Config.cs" />

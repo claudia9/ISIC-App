@@ -8,38 +8,43 @@ using System.Linq;
 using Xamarin.Forms;
 using System;
 using Acr.UserDialogs;
+using Isic.Debugger;
 
 namespace ISIC_FMT_MMCP_App
 {
     public partial class DeviceList : ContentPage
     {
         //Collection of IDevice to collect each device encountered
-        ObservableCollection<IDevice> devicesList = new ObservableCollection<IDevice>();
-
+        ObservableCollection<IDevice> DevicesList = new ObservableCollection<IDevice>();
 
         //Bluetooth Settings
-        IAdapter adapter = CrossBluetoothLE.Current.Adapter;
-        IDevice currentDevice;
+        IBluetoothLE Ble;
+        IAdapter Adapter;
+        IDevice CurrentDevice;
+
 
         public DeviceList()
         {
+            Ble = CrossBluetoothLE.Current;
+            Adapter = Ble.Adapter;
+            Adapter.ScanTimeout = 10000;
+
             //Delete Navigation Bar
             InitializeScreen();
 
             //Automatically written to get the XAML
             InitializeComponent();
 
-            var ble = CrossBluetoothLE.Current;
-            CheckAvailabilityBluetooth(ble.State);
+            CheckAvailabilityBluetooth(Ble.State);
 
-            ble.StateChanged += (s, e) =>
+            Ble.StateChanged += (s, e) =>
             {
-                Debug.WriteLine("Bluetooth LE changed it's state from " + e.NewState + " to " + e.OldState);
-                if(e.NewState == BluetoothState.Off)
+                IsicDebug.DebugBluetooth(String.Format("Bluetooth LE changed it's state from {0} to: {1}", e.NewState, e.OldState));
+                if (e.NewState == BluetoothState.Off)
                 {
-                    ToastConfig toast = new ToastConfig("Your Bluetooth has turned off, please turn it on againg before proceding");
-                    UserDialogs.Instance.Toast(toast);
-                } else if (e.NewState == BluetoothState.On)
+                    UserDialogs.Instance.Toast(new ToastConfig("Your Bluetooth has turned off, please turn it on againg before proceding"));
+                }
+                else if (e.NewState == BluetoothState.On)
                 {
                     ToastConfig toast = new ToastConfig("Your Bluetooth has turned on, enjoy the features of this app ;)");
                     UserDialogs.Instance.Toast(toast);
@@ -53,7 +58,7 @@ namespace ISIC_FMT_MMCP_App
             //Event handler for the Scan Button
             ScanAllButton.Clicked += (sender, e) =>
             {
-                CheckAvailabilityBluetooth(ble.State);
+                CheckAvailabilityBluetooth(Ble.State);
                 InitiliazeBluetooth();
 
             };
@@ -64,7 +69,7 @@ namespace ISIC_FMT_MMCP_App
         private void InitializeScreen()
         {
             NavigationPage.SetHasNavigationBar(this, false);
-            devicesList.Clear();
+            DevicesList.Clear();
         }
 
         private void CheckAvailabilityBluetooth(BluetoothState state)
@@ -98,52 +103,63 @@ namespace ISIC_FMT_MMCP_App
                     Debug.WriteLine("Could not connect to known or paired device" + ex.Message);
                 }
             }*/
-            try
+            if (Adapter != null)
             {
-                //currentDevice = await adapter.ConnectToKnownDeviceAsync(Guid.Parse("00000000-0000-0000-0000-f0c77f1c2065"));        //bleCACA
-                currentDevice = await adapter.ConnectToKnownDeviceAsync(Guid.Parse("00000000-0000-0000-0000-a81b6aaec165"));        //HELLOMISTER
-                if (currentDevice != null)
+                try
                 {
+                    //currentDevice = await adapter.ConnectToKnownDeviceAsync(Guid.Parse("00000000-0000-0000-0000-f0c77f1c2065"));        //bleCACA
+                    CurrentDevice = await Adapter.ConnectToKnownDeviceAsync(Guid.Parse("00000000-0000-0000-0000-a81b6aaec165"));        //HELLOMISTER
+                    if (CurrentDevice != null)
+                    {
 
-                    Debug.WriteLine("Connected to device: " + currentDevice.Name);
-                    await Navigation.PushAsync(new RemoteControlPage(currentDevice));
+                        IsicDebug.DebugBluetooth(String.Format("Connected to device: {0}", CurrentDevice.Name));
+                        await Navigation.PushAsync(new RemoteControlPage(CurrentDevice));
+                    }
                 }
-            } catch (Exception e)
-            {
-                Debug.WriteLine("Could not connect to default device!! Exception: " + e); 
+                catch (DeviceConnectionException e)
+                {
+                    IsicDebug.DebugException(String.Format("Could not connect to default device!! Exception: {0}", e));
+                }
+                catch (Exception ex)
+                {
+                    IsicDebug.DebugException(String.Format("General exception thrown while trying to connect to device. Exception {0}", ex));
+                }
             }
-            
+
         }
 
         private void InitiliazeBluetooth()
         {
-            Debug.WriteLine("BluetoothLE initiliased correctly.");
+            IsicDebug.DebugBluetooth(String.Format("BluetoothLE initiliased correctly."));
 
             //Delete any rests of the last Bluetooth scans
-            devicesList.Clear();
-            if(currentDevice != null)
+            DevicesList.Clear();
+            if (Adapter != null)
             {
-                Debug.WriteLine("Disconnecting from current device: " + currentDevice.Name);
-                adapter.DisconnectDeviceAsync(currentDevice);
+                if (CurrentDevice != null)
+                {
+                    IsicDebug.DebugBluetooth(String.Format("Disconnecting from current device: " + CurrentDevice.Name));
+                    Adapter.DisconnectDeviceAsync(CurrentDevice);
+                }
+
+                //Start scanning
+                StartScanning();
+
+
+                //Initiliase list of devices
+                Adapter.DeviceDiscovered += (s, a) =>
+                {
+                    if (!DevicesList.Contains(a.Device) && a.Device.Name != "" && a.Device.Name != null)
+                    {
+                        DevicesList.Add(a.Device);
+                        IsicDebug.DebugBluetooth(String.Format("Device found: {0}", a.Device.Name));
+                        IsicDebug.DebugBluetooth(String.Format("Device id: {0}", a.Device.Id));
+                    }
+                };
             }
 
-            //Start scanning
-            StartScanning(adapter);
-
-
-            //Initiliase list of devices
-            adapter.DeviceDiscovered += (s, a) =>
-            {
-                if (!devicesList.Contains(a.Device))
-                {
-                    devicesList.Add(a.Device);
-                    Debug.WriteLine("Device found: " + a.Device.Name);
-                    Debug.WriteLine("Device found: " + a.Device.Id);
-                }
-            };
-
             //Event handlers to show the List of devices once found
-            listView.ItemsSource = devicesList;
+            listView.ItemsSource = DevicesList;
             listView.ItemSelected += OnItemSelected;
         }
 
@@ -153,71 +169,81 @@ namespace ISIC_FMT_MMCP_App
             {
                 return;
             }
-
-            if (CrossBluetoothLE.Current.IsOn && CrossBluetoothLE.Current.IsAvailable)
+            if (Ble != null && Adapter != null && Ble.IsOn && Ble.IsAvailable)
             {
-                StopScanning(CrossBluetoothLE.Current.Adapter);
+                StopScanning();
 
-                var connectedDevice = e.SelectedItem as IDevice;
-                if (connectedDevice != null)
+                var selectedDevice = e.SelectedItem as IDevice;
+                if (selectedDevice != null)
                 {
-                    Debug.WriteLine("Selected device: " + connectedDevice.Name);
+                    IsicDebug.DebugBluetooth(String.Format("Selected device: {0}", selectedDevice.Name));
                     try
                     {
-                        await CrossBluetoothLE.Current.Adapter.ConnectToDeviceAsync(connectedDevice);
-                        Debug.WriteLine("Connected to device " + connectedDevice.Name);
+                        await Adapter.ConnectToDeviceAsync(selectedDevice);
+                        IsicDebug.DebugBluetooth(String.Format("Connected to device {0}", selectedDevice.Name));
                     }
                     catch (DeviceConnectionException ex)
                     {
-                        Debug.WriteLine("Could not connect to device: " + connectedDevice.Name);
+                        IsicDebug.DebugException(String.Format("Could not connect to device. Exception: {0}", ex));
+                    }
+                    catch (Exception exep)
+                    {
+                        IsicDebug.DebugException(String.Format("General exception thrown when trying to connect to device. {0}", exep));
                     }
 
                     ((ListView)sender).SelectedItem = null;
 
-                    await Navigation.PushAsync(new RemoteControlPage(connectedDevice));
+                    await Navigation.PushAsync(new RemoteControlPage(selectedDevice));
+                    DevicesList.Clear();
                 }
-            } else
-            {
-                CheckAvailabilityBluetooth(CrossBluetoothLE.Current.State);
+                else
+                {
+                    IsicDebug.DebugBluetooth(String.Format("CurrentDevice is null, checking availability of bluetooth a"));
+                    CheckAvailabilityBluetooth(Ble.State);
+                }
             }
+
         }
 
-        async void StartScanning(IAdapter adapter)
+        async void StartScanning()
         {
-            Debug.WriteLine(" ------- Start scanning -----------");
-            devicesList.Clear();
+            IsicDebug.DebugBluetooth(String.Format(" ------- Start scanning -----------"));
+            DevicesList.Clear();
 
-            if (adapter.IsScanning)
+            if (Adapter.IsScanning)
             {
-                await adapter.StopScanningForDevicesAsync();
-                Debug.WriteLine("Adapter already trying to scan. STOPPING LAST SCAN and TRY AGAIN");
-                await adapter.StartScanningForDevicesAsync();
+                await Adapter.StopScanningForDevicesAsync();
+                IsicDebug.DebugBluetooth(String.Format("Adapter already trying to scan. STOPPING LAST SCAN and TRY AGAIN"));
+                await Adapter.StartScanningForDevicesAsync();
             }
             else
             {
-                await adapter.StartScanningForDevicesAsync();
-                Debug.WriteLine("Cleared list of devices and starting scanning.");
+                IsicDebug.DebugBluetooth(String.Format("Cleared list of devices and starting scanning."));
+                await Adapter.StartScanningForDevicesAsync();
             }
-            adapter.ScanTimeoutElapsed += (s, e) =>
+            Adapter.ScanTimeoutElapsed += (s, e) =>
             {
-                if (devicesList.Count() == 0)
+                if (DevicesList.Count() == 0)
                 {
+                    StopScanning();
                     DisplayAlert("No devices found", "No devices have been found", "OK");
                 }
                 else
                 {
+                    StopScanning();
                     DisplayAlert("Time out", "Time out has been reached. If the target device do not appear, try again", "OK");
                 }
             };
 
         }
 
-        void StopScanning(IAdapter adapter)
+        void StopScanning()
         {
-            if (adapter.IsScanning)
+            IsicDebug.DebugBluetooth(String.Format("Is Adapter scanning? If yes -> Stop."));
+            if (Adapter != null && Adapter.IsScanning)
             {
-                adapter.StopScanningForDevicesAsync();
-                Debug.WriteLine("Still scanning, stopping the scan");
+                IsicDebug.DebugBluetooth(String.Format("Stopping scan."));
+                Adapter.StopScanningForDevicesAsync();
             }
         }
 
