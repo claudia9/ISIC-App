@@ -1,4 +1,6 @@
-﻿using Isic.Debugger;
+﻿using Acr.UserDialogs;
+using Isic.Debugger;
+using Isic.ViewModels;
 using Plugin.BLE;
 using System;
 using System.Collections.Generic;
@@ -11,8 +13,12 @@ namespace ISIC_FMT_MMCP_App
     {
         private Dictionary<MonitorIdentifier, MonitorSettings> monitors { get; set; }
 
+        LoadingViewModel saveViewModel;
+
         public MonitorSettingsPage()
         {
+            saveViewModel = new LoadingViewModel(UserDialogs.Instance);
+
             InitializeScreen();
             InitializeComponent();
             InitializeDictionary();
@@ -21,8 +27,10 @@ namespace ISIC_FMT_MMCP_App
             var ble = CrossBluetoothLE.Current;
             if (ble.State == Plugin.BLE.Abstractions.Contracts.BluetoothState.Off)
             {
-
+                UserDialogs.Instance.Toast("Your bluetooth has been disconnected, please, connect it again to proceed.");
             }
+            //Binding ScanAllbutton
+            this.BindingContext =saveViewModel;
 
             Back.Clicked += Back_Clicked;
 
@@ -42,9 +50,10 @@ namespace ISIC_FMT_MMCP_App
             Navigation.PopAsync();
         }
 
-        private void SetPreferences()
+        private async void SetPreferences()
         {
-            //SetPreferences -> Need implementation
+
+            await Application.Current.SavePropertiesAsync();
         }
 
         private void InitializeDictionary()
@@ -70,12 +79,6 @@ namespace ISIC_FMT_MMCP_App
                 mon3.Items.Add(i.ToString());
             }
 
-            Picker baud = Baud;
-            baud.Items.Add("9K6");
-            baud.Items.Add("19K2");
-            baud.Items.Add("115K2");
-            baud.Items.Add("460K8");
-
             Mon1Addr.SelectedIndex = monitors[MonitorIdentifier.Monitor1].MonAddr;
             Mon2Addr.SelectedIndex = monitors[MonitorIdentifier.Monitor2].MonAddr;
             Mon3Addr.SelectedIndex = monitors[MonitorIdentifier.Monitor3].MonAddr;
@@ -83,6 +86,32 @@ namespace ISIC_FMT_MMCP_App
             Mon1Addr.SelectedIndexChanged += Mon1Addr_SelectedIndexChanged;
             Mon2Addr.SelectedIndexChanged += Mon2Addr_SelectedIndexChanged;
             Mon3Addr.SelectedIndexChanged += Mon3Addr_SelectedIndexChanged;
+
+
+            Picker baud = Baud;
+            baud.Items.Add("9K6");
+            baud.Items.Add("19K2");
+            baud.Items.Add("115K2");
+            baud.Items.Add("460K8");
+
+            if(Application.Current.Properties["Baud"] != null) {
+                baud.SelectedIndex = (int)Application.Current.Properties["Baud"];
+            }
+
+            baud.SelectedIndexChanged += Baud_SelectedIndexChanged;
+
+        }
+
+
+        private void Baud_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SetBaud(sender);
+        }
+
+        private void SetBaud(object sender)
+        {
+            Application.Current.Properties["Baud"] = (int)(sender as Picker).SelectedIndex;
+            IsicDebug.DebugMonitor(String.Format("Setting property Baud to {0}", (int)(sender as Picker).SelectedIndex));
         }
         #region Set Addresses from ComboBoxes
         private void Mon1Addr_SelectedIndexChanged(object sender, EventArgs e)
@@ -101,38 +130,14 @@ namespace ISIC_FMT_MMCP_App
 
         private void SetMonitorAddress(object sender, MonitorIdentifier monIdentifier)
         {
+            Application.Current.Properties[monIdentifier.ToString()] = (Byte)(sender as Picker).SelectedIndex;
             monitors[monIdentifier].MonAddr = (Byte)(sender as Picker).SelectedIndex;
 
-            IsicDebug.DebugMonitor("Setting Monitor" + monIdentifier + " addres: " + monitors[monIdentifier].MonAddr);
+            IsicDebug.DebugMonitor(String.Format("Setting property {0} to {1}", monIdentifier.ToString(), (sender as Picker).SelectedIndex));
+            IsicDebug.DebugMonitor(String.Format("Setting Monitor {0}, address: {1}", monIdentifier, monitors[monIdentifier].MonAddr));
+            //IsicDebug.DebugGeneral(String.Format("General preference - Mon1Addr = {0}", Application.Current.Properties["Mon1Addr"]));
         }
         #endregion
 
     }
-
-    /*private void retrieveSettings()
-    {
-        //Retrieve
-        var prefs = Application.Context.GetSharedPreferences("IsicApp", Android.Content.FileCreationMode.Private);
-        var mon1Addr = prefs.GetString("mon1Addr", null);
-        var mon2Addr = prefs.GetString("mon2Addr", null);
-        var mon3Addr = prefs.GetString("mon3Addr", null);
-
-        var baud = prefs.GetString("baud", null);
-
-        //Show a toast with the values
-        RunOnUiThread(() => Toast.MakeText(this, mon1Addr + mon2Addr + mon3Addr + baud, ToastLength.Long).Show());
-    }
-    
-             private void SaveSettings()
-        {
-            //Store
-            var prefs = Application.Context.GetSharedPreferences("IsicApp", Android.Content.FileCreationMode.Private);
-            var prefEditor = prefs.Edit();
-            prefEditor.PutString("mon1Addr", "1");
-            prefEditor.PutString("mon2Addr", "140");
-            prefEditor.PutString("mon3Addr", "33");
-            prefEditor.PutString("baud", "19K2");
-
-            prefEditor.Commit();
-        }*/
 }

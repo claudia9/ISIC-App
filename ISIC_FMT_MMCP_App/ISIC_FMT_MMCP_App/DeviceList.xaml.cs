@@ -2,7 +2,6 @@
 using Plugin.BLE.Abstractions.Contracts;
 using Plugin.BLE.Abstractions.Exceptions;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 
 using Xamarin.Forms;
@@ -10,23 +9,33 @@ using System;
 using Acr.UserDialogs;
 using Isic.Debugger;
 using Isic.ViewModels;
-using System.Windows.Input;
+using System.Threading.Tasks;
 
 namespace ISIC_FMT_MMCP_App
 {
     public partial class DeviceList : ContentPage
     {
         //Collection of IDevice to collect each device encountered
-        ObservableCollection<IDevice> DevicesList = new ObservableCollection<IDevice>();
+        ObservableCollection<IDevice> DevicesList;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        LoadingViewModel loadViewModel;
 
         //Bluetooth Settings
         IBluetoothLE Ble;
         IAdapter Adapter;
         IDevice CurrentDevice;
 
-
+        /// <summary>
+        /// 
+        /// </summary>
         public DeviceList()
         {
+            DevicesList = new ObservableCollection<IDevice>();
+            loadViewModel = new LoadingViewModel(UserDialogs.Instance);
+
             Ble = CrossBluetoothLE.Current;
             Adapter = Ble.Adapter;
             Adapter.ScanTimeout = 10000;
@@ -36,6 +45,9 @@ namespace ISIC_FMT_MMCP_App
 
             //Automatically written to get the XAML
             InitializeComponent();
+
+            //Binding ScanAllbutton
+            this.BindingContext = loadViewModel;
 
             CheckAvailabilityBluetooth(Ble.State);
 
@@ -53,27 +65,41 @@ namespace ISIC_FMT_MMCP_App
                 }
             };
 
+
             //Bluetooth Connection
             InitiliazeDefaultBluetooth();
+
 
             //Event handler for the Scan Button
             ScanAllButton.Clicked += (sender, e) =>
             {
-                this.BindingContext = new LoadingViewModel(UserDialogs.Instance);
                 CheckAvailabilityBluetooth(Ble.State);
                 InitiliazeBluetooth();
-
             };
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /*protected override void OnAppearing()
+        {
+        }*/
 
+
+        /// <summary>
+        /// 
+        /// </summary>
         private void InitializeScreen()
         {
             NavigationPage.SetHasNavigationBar(this, false);
             DevicesList.Clear();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="state"></param>
         private void CheckAvailabilityBluetooth(BluetoothState state)
         {
             if (state == BluetoothState.Off)
@@ -109,8 +135,8 @@ namespace ISIC_FMT_MMCP_App
             {
                 try
                 {
-                    //currentDevice = await adapter.ConnectToKnownDeviceAsync(Guid.Parse("00000000-0000-0000-0000-f0c77f1c2065"));        //bleCACA
-                    CurrentDevice = await Adapter.ConnectToKnownDeviceAsync(Guid.Parse("00000000-0000-0000-0000-a81b6aaec165"));        //HELLOMISTER
+                    CurrentDevice = await Adapter.ConnectToKnownDeviceAsync(Guid.Parse("00000000-0000-0000-0000-f0c77f1c2065"));        //bleCACA
+                    //CurrentDevice = await Adapter.ConnectToKnownDeviceAsync(Guid.Parse("00000000-0000-0000-0000-a81b6aaec165"));        //HELLOMISTER
                     if (CurrentDevice != null)
                     {
 
@@ -133,6 +159,8 @@ namespace ISIC_FMT_MMCP_App
         private void InitiliazeBluetooth()
         {
             IsicDebug.DebugBluetooth(String.Format("BluetoothLE initiliased correctly."));
+
+            listView.ItemSelected += OnItemSelected;
 
             //Delete any rests of the last Bluetooth scans
             DevicesList.Clear();
@@ -162,7 +190,7 @@ namespace ISIC_FMT_MMCP_App
 
             //Event handlers to show the List of devices once found
             listView.ItemsSource = DevicesList;
-            listView.ItemSelected += OnItemSelected;
+
         }
 
         public async void OnItemSelected(object sender, SelectedItemChangedEventArgs e)
@@ -171,7 +199,9 @@ namespace ISIC_FMT_MMCP_App
             {
                 return;
             }
-            if (Ble != null && Adapter != null && Ble.IsOn && Ble.IsAvailable)
+            //ble.IsOn && Ble.IsAvailable were taking too many resources and so, the app was slowing down a lot when connecting to a Device.
+            //We handle the problem of being disconnected in the next activity
+            if (Adapter != null)
             {
                 StopScanning();
 
@@ -200,8 +230,11 @@ namespace ISIC_FMT_MMCP_App
                 }
                 else
                 {
-                    IsicDebug.DebugBluetooth(String.Format("CurrentDevice is null, checking availability of bluetooth a"));
-                    CheckAvailabilityBluetooth(Ble.State);
+                    IsicDebug.DebugBluetooth(String.Format("CurrentDevice is null, checking availability of bluetooth"));
+                    if (Ble != null)
+                    {
+                        CheckAvailabilityBluetooth(Ble.State);
+                    }
                 }
             }
 
@@ -233,7 +266,7 @@ namespace ISIC_FMT_MMCP_App
                 else
                 {
                     StopScanning();
-                    DisplayAlert("Time out", "Time out has been reached. If the target device do not appear, try again", "OK");
+                    //DisplayAlert("Time out", "Time out has been reached. If the target device do not appear, try again", "OK");
                 }
             };
 

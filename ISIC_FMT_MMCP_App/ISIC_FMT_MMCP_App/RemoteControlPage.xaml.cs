@@ -142,24 +142,28 @@ namespace ISIC_FMT_MMCP_App
             if (MonIdentifier == MonitorIdentifier.Monitor1)
             {
                 Monitor1.TextColor = Color.FromHex("#64B22E");
+                Monitor1.BorderColor = Color.FromHex("#64B22E");
                 Monitor2.TextColor = Color.FromHex("#FFFFFF");
                 Monitor3.TextColor = Color.FromHex("#FFFFFF");
                 MonitorAll.TextColor = Color.FromHex("#FFFFFF");
             } else if (MonIdentifier == MonitorIdentifier.Monitor2)
             {
                 Monitor2.TextColor = Color.FromHex("#64B22E");
+                Monitor2.BorderColor = Color.FromHex("#64B22E");
                 Monitor1.TextColor = Color.FromHex("#FFFFFF");
                 Monitor3.TextColor = Color.FromHex("#FFFFFF");
                 MonitorAll.TextColor = Color.FromHex("#FFFFFF");
             } else if (MonIdentifier == MonitorIdentifier.Monitor3)
             {
                 Monitor3.TextColor = Color.FromHex("#64B22E");
+                Monitor3.BorderColor = Color.FromHex("#64B22E");
                 Monitor1.TextColor = Color.FromHex("#FFFFFF");
                 Monitor2.TextColor = Color.FromHex("#FFFFFF");
                 MonitorAll.TextColor = Color.FromHex("#FFFFFF");
             } else if (MonIdentifier == MonitorIdentifier.MonitorBroadcast)
             {
                 MonitorAll.TextColor = Color.FromHex("#64B22E");
+                MonitorAll.BorderColor = Color.FromHex("#64B22E");
                 Monitor1.TextColor = Color.FromHex("#FFFFFF");
                 Monitor2.TextColor = Color.FromHex("#FFFFFF");
                 Monitor3.TextColor = Color.FromHex("#FFFFFF");

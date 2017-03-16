@@ -47,7 +47,7 @@ namespace ISIC_FMT_MMCP_App.Droid
                 clicked = new GradientDrawable();
 
                 clicked.SetColor(Android.Graphics.Color.ParseColor("#64B22E"));
-                clicked.SetStroke((int)borderWidth, button.BorderColor.ToAndroid(Xamarin.Forms.Color.FromHex("#64B22E")));
+                clicked.SetStroke(borderWidth, Android.Graphics.Color.ParseColor("#808080"));
                 clicked.SetCornerRadius(borderRadius);
 
                 

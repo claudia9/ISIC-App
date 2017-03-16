@@ -8,10 +8,6 @@
   <ContentPage.Resources>
     <ResourceDictionary>
 
-      <Style TargetType="NavigationPage">
-        <Setter Property="BarBackgroundColor" Value="#FF1A1A1A" />
-      </Style>
-
       <Style TargetType="Button">
         <Setter Property="TextColor" Value="Black"/>
         <Setter Property="FontAttributes" Value="Bold" />
@@ -31,7 +27,7 @@
   <StackLayout Padding="20">
 
     <Grid Padding="0,0,0,30">
-      <local:RoundedButton x:Name="Back" Image="home_icon.png" />
+      <local:RoundedButton x:Name="Back" Image="home_icon.png" Command ="{Binding SavePreferences}"/>
     </Grid>
 
     <Label x:Name="MonitorAddrs" Text="Monitor addresses" TextColor="White"/>

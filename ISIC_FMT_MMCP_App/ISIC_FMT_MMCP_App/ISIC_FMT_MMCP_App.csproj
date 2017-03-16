@@ -63,7 +63,6 @@
     <Compile Include="Renderers\CommandViewModel.cs" />
     <Compile Include="Renderers\LoadingViewModel.cs" />
     <Compile Include="Renderers\RoundedButton.cs" />
-    <Compile Include="Renderers\ToastsViewModel.cs" />
     <Compile Include="SerialProtocol\Checksum.cs" />
     <Compile Include="SerialProtocol\Command.cs" />
     <Compile Include="SerialProtocol\Config.cs" />
