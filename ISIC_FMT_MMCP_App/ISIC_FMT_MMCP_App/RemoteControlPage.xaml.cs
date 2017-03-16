@@ -32,9 +32,10 @@ namespace ISIC_FMT_MMCP_App
             InitializeComponent();          //Create visual interface
             InitializeBluetooth();          //Check characteristics of the BluetoothLe Device.
             InitializeDictionary();         //Create object of MonitorSettings for each monitor
-            InitiliazeMonitor();            //Create current monitor
             InitializeButtons();            //Create event handlers for each button
 
+
+            InitiliazeMonitor();            //Create current monitor
             IsicDebug.DebugGeneral(String.Format("Finished initiliazations"));
         }
 
@@ -81,14 +82,44 @@ namespace ISIC_FMT_MMCP_App
             Monitors[MonitorIdentifier.Monitor1] = new MonitorSettings();
             Monitors[MonitorIdentifier.Monitor2] = new MonitorSettings();
             Monitors[MonitorIdentifier.Monitor3] = new MonitorSettings();
-            Monitors[MonitorIdentifier.Monitor4] = new MonitorSettings();
             Monitors[MonitorIdentifier.MonitorBroadcast] = new MonitorSettings() { MonAddr = 0xFF };
         }
 
         private void InitiliazeMonitor()
         {
-            CurrentMonitor = Monitors[MonitorIdentifier.Monitor1];
-            IsicDebug.DebugMonitor(String.Format("Initiliasing monitor: CurrentMonitor.MonAddr = {0}, CurrentMonitor.ToD = {1}, CurrentMonitor.ToDBacklightValue = {2}", CurrentMonitor.MonAddr, CurrentMonitor.ToD, CurrentMonitor.ToDBacklightValue));
+            if (CurrentMonitor == null)
+            {
+                DisableButtons();
+                UserDialogs.Instance.Toast("Choose one monitor before proceding. (Press ALL to send broadcast commands", TimeSpan.FromSeconds(2.5));
+            }
+        }
+
+        private void DisableButtons()
+        {
+            NightMode.IsEnabled = false;
+            DuskMode.IsEnabled = false;
+            DayMode.IsEnabled = false;
+            VGA.IsEnabled = false;
+            DVI.IsEnabled = false;
+            DP.IsEnabled = false;
+            Slider.IsEnabled = false;
+        }
+        private void EnableButtons()
+        {
+            NightMode.IsEnabled = true;
+            DuskMode.IsEnabled = true;
+            DayMode.IsEnabled = true;
+            VGA.IsEnabled = true;
+            DVI.IsEnabled = true;
+            DP.IsEnabled = true;
+            Slider.IsEnabled = true;
+            NightMode.TextColor = Color.White;
+            DuskMode.TextColor = Color.White;
+            DayMode.TextColor = Color.White;
+            VGA.TextColor = Color.White;
+            DVI.TextColor = Color.White;
+            DP.TextColor = Color.White;
+            Slider.IsEnabled = true;
         }
 
         private void InitializeButtons()
@@ -114,7 +145,6 @@ namespace ISIC_FMT_MMCP_App
 
         #endregion Initializers
         
-
         #region Monitor Clicks
 
         private void Monitor1_Clicked(object sender, EventArgs e)
@@ -138,37 +168,45 @@ namespace ISIC_FMT_MMCP_App
 
         private void SetMonitor(MonitorIdentifier MonIdentifier)
         {
-            CurrentMonitor = Monitors[MonIdentifier];
-            if (MonIdentifier == MonitorIdentifier.Monitor1)
+            EnableButtons();
+
+            switch (MonIdentifier)
             {
-                Monitor1.TextColor = Color.FromHex("#64B22E");
-                Monitor1.BorderColor = Color.FromHex("#64B22E");
-                Monitor2.TextColor = Color.FromHex("#FFFFFF");
-                Monitor3.TextColor = Color.FromHex("#FFFFFF");
-                MonitorAll.TextColor = Color.FromHex("#FFFFFF");
-            } else if (MonIdentifier == MonitorIdentifier.Monitor2)
-            {
-                Monitor2.TextColor = Color.FromHex("#64B22E");
-                Monitor2.BorderColor = Color.FromHex("#64B22E");
-                Monitor1.TextColor = Color.FromHex("#FFFFFF");
-                Monitor3.TextColor = Color.FromHex("#FFFFFF");
-                MonitorAll.TextColor = Color.FromHex("#FFFFFF");
-            } else if (MonIdentifier == MonitorIdentifier.Monitor3)
-            {
-                Monitor3.TextColor = Color.FromHex("#64B22E");
-                Monitor3.BorderColor = Color.FromHex("#64B22E");
-                Monitor1.TextColor = Color.FromHex("#FFFFFF");
-                Monitor2.TextColor = Color.FromHex("#FFFFFF");
-                MonitorAll.TextColor = Color.FromHex("#FFFFFF");
-            } else if (MonIdentifier == MonitorIdentifier.MonitorBroadcast)
-            {
-                MonitorAll.TextColor = Color.FromHex("#64B22E");
-                MonitorAll.BorderColor = Color.FromHex("#64B22E");
-                Monitor1.TextColor = Color.FromHex("#FFFFFF");
-                Monitor2.TextColor = Color.FromHex("#FFFFFF");
-                Monitor3.TextColor = Color.FromHex("#FFFFFF");
+                case MonitorIdentifier.Monitor1:
+                    Monitors[MonIdentifier].MonAddr = Convert.ToByte(Application.Current.Properties["Mon1Addr"]);
+                    Monitor1.TextColor = Color.FromHex("#64B22E");
+                    Monitor1.BorderColor = Color.FromHex("#64B22E");
+                    Monitor2.TextColor = Color.FromHex("#FFFFFF");
+                    Monitor3.TextColor = Color.FromHex("#FFFFFF");
+                    MonitorAll.TextColor = Color.FromHex("#FFFFFF");
+                    break;
+                case MonitorIdentifier.Monitor2:
+                    Monitors[MonIdentifier].MonAddr = Convert.ToByte(Application.Current.Properties["Mon2Addr"]);
+                    Monitor2.TextColor = Color.FromHex("#64B22E");
+                    Monitor2.BorderColor = Color.FromHex("#64B22E");
+                    Monitor1.TextColor = Color.FromHex("#FFFFFF");
+                    Monitor3.TextColor = Color.FromHex("#FFFFFF");
+                    MonitorAll.TextColor = Color.FromHex("#FFFFFF");
+                    break;
+                case MonitorIdentifier.Monitor3:
+                    Monitors[MonIdentifier].MonAddr = Convert.ToByte(Application.Current.Properties["Mon3Addr"]);
+                    Monitor3.TextColor = Color.FromHex("#64B22E");
+                    Monitor3.BorderColor = Color.FromHex("#64B22E");
+                    Monitor1.TextColor = Color.FromHex("#FFFFFF");
+                    Monitor2.TextColor = Color.FromHex("#FFFFFF");
+                    MonitorAll.TextColor = Color.FromHex("#FFFFFF");
+                    break;
+                case MonitorIdentifier.MonitorBroadcast:
+                    MonitorAll.TextColor = Color.FromHex("#64B22E");
+                    MonitorAll.BorderColor = Color.FromHex("#64B22E");
+                    Monitor1.TextColor = Color.FromHex("#FFFFFF");
+                    Monitor2.TextColor = Color.FromHex("#FFFFFF");
+                    Monitor3.TextColor = Color.FromHex("#FFFFFF");
+                    break;
             }
 
+            CurrentMonitor = Monitors[MonIdentifier];
+            IsicDebug.DebugMonitor(String.Format("CurrentMonitor initiliased: Address: {0}", CurrentMonitor.MonAddr));
             /*if (monIdentifier == MonitorIdentifier.MonitorBroadcast)
             {
                 availableButtons();
@@ -274,29 +312,6 @@ namespace ISIC_FMT_MMCP_App
                     DuskMode.TextColor = Color.FromHex("#FFFFFF");
                 }
             }
-        }
-
-        private void AvailableButtons()
-        {
-            Slider.IsEnabled = true;
-            DayMode.IsEnabled = true;
-            DuskMode.IsEnabled = true;
-            NightMode.IsEnabled = true;
-            DVI.IsEnabled = true;
-            VGA.IsEnabled = true;
-            DP.IsEnabled = true;
-        }
-
-        private void MonitorNotAvailable()
-        {
-            Slider.Value = 0;
-            GridSlider.IsEnabled = false;
-            DayMode.IsEnabled = false;
-            DuskMode.IsEnabled = false;
-            NightMode.IsEnabled = false;
-            DVI.IsEnabled = false;
-            VGA.IsEnabled = false;
-            DP.IsEnabled = false;
         }
         #endregion
 

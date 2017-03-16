@@ -23,11 +23,20 @@ namespace ISIC_FMT_MMCP_App
 
         private void InitializeProperties()
         {
-            Application.Current.Properties["Mon1Addr"] = (Byte)0;
-            Application.Current.Properties["Mon2Addr"] = (Byte)0;
-            Application.Current.Properties["Mon3Addr"] = (Byte)0;
-            Application.Current.Properties["MonAllAddr"] = (Byte)255;
-            Application.Current.Properties["Baud"] = 2;
+            AssignValues("Mon1Addr", (byte)0);
+            AssignValues("Mon2Addr", (byte)0);
+            AssignValues("Mon3Addr", (byte)0);
+            AssignValues("MonAllAddr", (byte)250);
+            AssignValues("Baud", 0);
+            AssignValues("LastBluetooth", "");
+        }
+
+        private void AssignValues(string key, object value)
+        {
+            if (!Application.Current.Properties.ContainsKey(key))
+            {
+                Application.Current.Properties[key] = value;
+            }
         }
 
         protected override void OnSleep()

@@ -68,19 +68,5 @@
 
     </Grid>
 
-    <Label x:Name="BluetoothLabel" Text="Bluetooth settings" TextColor="White" VerticalTextAlignment="Center"/>
-    <BoxView Color="White" HeightRequest="2"></BoxView>
-
-    <Grid ColumnSpacing="5">
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition />
-        <ColumnDefinition />
-      </Grid.ColumnDefinitions>
-      <Grid.RowDefinitions>
-        <RowDefinition />
-      </Grid.RowDefinitions>
-      <Label x:Name="BluetoothTitle" Text="Default Bluetooth" TextColor="White" Grid.Column="0" Grid.Row="0"/>
-      <Picker x:Name="Bluetooth" TextColor="White" Grid.Column="1" Grid.Row="0" />
-    </Grid>
   </StackLayout>
 </ContentPage>

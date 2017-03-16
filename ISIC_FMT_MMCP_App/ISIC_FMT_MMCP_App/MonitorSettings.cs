@@ -11,7 +11,6 @@ public enum MonitorIdentifier
     Monitor1,
     Monitor2,
     Monitor3,
-    Monitor4,
     MonitorBroadcast
 }
 

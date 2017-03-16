@@ -48,9 +48,7 @@ namespace ISIC_FMT_MMCP_App.Droid
 
                 clicked.SetColor(Android.Graphics.Color.ParseColor("#64B22E"));
                 clicked.SetStroke(borderWidth, Android.Graphics.Color.ParseColor("#808080"));
-                clicked.SetCornerRadius(borderRadius);
-
-                
+                clicked.SetCornerRadius(borderRadius); 
 
                 //Add the new drawables to a state list and assign it to the button
                 var sld = new StateListDrawable();

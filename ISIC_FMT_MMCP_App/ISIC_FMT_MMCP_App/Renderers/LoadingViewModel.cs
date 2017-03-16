@@ -86,7 +86,7 @@ namespace Isic.ViewModels
                 {
                     try
                     {
-                        await Task.Delay(TimeSpan.FromSeconds(3));
+                        await Task.Delay(TimeSpan.FromSeconds(1.5));
                     }
                     catch { }
 

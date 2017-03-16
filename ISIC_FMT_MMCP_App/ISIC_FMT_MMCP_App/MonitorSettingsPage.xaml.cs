@@ -52,7 +52,6 @@ namespace ISIC_FMT_MMCP_App
 
         private async void SetPreferences()
         {
-
             await Application.Current.SavePropertiesAsync();
         }
 
@@ -62,7 +61,6 @@ namespace ISIC_FMT_MMCP_App
             monitors[MonitorIdentifier.Monitor1] = new MonitorSettings();
             monitors[MonitorIdentifier.Monitor2] = new MonitorSettings();
             monitors[MonitorIdentifier.Monitor3] = new MonitorSettings();
-            monitors[MonitorIdentifier.Monitor4] = new MonitorSettings();
             monitors[MonitorIdentifier.MonitorBroadcast] = new MonitorSettings() { MonAddr = 0xFF };
 
         }
@@ -79,14 +77,17 @@ namespace ISIC_FMT_MMCP_App
                 mon3.Items.Add(i.ToString());
             }
 
-            Mon1Addr.SelectedIndex = monitors[MonitorIdentifier.Monitor1].MonAddr;
-            Mon2Addr.SelectedIndex = monitors[MonitorIdentifier.Monitor2].MonAddr;
-            Mon3Addr.SelectedIndex = monitors[MonitorIdentifier.Monitor3].MonAddr;
+            //Mon1Addr.SelectedIndex = monitors[MonitorIdentifier.Monitor1].MonAddr;
+            //Mon2Addr.SelectedIndex = monitors[MonitorIdentifier.Monitor2].MonAddr;
+            //Mon3Addr.SelectedIndex = monitors[MonitorIdentifier.Monitor3].MonAddr;
+
+            Mon1Addr.SelectedIndex = (int)Application.Current.Properties["Mon1Addr"];
+            Mon2Addr.SelectedIndex = (int)Application.Current.Properties["Mon2Addr"];
+            Mon3Addr.SelectedIndex = (int)Application.Current.Properties["Mon3Addr"];
 
             Mon1Addr.SelectedIndexChanged += Mon1Addr_SelectedIndexChanged;
             Mon2Addr.SelectedIndexChanged += Mon2Addr_SelectedIndexChanged;
             Mon3Addr.SelectedIndexChanged += Mon3Addr_SelectedIndexChanged;
-
 
             Picker baud = Baud;
             baud.Items.Add("9K6");
@@ -130,7 +131,20 @@ namespace ISIC_FMT_MMCP_App
 
         private void SetMonitorAddress(object sender, MonitorIdentifier monIdentifier)
         {
-            Application.Current.Properties[monIdentifier.ToString()] = (Byte)(sender as Picker).SelectedIndex;
+            switch (monIdentifier)
+            {
+                case MonitorIdentifier.Monitor1:
+                    Application.Current.Properties["Mon1Addr"] = (int)(sender as Picker).SelectedIndex;
+                    break;
+                case MonitorIdentifier.Monitor2:
+                    Application.Current.Properties["Mon2Addr"] = (int)(sender as Picker).SelectedIndex;
+                    break;
+                case MonitorIdentifier.Monitor3:
+                    Application.Current.Properties["Mon3Addr"] = (int)(sender as Picker).SelectedIndex;
+                    break;
+            }
+
+       
             monitors[monIdentifier].MonAddr = (Byte)(sender as Picker).SelectedIndex;
 
             IsicDebug.DebugMonitor(String.Format("Setting property {0} to {1}", monIdentifier.ToString(), (sender as Picker).SelectedIndex));
