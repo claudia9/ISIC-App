@@ -54,8 +54,10 @@ namespace ISIC_FMT_MMCP_App.Droid
                 var sld = new StateListDrawable();
                 sld.AddState(new int[] { Android.Resource.Attribute.StatePressed }, clicked);
                 sld.AddState(new int[] { }, normal);
+
                 Control.SetBackground(sld);
             }
+
         }
     }
 }

@@ -13,11 +13,16 @@
   </ContentPage.Resources>
 
   <StackLayout Padding="20">
-    <StackLayout Orientation="Horizontal" Spacing="100">
-      <Label x:Name="Title" Text="Devices List" VerticalTextAlignment="Center" TextColor="White" FontAttributes="Bold" FontSize="24" />
-      <local:RoundedButton x:Name="ScanAllButton" Image="ble_icon.png" Command="{Binding LoadCommand}"/>
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
 
-    </StackLayout>
+      <Label x:Name="Title" Text="Devices List" VerticalTextAlignment="Center" TextColor="White" FontAttributes="Bold" FontSize="24" Grid.Column="0"/>
+      <local:RoundedButton x:Name="ScanAllButton" Image="ble_icon.png" Command="{Binding LoadCommand}" Grid.Column="2"/>
+    </Grid>
     <!--To scan -->
 
     <ListView x:Name="listView">

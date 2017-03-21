@@ -175,7 +175,7 @@ namespace ISIC_FMT_MMCP_App
                 case MonitorIdentifier.Monitor1:
                     Monitors[MonIdentifier].MonAddr = Convert.ToByte(Application.Current.Properties["Mon1Addr"]);
                     Monitor1.TextColor = Color.FromHex("#64B22E");
-                    Monitor1.BorderColor = Color.FromHex("#64B22E");
+                    Monitor1.FontAttributes = FontAttributes.Bold;
                     Monitor2.TextColor = Color.FromHex("#FFFFFF");
                     Monitor3.TextColor = Color.FromHex("#FFFFFF");
                     MonitorAll.TextColor = Color.FromHex("#FFFFFF");
@@ -183,7 +183,7 @@ namespace ISIC_FMT_MMCP_App
                 case MonitorIdentifier.Monitor2:
                     Monitors[MonIdentifier].MonAddr = Convert.ToByte(Application.Current.Properties["Mon2Addr"]);
                     Monitor2.TextColor = Color.FromHex("#64B22E");
-                    Monitor2.BorderColor = Color.FromHex("#64B22E");
+                    Monitor2.FontAttributes = FontAttributes.Bold;
                     Monitor1.TextColor = Color.FromHex("#FFFFFF");
                     Monitor3.TextColor = Color.FromHex("#FFFFFF");
                     MonitorAll.TextColor = Color.FromHex("#FFFFFF");
@@ -191,14 +191,14 @@ namespace ISIC_FMT_MMCP_App
                 case MonitorIdentifier.Monitor3:
                     Monitors[MonIdentifier].MonAddr = Convert.ToByte(Application.Current.Properties["Mon3Addr"]);
                     Monitor3.TextColor = Color.FromHex("#64B22E");
-                    Monitor3.BorderColor = Color.FromHex("#64B22E");
+                    Monitor3.FontAttributes = FontAttributes.Bold;
                     Monitor1.TextColor = Color.FromHex("#FFFFFF");
                     Monitor2.TextColor = Color.FromHex("#FFFFFF");
                     MonitorAll.TextColor = Color.FromHex("#FFFFFF");
                     break;
                 case MonitorIdentifier.MonitorBroadcast:
                     MonitorAll.TextColor = Color.FromHex("#64B22E");
-                    MonitorAll.BorderColor = Color.FromHex("#64B22E");
+                    MonitorAll.FontAttributes = FontAttributes.Bold;
                     Monitor1.TextColor = Color.FromHex("#FFFFFF");
                     Monitor2.TextColor = Color.FromHex("#FFFFFF");
                     Monitor3.TextColor = Color.FromHex("#FFFFFF");
@@ -223,7 +223,10 @@ namespace ISIC_FMT_MMCP_App
                 monitorNotAvailable();
             }*/
         }
+        #endregion
 
+        #region Query info from monitor - NOT IN USE
+        //Not in use
         private async void QueryBacklight()
         {
             try
@@ -264,6 +267,7 @@ namespace ISIC_FMT_MMCP_App
 
         }
 
+        //Not in use
         private async Task<bool> QueryInput()
         {
             int currentInput;
@@ -290,6 +294,7 @@ namespace ISIC_FMT_MMCP_App
             }
         }
 
+        //Not in use
         private void SetModeButtons()
         {
             if (CurrentMonitor != null)
@@ -431,7 +436,7 @@ namespace ISIC_FMT_MMCP_App
 
         #endregion  Mode Clicks
 
-        #region Check Availability Monitors
+        #region Check Availability Monitors - NOT IN USE
         private async Task<bool> isMonitorAvailable(byte monAddr)
         {
             if (CurrentCharacteristic.CanRead)
