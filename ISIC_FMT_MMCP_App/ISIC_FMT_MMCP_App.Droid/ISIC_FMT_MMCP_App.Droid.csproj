@@ -138,9 +138,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainActivity.cs" />
+    <Compile Include="RoundedMonitorButtonRenderer.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RoundedButtonRenderer.cs" />
+    <Compile Include="RoundedMonitorButtonRendererWithMGListener.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

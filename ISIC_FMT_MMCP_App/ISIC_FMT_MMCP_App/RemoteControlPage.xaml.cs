@@ -34,7 +34,6 @@ namespace ISIC_FMT_MMCP_App
             InitializeDictionary();         //Create object of MonitorSettings for each monitor
             InitializeButtons();            //Create event handlers for each button
 
-
             InitiliazeMonitor();            //Create current monitor
             IsicDebug.DebugGeneral(String.Format("Finished initiliazations"));
         }
@@ -70,6 +69,7 @@ namespace ISIC_FMT_MMCP_App
                 {
                     IsicDebug.DebugException(String.Format("Could not find Characteristics. {0}", ex));
                     UserDialogs.Instance.Alert("This Bluetooth device does not allow to send Serial Data, please, choose another Bluetooth device of the list", null, "Ok");
+                    await Task.Delay(1000);
                     await Navigation.PopToRootAsync();
                 }
             }

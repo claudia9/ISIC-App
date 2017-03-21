@@ -46,6 +46,9 @@
     <Compile Include="Extensions\EmptyStringConverter.cs" />
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Extensions\GuidConverter.cs" />
+    <Compile Include="MonitorInformationPage.xaml.cs">
+      <DependentUpon>MonitorInformationPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MonitorSettings.cs" />
     <Compile Include="MonitorSettingsPage.xaml.cs">
       <DependentUpon>MonitorSettingsPage.xaml</DependentUpon>
@@ -63,6 +66,7 @@
     <Compile Include="Renderers\CommandViewModel.cs" />
     <Compile Include="Renderers\LoadingViewModel.cs" />
     <Compile Include="Renderers\RoundedButton.cs" />
+    <Compile Include="Renderers\RoundedMonitorButton.cs" />
     <Compile Include="SerialProtocol\Checksum.cs" />
     <Compile Include="SerialProtocol\Command.cs" />
     <Compile Include="SerialProtocol\Config.cs" />
@@ -135,6 +139,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonitorSettingsPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="MonitorInformationPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
       <SubType>Designer</SubType>
     </EmbeddedResource>
