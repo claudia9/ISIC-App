@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:ISIC_FMT_MMCP_App;assembly=ISIC_FMT_MMCP_App"
              x:Class="ISIC_FMT_MMCP_App.MonitorSettingsPage"
-              BackgroundColor="#444444">
+             BackgroundColor="#444444">
 
   <ContentPage.Resources>
     <ResourceDictionary>
@@ -16,6 +16,7 @@
       <Style TargetType="Label">
         <Setter Property="FontFamily" Value="Calibry"/>
         <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="TextColor" Value="White" />
         <Setter Property="HorizontalTextAlignment" Value="Center"/>
         <Setter Property="VerticalTextAlignment" Value="Start" />
         <Setter Property="Margin" Value=" 0, 30, 0, 0" />
@@ -30,7 +31,7 @@
       <local:RoundedButton x:Name="Back" Image="home_icon.png" Command ="{Binding SavePreferences}"/>
     </Grid>
 
-    <Label x:Name="MonitorAddrs" Text="Monitor addresses" TextColor="White"/>
+    <Label x:Name="MonitorAddrs" Text="Monitor addresses"/>
     <BoxView Color="White" HeightRequest="2"></BoxView>
 
     <Grid ColumnSpacing="5">
@@ -43,16 +44,16 @@
         <RowDefinition />
         <RowDefinition />
       </Grid.RowDefinitions>
-      <Label x:Name="Mon1" Text="Monitor 1" TextColor="White" Grid.Column="0" Grid.Row="0" VerticalTextAlignment="Center"/>
+      <Label x:Name="Mon1" Text="Monitor 1" Grid.Column="0" Grid.Row="0" VerticalTextAlignment="Center"/>
       <Picker x:Name="Mon1Addr" TextColor="White" Grid.Column="1" Grid.Row="0"/>
-      <Label x:Name="Mon2" Text="Monitor 2" TextColor="White" Grid.Column="0" Grid.Row="1" VerticalTextAlignment="Center"/>
+      <Label x:Name="Mon2" Text="Monitor 2" Grid.Column="0" Grid.Row="1" VerticalTextAlignment="Center"/>
       <Picker x:Name="Mon2Addr" TextColor="White" Grid.Column="1" Grid.Row="1"/>
-      <Label x:Name="Mon3" Text="Monitor 3" TextColor="White" Grid.Column="0" Grid.Row="2" VerticalTextAlignment="Center"/>
+      <Label x:Name="Mon3" Text="Monitor 3" Grid.Column="0" Grid.Row="2" VerticalTextAlignment="Center"/>
       <Picker x:Name="Mon3Addr" TextColor="White" Grid.Column="1" Grid.Row="2"/>
 
     </Grid>
 
-    <Label x:Name="BaudLabel" Text="Baud" TextColor="White" VerticalTextAlignment="Center"/>
+    <Label x:Name="BaudLabel" Text="Baud" VerticalTextAlignment="Center"/>
     <BoxView Color="White" HeightRequest="2"></BoxView>
 
     <Grid ColumnSpacing="5">
@@ -63,10 +64,15 @@
       <Grid.RowDefinitions>
         <RowDefinition />
       </Grid.RowDefinitions>
-      <Label x:Name="BaudTitle" Text="Baud" TextColor="White" Grid.Column="0" Grid.Row="0"/>
+      <Label x:Name="BaudTitle" Text="Baud" Grid.Column="0" Grid.Row="0"/>
       <Picker x:Name="Baud" TextColor="White" Grid.Column="1" Grid.Row="0" />
 
     </Grid>
+    
+    <Label x:Name="AdvSettingsLabel" Text="Advanced Settings" VerticalTextAlignment="Center"/>
+    <BoxView Color="White" HeightRequest="2"></BoxView>
 
+    <local:RoundedButton x:Name="AdvSettingsButton" Text="Advances Settings"/>
+    
   </StackLayout>
 </ContentPage>

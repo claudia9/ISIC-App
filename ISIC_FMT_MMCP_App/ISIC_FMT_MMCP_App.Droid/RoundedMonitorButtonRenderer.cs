@@ -142,6 +142,7 @@ namespace ISIC_FMT_MMCP_App.Droid
                 }
                 else
                 {
+                    //NEED TO FIX THE DISPOSE PROBLEM!!!! ITEM IS DISPOSED WHEN POPING THE REMOTE CONTROL PAGE AND WHEN OPENNING THE PAGE AGAIN AND CLICK A MONITOR BUTTON, IT THROWS AN EXCEPTION!
                     item.SetTextColor(Android.Graphics.Color.White);
                     item.SetBackground(sld1);
                 }

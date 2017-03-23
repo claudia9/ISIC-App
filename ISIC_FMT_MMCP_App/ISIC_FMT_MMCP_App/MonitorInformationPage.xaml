@@ -1,31 +1,61 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="ISIC_FMT_MMCP_App.MonitorInformationPage">
-
+             xmlns:local="clr-namespace:ISIC_FMT_MMCP_App;assembly=ISIC_FMT_MMCP_App"
+             x:Class="ISIC_FMT_MMCP_App.MonitorInformationPage"
+             BackgroundColor="#444444">
+  
+  <ContentPage.Resources>
+    <ResourceDictionary>
+      <Style TargetType="Label">
+        <Setter Property="TextColor" Value="White"/>
+        <Setter Property="FontSize" Value="Small"/>
+        <Setter Property="FontFamily" Value="Calibry"/>
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="HorizontalTextAlignment" Value="Center"/>
+        <Setter Property="VerticalTextAlignment" Value="Start" />
+      </Style>
+    </ResourceDictionary>
+  </ContentPage.Resources>
+  
   <StackLayout Padding="15">
-    <ScrollView>
-      <Grid>
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="auto"/>
-          <ColumnDefinition Width="auto"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-          <RowDefinition/>
-          <RowDefinition/>
-          <RowDefinition/>
-          <RowDefinition/>
-        </Grid.RowDefinitions>
-      </Grid>
-        <Label x:Name="NameLabel" Grid.Column="0" Grid.Row="0">Name:</Label>
-        <Label x:Name="NameInfo" Binding="" Grid.Column="1" Grid.Row="0"></Label>
-        <Label x:Name="RNLabel" Grid.Column="0" Grid.Row="1">R/N:</Label>
-        <Label x:Name="RNLabel" Grid.Column="1" Grid.Row="1"></Label>
-        <Label x:Name="TempLabel" Grid.Column="0" Grid.Row="2">Temp:</Label>
-        <Label x:Name="TempInfo" Grid.Column="1" Grid.Row="2"></Label>
-        <Label x:Name="TimeLabel" Grid.Column="0" Grid.Row="3"></Label>
-        <Label x:Name="TimeInfo" Grid.Column="1" Grid.Row="3"></Label>
-    </ScrollView>
+
+
+    <local:RoundedButton x:Name="BackButton" Text="Back"/>
+    <Label x:Name="Title" HorizontalTextAlignment="Center" FontFamily="Calibri" FontAttributes="Bold" TextColor="White">Monitor 1</Label>
+    <BoxView Color="White" HeightRequest="2"/>
+
+    <Grid Margin="0, 10, 0, 10">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition/>
+        <ColumnDefinition/>
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition/>
+        <RowDefinition/>
+        <RowDefinition/>
+        <RowDefinition/>
+      </Grid.RowDefinitions>
+      <Label x:Name="NameLabel" Grid.Column="0" Grid.Row="0">Name:</Label>
+      <Label x:Name="NameInfo" Grid.Column="1" Grid.Row="0"></Label>
+      <Label x:Name="RNLabel" Grid.Column="0" Grid.Row="1">R/N:</Label>
+      <Label x:Name="RNInfo" Grid.Column="1" Grid.Row="1"></Label>
+      <Label x:Name="TempLabel" Grid.Column="0" Grid.Row="2">Temp:</Label>
+      <Label x:Name="TempInfo" Grid.Column="1" Grid.Row="2"></Label>
+      <Label x:Name="TimeLabel" Grid.Column="0" Grid.Row="3">Time on:</Label>
+      <Label x:Name="TimeInfo" Grid.Column="1" Grid.Row="3"></Label>
+    </Grid>
+      <BoxView Color="White" HeightRequest="2"/>
+    <Grid Margin="0, 10, 0, 10">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition></ColumnDefinition>
+        <ColumnDefinition></ColumnDefinition>
+      </Grid.ColumnDefinitions>
+
+      <Label x:Name="BuzzerLabel" Grid.Column="0" Grid.Row="0">Buzzer:</Label>
+      <Switch x:Name="Buzzer" Grid.Column="1" Grid.Row="0" HorizontalOptions="CenterAndExpand"></Switch>
+    </Grid>
+
 
 
   </StackLayout>
