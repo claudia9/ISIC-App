@@ -81,9 +81,17 @@ namespace ISIC_FMT_MMCP_App
             //Mon2Addr.SelectedIndex = monitors[MonitorIdentifier.Monitor2].MonAddr;
             //Mon3Addr.SelectedIndex = monitors[MonitorIdentifier.Monitor3].MonAddr;
 
-            Mon1Addr.SelectedIndex = (int)Application.Current.Properties["Mon1Addr"];
-            Mon2Addr.SelectedIndex = (int)Application.Current.Properties["Mon2Addr"];
-            Mon3Addr.SelectedIndex = (int)Application.Current.Properties["Mon3Addr"];
+            if (Application.Current.Properties.ContainsKey("Mon1Addr")) {
+                Mon1Addr.SelectedIndex = (int)Application.Current.Properties["Mon1Addr"];
+            }
+            if (Application.Current.Properties.ContainsKey("Mon2Addr"))
+            {
+                Mon2Addr.SelectedIndex = (int)Application.Current.Properties["Mon2Addr"];
+            }
+            if (Application.Current.Properties.ContainsKey("Mon3Addr"))
+            {
+                Mon3Addr.SelectedIndex = (int)Application.Current.Properties["Mon3Addr"];
+            }
 
             Mon1Addr.SelectedIndexChanged += Mon1Addr_SelectedIndexChanged;
             Mon2Addr.SelectedIndexChanged += Mon2Addr_SelectedIndexChanged;

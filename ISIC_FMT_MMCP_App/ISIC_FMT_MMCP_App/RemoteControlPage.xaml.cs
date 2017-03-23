@@ -141,29 +141,68 @@ namespace ISIC_FMT_MMCP_App
 
             SettingsButton.Clicked += SettingsButton_Clicked;
             ScanButton.Clicked += ScanButton_Clicked;
+
+            MonitorSettingsButton.Clicked += MonitorSettingsButton_Clicked;
+        }
+
+        private void MonitorSettingsButton_Clicked(object sender, EventArgs e)
+        {
+            Navigation.PushAsync(new MonitorInformationPage());
         }
 
         #endregion Initializers
-        
+
         #region Monitor Clicks
 
         private void Monitor1_Clicked(object sender, EventArgs e)
         {
-            SetMonitor(MonitorIdentifier.Monitor1);
+            if (Monitor1.IsClicked == true)
+            {
+                Monitor1.IsClicked = false;
+            }
+            else
+            {
+                Monitor1.IsClicked = true;
+                SetMonitor(MonitorIdentifier.Monitor1);
+            }
         }
 
         private void Monitor2_Clicked(object sender, EventArgs e)
         {
-            SetMonitor(MonitorIdentifier.Monitor2);
+            if (Monitor2.IsClicked == true)
+            {
+                Monitor2.IsClicked = false;
+            }
+            else
+            {
+                Monitor2.IsClicked = true;
+                SetMonitor(MonitorIdentifier.Monitor2);
+            }
         }
         private void Monitor3_Clicked(object sender, EventArgs e)
         {
-            SetMonitor(MonitorIdentifier.Monitor3);
+            if (Monitor3.IsClicked == true)
+            {
+                Monitor3.IsClicked = false;
+            }
+            else
+            {
+                Monitor3.IsClicked = true;
+                SetMonitor(MonitorIdentifier.Monitor3);
+            }
         }
 
         private void MonitorAll_Clicked(object sender, EventArgs e)
         {
-            SetMonitor(MonitorIdentifier.MonitorBroadcast);
+            if (MonitorAll.IsClicked == true)
+            {
+                MonitorAll.IsClicked = false;
+            }
+            else
+            {
+                MonitorAll.IsClicked = true;
+                SetMonitor(MonitorIdentifier.MonitorBroadcast);
+            }
         }
 
         private void SetMonitor(MonitorIdentifier MonIdentifier)
@@ -174,34 +213,46 @@ namespace ISIC_FMT_MMCP_App
             {
                 case MonitorIdentifier.Monitor1:
                     Monitors[MonIdentifier].MonAddr = Convert.ToByte(Application.Current.Properties["Mon1Addr"]);
-                    Monitor1.TextColor = Color.FromHex("#64B22E");
-                    Monitor1.FontAttributes = FontAttributes.Bold;
-                    Monitor2.TextColor = Color.FromHex("#FFFFFF");
-                    Monitor3.TextColor = Color.FromHex("#FFFFFF");
-                    MonitorAll.TextColor = Color.FromHex("#FFFFFF");
+                    Monitor2.IsClicked = false;
+                    Monitor3.IsClicked = false;
+                    MonitorAll.IsClicked = false;
+                    //Monitor1.TextColor = Color.FromHex("#64B22E");
+                    //Monitor1.FontAttributes = FontAttributes.Bold;
+                    //Monitor2.TextColor = Color.FromHex("#FFFFFF");
+                    //Monitor3.TextColor = Color.FromHex("#FFFFFF");
+                    //MonitorAll.TextColor = Color.FromHex("#FFFFFF");
                     break;
                 case MonitorIdentifier.Monitor2:
                     Monitors[MonIdentifier].MonAddr = Convert.ToByte(Application.Current.Properties["Mon2Addr"]);
-                    Monitor2.TextColor = Color.FromHex("#64B22E");
-                    Monitor2.FontAttributes = FontAttributes.Bold;
-                    Monitor1.TextColor = Color.FromHex("#FFFFFF");
-                    Monitor3.TextColor = Color.FromHex("#FFFFFF");
-                    MonitorAll.TextColor = Color.FromHex("#FFFFFF");
+                    Monitor1.IsClicked = false;
+                    Monitor3.IsClicked = false;
+                    MonitorAll.IsClicked = false;
+                    //Monitor2.TextColor = Color.FromHex("#64B22E");
+                    //Monitor2.FontAttributes = FontAttributes.Bold;
+                    //Monitor1.TextColor = Color.FromHex("#FFFFFF");
+                    //Monitor3.TextColor = Color.FromHex("#FFFFFF");
+                    //MonitorAll.TextColor = Color.FromHex("#FFFFFF");
                     break;
                 case MonitorIdentifier.Monitor3:
                     Monitors[MonIdentifier].MonAddr = Convert.ToByte(Application.Current.Properties["Mon3Addr"]);
-                    Monitor3.TextColor = Color.FromHex("#64B22E");
-                    Monitor3.FontAttributes = FontAttributes.Bold;
-                    Monitor1.TextColor = Color.FromHex("#FFFFFF");
-                    Monitor2.TextColor = Color.FromHex("#FFFFFF");
-                    MonitorAll.TextColor = Color.FromHex("#FFFFFF");
+                    Monitor1.IsClicked = false;
+                    Monitor2.IsClicked = false;
+                    MonitorAll.IsClicked = false;
+                    //Monitor3.TextColor = Color.FromHex("#64B22E");
+                    //Monitor3.FontAttributes = FontAttributes.Bold;
+                    //Monitor1.TextColor = Color.FromHex("#FFFFFF");
+                    //Monitor2.TextColor = Color.FromHex("#FFFFFF");
+                    //MonitorAll.TextColor = Color.FromHex("#FFFFFF");
                     break;
                 case MonitorIdentifier.MonitorBroadcast:
-                    MonitorAll.TextColor = Color.FromHex("#64B22E");
-                    MonitorAll.FontAttributes = FontAttributes.Bold;
-                    Monitor1.TextColor = Color.FromHex("#FFFFFF");
-                    Monitor2.TextColor = Color.FromHex("#FFFFFF");
-                    Monitor3.TextColor = Color.FromHex("#FFFFFF");
+                    Monitor1.IsClicked = false;
+                    Monitor2.IsClicked = false;
+                    Monitor3.IsClicked = false;
+                    //MonitorAll.TextColor = Color.FromHex("#64B22E");
+                    //MonitorAll.FontAttributes = FontAttributes.Bold;
+                    //Monitor1.TextColor = Color.FromHex("#FFFFFF");
+                    //Monitor2.TextColor = Color.FromHex("#FFFFFF");
+                    //Monitor3.TextColor = Color.FromHex("#FFFFFF");
                     break;
             }
 
@@ -223,6 +274,7 @@ namespace ISIC_FMT_MMCP_App
                 monitorNotAvailable();
             }*/
         }
+
         #endregion
 
         #region Query info from monitor - NOT IN USE
