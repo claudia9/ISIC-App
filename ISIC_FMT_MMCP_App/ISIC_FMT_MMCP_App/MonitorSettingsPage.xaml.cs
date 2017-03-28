@@ -27,16 +27,22 @@ namespace ISIC_FMT_MMCP_App
             var ble = CrossBluetoothLE.Current;
             if (ble.State == Plugin.BLE.Abstractions.Contracts.BluetoothState.Off)
             {
-                UserDialogs.Instance.Toast("Your bluetooth has been disconnected, please, connect it again to proceed.");
+                UserDialogs.Instance.Toast("Please, turn on your Bluetooth to experience all the features of this DEMO.");
             }
             //Binding ScanAllbutton
             this.BindingContext =saveViewModel;
 
             Back.Clicked += Back_Clicked;
+            AdvSettingsButton.Clicked += AdvSettingsButton_Clicked;
 
             IsicDebug.DebugGeneral("On MonitorSettingsPage");
             
             //retrieveSettings();
+        }
+
+        private void AdvSettingsButton_Clicked(object sender, EventArgs e)
+        {
+            UserDialogs.Instance.Toast("This feature is not available for this DEMO version");
         }
 
         private void InitializeScreen()
@@ -77,20 +83,36 @@ namespace ISIC_FMT_MMCP_App
                 mon3.Items.Add(i.ToString());
             }
 
-            //Mon1Addr.SelectedIndex = monitors[MonitorIdentifier.Monitor1].MonAddr;
-            //Mon2Addr.SelectedIndex = monitors[MonitorIdentifier.Monitor2].MonAddr;
-            //Mon3Addr.SelectedIndex = monitors[MonitorIdentifier.Monitor3].MonAddr;
-
             if (Application.Current.Properties.ContainsKey("Mon1Addr")) {
-                Mon1Addr.SelectedIndex = (int)Application.Current.Properties["Mon1Addr"];
+                try
+                {
+                    Mon1Addr.SelectedIndex = (int)Application.Current.Properties["Mon1Addr"];
+                } catch (Exception e)
+                {
+                    IsicDebug.DebugException(String.Format("Giving address to comboboxes from the phone Properties", e));
+                }
             }
             if (Application.Current.Properties.ContainsKey("Mon2Addr"))
             {
-                Mon2Addr.SelectedIndex = (int)Application.Current.Properties["Mon2Addr"];
+                try
+                {
+                    Mon2Addr.SelectedIndex = (int)Application.Current.Properties["Mon2Addr"];
+                }
+                catch (Exception e)
+                {
+                    IsicDebug.DebugException(String.Format("Giving address to comboboxes from the phone Properties", e));
+                }
             }
             if (Application.Current.Properties.ContainsKey("Mon3Addr"))
             {
-                Mon3Addr.SelectedIndex = (int)Application.Current.Properties["Mon3Addr"];
+                try
+                {
+                    Mon3Addr.SelectedIndex = (int)Application.Current.Properties["Mon3Addr"];
+                }
+                catch (Exception e)
+                {
+                    IsicDebug.DebugException(String.Format("Giving address to comboboxes from the phone Properties", e));
+                }
             }
 
             Mon1Addr.SelectedIndexChanged += Mon1Addr_SelectedIndexChanged;

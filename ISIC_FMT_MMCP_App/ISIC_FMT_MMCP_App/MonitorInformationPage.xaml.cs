@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Isic.Debugger;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,8 +11,12 @@ namespace ISIC_FMT_MMCP_App
 {
     public partial class MonitorInformationPage : ContentPage
     {
-        public MonitorInformationPage()
+        MonitorSettings monitor;
+        public MonitorInformationPage(MonitorSettings _monitor)
         {
+            this.monitor = _monitor;
+            IsicDebug.DebugGeneral(String.Format("Initiliazed Monitor Information Page with Monitor at address: {0}", monitor.MonAddr));
+
             InitializeScreen();
             InitializeComponent();
             InitializeButtons();
@@ -36,30 +41,31 @@ namespace ISIC_FMT_MMCP_App
         private void InitializeMonitorInfo()
         {
             Label Name = NameInfo;
-            Name.Text = "Claudia";
+            Name.Text = "DuraMON 24 Glassé";
 
             Label RN = RNInfo;
-            RN.Text = "AA00WWN-A";
+            RN.Text = "AA00TDX";
+
+            Label SN = SNInfo;
+            SN.Text = "76A1609001";
+
+            Label Firmware = FirmwareInfo;
+            Firmware.Text = "Transas 24'' Config";
+
+            Label Baud = BaudInfo;
+            Baud.Text = "19K2";
 
             Label Temp = TempInfo;
             Temp.Text = "25.2";
             Temp.Text += "°C";
 
+            Label Light = LightInfo;
+            Light.Text = "60.520";
+
             Label Time = TimeInfo;
-            Time.Text = "2.2";
-            Time.Text += "t.";
+            Time.Text = "22.5";
+            Time.Text += " h.";
 
-            Label Time60 = Time60Label;
-            Time60.Text += " 22";
-            Time60.Text += "t.";
-
-            Label Time65 = Time65Label;
-            Time65.Text += " 10";
-            Time65.Text += "t.";
-
-            Label Time70 = Time70Label;
-            Time70.Text += " 00";
-            Time70.Text += "t.";
         }
     }
 }

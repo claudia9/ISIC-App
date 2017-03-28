@@ -26,7 +26,10 @@ namespace ISIC_FMT_MMCP_App
         public RemoteControlPage(IDevice device)
         {
             CurrentDevice = device;
-            IsicDebug.DebugGeneral(String.Format("Initiliasing Remote Control Page with Device: {0}", CurrentDevice.Name));
+            if (CurrentDevice != null)
+            {
+                IsicDebug.DebugGeneral(String.Format("Initiliasing Remote Control Page with Device: {0}", CurrentDevice.Name));
+            }
 
             InitilizeScreen();             //Hide Navigation Bar
             InitializeComponent();          //Create visual interface
@@ -65,7 +68,8 @@ namespace ISIC_FMT_MMCP_App
                     CurrentCharacteristic = await Service.GetCharacteristicAsync(WRITE_CHARACTERISTIC);
                     IsicDebug.DebugBluetooth(String.Format("Write characteristic found: {0}", CurrentCharacteristic.Name));
 
-                } catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
                     IsicDebug.DebugException(String.Format("Could not find Characteristics. {0}", ex));
                     UserDialogs.Instance.Alert("This Bluetooth device does not allow to send Serial Data, please, choose another Bluetooth device of the list", null, "Ok");
@@ -90,7 +94,7 @@ namespace ISIC_FMT_MMCP_App
             if (CurrentMonitor == null)
             {
                 DisableButtons();
-                UserDialogs.Instance.Toast("Choose one monitor before proceding. (Press ALL to send broadcast commands", TimeSpan.FromSeconds(2.5));
+                UserDialogs.Instance.Toast(String.Format("Choose one monitor before proceding.{0}(Press ALL to send broadcast commands", Environment.NewLine), TimeSpan.FromSeconds(2.5));
             }
         }
 
@@ -112,13 +116,6 @@ namespace ISIC_FMT_MMCP_App
             VGA.IsEnabled = true;
             DVI.IsEnabled = true;
             DP.IsEnabled = true;
-            Slider.IsEnabled = true;
-            NightMode.TextColor = Color.White;
-            DuskMode.TextColor = Color.White;
-            DayMode.TextColor = Color.White;
-            VGA.TextColor = Color.White;
-            DVI.TextColor = Color.White;
-            DP.TextColor = Color.White;
             Slider.IsEnabled = true;
         }
 
@@ -145,11 +142,6 @@ namespace ISIC_FMT_MMCP_App
             MonitorSettingsButton.Clicked += MonitorSettingsButton_Clicked;
         }
 
-        private void MonitorSettingsButton_Clicked(object sender, EventArgs e)
-        {
-            Navigation.PushAsync(new MonitorInformationPage());
-        }
-
         #endregion Initializers
 
         #region Monitor Clicks
@@ -164,6 +156,7 @@ namespace ISIC_FMT_MMCP_App
             {
                 Monitor1.IsClicked = true;
                 SetMonitor(MonitorIdentifier.Monitor1);
+                UserDialogs.Instance.Toast(String.Format("You are now controlling Monitor 1 at address: {0}", Monitors[MonitorIdentifier.Monitor1].MonAddr), TimeSpan.FromSeconds(2));
             }
         }
 
@@ -177,6 +170,7 @@ namespace ISIC_FMT_MMCP_App
             {
                 Monitor2.IsClicked = true;
                 SetMonitor(MonitorIdentifier.Monitor2);
+                UserDialogs.Instance.Toast(String.Format("You are now controlling Monitor 2 at address: {0}", Monitors[MonitorIdentifier.Monitor2].MonAddr), TimeSpan.FromSeconds(2));
             }
         }
         private void Monitor3_Clicked(object sender, EventArgs e)
@@ -189,6 +183,7 @@ namespace ISIC_FMT_MMCP_App
             {
                 Monitor3.IsClicked = true;
                 SetMonitor(MonitorIdentifier.Monitor3);
+                UserDialogs.Instance.Toast(String.Format("You are now controlling Monitor 3 at address: {0}", Monitors[MonitorIdentifier.Monitor3].MonAddr), TimeSpan.FromSeconds(2));
             }
         }
 
@@ -202,6 +197,7 @@ namespace ISIC_FMT_MMCP_App
             {
                 MonitorAll.IsClicked = true;
                 SetMonitor(MonitorIdentifier.MonitorBroadcast);
+                UserDialogs.Instance.Toast("You are now controlling all the monitors", TimeSpan.FromSeconds(2));
             }
         }
 
@@ -216,43 +212,23 @@ namespace ISIC_FMT_MMCP_App
                     Monitor2.IsClicked = false;
                     Monitor3.IsClicked = false;
                     MonitorAll.IsClicked = false;
-                    //Monitor1.TextColor = Color.FromHex("#64B22E");
-                    //Monitor1.FontAttributes = FontAttributes.Bold;
-                    //Monitor2.TextColor = Color.FromHex("#FFFFFF");
-                    //Monitor3.TextColor = Color.FromHex("#FFFFFF");
-                    //MonitorAll.TextColor = Color.FromHex("#FFFFFF");
                     break;
                 case MonitorIdentifier.Monitor2:
                     Monitors[MonIdentifier].MonAddr = Convert.ToByte(Application.Current.Properties["Mon2Addr"]);
                     Monitor1.IsClicked = false;
                     Monitor3.IsClicked = false;
                     MonitorAll.IsClicked = false;
-                    //Monitor2.TextColor = Color.FromHex("#64B22E");
-                    //Monitor2.FontAttributes = FontAttributes.Bold;
-                    //Monitor1.TextColor = Color.FromHex("#FFFFFF");
-                    //Monitor3.TextColor = Color.FromHex("#FFFFFF");
-                    //MonitorAll.TextColor = Color.FromHex("#FFFFFF");
                     break;
                 case MonitorIdentifier.Monitor3:
                     Monitors[MonIdentifier].MonAddr = Convert.ToByte(Application.Current.Properties["Mon3Addr"]);
                     Monitor1.IsClicked = false;
                     Monitor2.IsClicked = false;
                     MonitorAll.IsClicked = false;
-                    //Monitor3.TextColor = Color.FromHex("#64B22E");
-                    //Monitor3.FontAttributes = FontAttributes.Bold;
-                    //Monitor1.TextColor = Color.FromHex("#FFFFFF");
-                    //Monitor2.TextColor = Color.FromHex("#FFFFFF");
-                    //MonitorAll.TextColor = Color.FromHex("#FFFFFF");
                     break;
                 case MonitorIdentifier.MonitorBroadcast:
                     Monitor1.IsClicked = false;
                     Monitor2.IsClicked = false;
                     Monitor3.IsClicked = false;
-                    //MonitorAll.TextColor = Color.FromHex("#64B22E");
-                    //MonitorAll.FontAttributes = FontAttributes.Bold;
-                    //Monitor1.TextColor = Color.FromHex("#FFFFFF");
-                    //Monitor2.TextColor = Color.FromHex("#FFFFFF");
-                    //Monitor3.TextColor = Color.FromHex("#FFFFFF");
                     break;
             }
 
@@ -312,7 +288,8 @@ namespace ISIC_FMT_MMCP_App
                 CurrentMonitor.ToDBacklightValue = sliderDecValue;
                 Slider.Value = sliderDecValue;
                 Slider.ValueChanged += Slider_ValueChanged;
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 IsicDebug.DebugException(String.Format("Not able to send or receive the Backlight data", ex));
             }
@@ -334,12 +311,14 @@ namespace ISIC_FMT_MMCP_App
                     currentInput = Convert.ToInt32(rArr.GetString().Substring(ISIC_SCP_IF.BYTE_INDEX_IHCHK + 3, 2), 16);
                     IsicDebug.DebugSerial(String.Format("Transpormed input data to value: {0}", currentInput));
                     return true;
-                } else
+                }
+                else
                 {
                     IsicDebug.DebugSerial(String.Format("Not receiving any Input data from the monitor"));
                     return false;
                 }
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 IsicDebug.DebugException(String.Format("Not able to send or receive input data.", ex));
                 return false;
@@ -357,12 +336,16 @@ namespace ISIC_FMT_MMCP_App
                     DayMode.TextColor = Color.FromHex("#64B22E");
                     DuskMode.TextColor = Color.FromHex("#FFFFFF");
                     NightMode.TextColor = Color.FromHex("#FFFFFF");
-                } else if(CurrentMonitor.ToD == ISIC_SCP_IF.BYTE_DATA_ECD_DUSK) {
+                }
+                else if (CurrentMonitor.ToD == ISIC_SCP_IF.BYTE_DATA_ECD_DUSK)
+                {
                     IsicDebug.DebugMonitor(String.Format("currentMonitor.ToD = Dusk"));
                     DuskMode.TextColor = Color.FromHex("#64B22E");
                     DayMode.TextColor = Color.FromHex("#FFFFFF");
                     NightMode.TextColor = Color.FromHex("#FFFFFF");
-                } else if (CurrentMonitor.ToD == ISIC_SCP_IF.BYTE_DATA_ECD_NIGHT) {
+                }
+                else if (CurrentMonitor.ToD == ISIC_SCP_IF.BYTE_DATA_ECD_NIGHT)
+                {
                     IsicDebug.DebugMonitor(String.Format("currentMonitor.ToD = NIght"));
                     NightMode.TextColor = Color.FromHex("#64B22E");
                     DayMode.TextColor = Color.FromHex("#FFFFFF");
@@ -377,16 +360,27 @@ namespace ISIC_FMT_MMCP_App
 
         private void Slider_ValueChanged(object sender, ValueChangedEventArgs e)
         {
-            if (!isSending)
+            if (CurrentDevice != null)
             {
-                isSending = true;
-                Byte value = (Byte)(sender as Slider).Value;
-                new Isic.SerialProtocol.Command(CurrentMonitor.MonAddr, ISIC_SCP_IF.CMD_BRT, value).Send(CurrentCharacteristic);
-                //String c = value.ToString("X2");
-                //byte[] bytes = { 0x07, 0x01, 0x4D, 0x43, 0x43, 0x03, 0x21, 0x59, (Byte)c[0], (Byte)c[1], 0x46 };
-                //await characteristic.WriteAsync(bytes);
-                isSending = false;
+                if (!isSending)
+                {
+                    try
+                    {
+                        isSending = true;
+                        Byte value = (Byte)(sender as Slider).Value;
+                        new Isic.SerialProtocol.Command(CurrentMonitor.MonAddr, ISIC_SCP_IF.CMD_BRT, value).Send(CurrentCharacteristic);
+                        //String c = value.ToString("X2");
+                        //byte[] bytes = { 0x07, 0x01, 0x4D, 0x43, 0x43, 0x03, 0x21, 0x59, (Byte)c[0], (Byte)c[1], 0x46 };
+                        //await characteristic.WriteAsync(bytes);
+                        isSending = false;
+                    }
+                    catch (Exception ex)
+                    {
+                        IsicDebug.DebugException(String.Format("Could not change Backlight value - {0}", ex));
+                    }
+                }
             }
+
 
         }
         #endregion
@@ -412,14 +406,18 @@ namespace ISIC_FMT_MMCP_App
 
         private void sendInputData(Byte inputValue)
         {
-            try
+            if (CurrentDevice != null)
             {
-                new Isic.SerialProtocol.Command(CurrentMonitor.MonAddr, ISIC_SCP_IF.CMD_MCC, ISIC_SCP_IF.BYTE_DATA_MCC_ADDR_MPC, (byte)inputValue.ToString("X2")[0], (byte)inputValue.ToString("X2")[1]).Send(CurrentCharacteristic);
+                try
+                {
+                    new Isic.SerialProtocol.Command(CurrentMonitor.MonAddr, ISIC_SCP_IF.CMD_MCC, ISIC_SCP_IF.BYTE_DATA_MCC_ADDR_MPC, (byte)inputValue.ToString("X2")[0], (byte)inputValue.ToString("X2")[1]).Send(CurrentCharacteristic);
+                }
+                catch (Exception e)
+                {
+                    IsicDebug.DebugException(String.Format("Error trying to send command. {0}", e.Message));
+                }
             }
-            catch (Exception e)
-            {
-                IsicDebug.DebugException(String.Format("Error trying to send command. {0}", e.Message));
-            }
+
         }
         #endregion Input Clicks
 
@@ -475,14 +473,17 @@ namespace ISIC_FMT_MMCP_App
 
         private void SendModeData(Byte mode)
         {
-            try
+            if (CurrentDevice != null)
             {
-                IsicDebug.DebugMonitor(String.Format("Sending mode data: Command: {0}, MonAddr: {1}, Mode: {2}", ISIC_SCP_IF.CMD_ECD, CurrentMonitor.MonAddr, mode.ToString()));
-                new Isic.SerialProtocol.Command(CurrentMonitor.MonAddr, ISIC_SCP_IF.CMD_ECD, mode).Send(CurrentCharacteristic);
-            }
-            catch (Exception e)
-            {
-                IsicDebug.DebugException(String.Format("Error trying to send command. {0}", e.Message));
+                try
+                {
+                    IsicDebug.DebugMonitor(String.Format("Sending mode data: Command: {0}, MonAddr: {1}, Mode: {2}", ISIC_SCP_IF.CMD_ECD, CurrentMonitor.MonAddr, mode.ToString()));
+                    new Isic.SerialProtocol.Command(CurrentMonitor.MonAddr, ISIC_SCP_IF.CMD_ECD, mode).Send(CurrentCharacteristic);
+                }
+                catch (Exception e)
+                {
+                    IsicDebug.DebugException(String.Format("Error trying to send command. {0}", e.Message));
+                }
             }
         }
 
@@ -521,7 +522,7 @@ namespace ISIC_FMT_MMCP_App
 
         private void SettingsButton_Clicked(object sender, EventArgs e)
         {
-            Navigation.PushAsync(new  MonitorSettingsPage(), true);
+            Navigation.PushAsync(new MonitorSettingsPage(), true);
         }
 
 
@@ -540,6 +541,25 @@ namespace ISIC_FMT_MMCP_App
                 IsicDebug.DebugBluetooth(String.Format("Adapter not connected to any device. Number of connected devices is: {0}", adapter.ConnectedDevices.Count));
             }
             Navigation.PopToRootAsync(true);
+        }
+        private void MonitorSettingsButton_Clicked(object sender, EventArgs e)
+        {
+            if (Monitor1.IsClicked)
+            {
+                Navigation.PushAsync(new MonitorInformationPage(Monitors[MonitorIdentifier.Monitor1]));
+            }
+            else if (Monitor2.IsClicked)
+            {
+                Navigation.PushAsync(new MonitorInformationPage(Monitors[MonitorIdentifier.Monitor2]));
+            }
+            else if (Monitor3.IsClicked)
+            {
+                Navigation.PushAsync(new MonitorInformationPage(Monitors[MonitorIdentifier.Monitor3]));
+            }
+            else
+            {
+                UserDialogs.Instance.Toast("Please, select a monitor to see its information", TimeSpan.FromSeconds(2.5));
+            }
         }
 
     }

@@ -2,6 +2,7 @@
 using Android.Content;
 using Android.Preferences;
 using Isic.Debugger;
+using Plugin.BLE.Abstractions.Contracts;
 using System;
 using Xamarin.Forms;
 
@@ -11,8 +12,9 @@ namespace ISIC_FMT_MMCP_App
     {
         public App()
         {
-
             MainPage = new NavigationPage(new DeviceList());
+            //CNC@ISIC 28-03-17 Changed in order to deploy to show the demo at Bo's phone
+            //MainPage = new NavigationPage(new RemoteControlPage(null));
         }
 
         protected override void OnStart()

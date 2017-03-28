@@ -27,8 +27,14 @@
 
   <StackLayout Padding="20">
 
-    <Grid Padding="0,0,0,30">
-      <local:RoundedButton x:Name="Back" Image="home_icon.png" Command ="{Binding SavePreferences}"/>
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition />
+        <ColumnDefinition />
+        <ColumnDefinition />
+        <ColumnDefinition />
+      </Grid.ColumnDefinitions>
+      <local:RoundedButton x:Name="Back" Image="home_icon.png" Command ="{Binding SavePreferences}" Grid.Column="0"/>
     </Grid>
 
     <Label x:Name="MonitorAddrs" Text="Monitor addresses"/>
@@ -68,11 +74,11 @@
       <Picker x:Name="Baud" TextColor="White" Grid.Column="1" Grid.Row="0" />
 
     </Grid>
-    
+
     <Label x:Name="AdvSettingsLabel" Text="Advanced Settings" VerticalTextAlignment="Center"/>
     <BoxView Color="White" HeightRequest="2"></BoxView>
 
-    <local:RoundedButton x:Name="AdvSettingsButton" Text="Advances Settings"/>
-    
+    <local:RoundedButton x:Name="AdvSettingsButton" Text="Advanced Settings" Grid.Column="1" WidthRequest="70" HeightRequest="40"/>
+
   </StackLayout>
 </ContentPage>

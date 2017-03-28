@@ -116,10 +116,11 @@ namespace ISIC_FMT_MMCP_App.Droid
 
         public void updateButtonGraphic(Android.Widget.Button button, StateListDrawable sld1, StateListDrawable sld2)
         {
-            foreach (var item in this)
+            try
             {
-                try
+                foreach (var item in this)
                 {
+
                     if (button == item)
                     {
                         item.SetTextColor(Android.Graphics.Color.ParseColor("#64B22E"));
@@ -131,12 +132,14 @@ namespace ISIC_FMT_MMCP_App.Droid
                         item.SetTextColor(Android.Graphics.Color.White);
                         item.SetBackground(sld1);
                     }
-                } catch (Exception e)
-                {
-                    IsicDebug.DebugException(String.Format("Item is null, it cannot be called - {0}", e));
                 }
-
             }
+            catch (Exception e)
+            {
+                IsicDebug.DebugException(String.Format("Item is null, it cannot be called - {0}", e));
+            }
+
+
         }
     }
 
