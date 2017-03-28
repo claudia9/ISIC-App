@@ -539,7 +539,6 @@ namespace ISIC_FMT_MMCP_App
                 }
                 IsicDebug.DebugBluetooth(String.Format("Adapter not connected to any device. Number of connected devices is: {0}", adapter.ConnectedDevices.Count));
             }
-
             Navigation.PopToRootAsync(true);
         }
 

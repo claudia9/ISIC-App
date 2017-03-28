@@ -7,6 +7,7 @@ using Isic.Debugger;
 using Android.Graphics.Drawables;
 using Android.Graphics;
 using System.Collections.Generic;
+using System;
 
 [assembly: ExportRenderer(typeof(RoundedMonitorButton), typeof(RoundedMonitorButtonRenderer))]
 namespace ISIC_FMT_MMCP_App.Droid
@@ -83,26 +84,8 @@ namespace ISIC_FMT_MMCP_App.Droid
             if (isChecked == true)
             {
                 ButtonGroup.Instance.updateButtonGraphic(Control, sld1, sld2);
-                //Control.SetTextColor(Android.Graphics.Color.ParseColor("#64B22E"));
-                //Control.SetBackground(sld2);
             }
-            //else
-            //{
-            //    Control.SetTextColor(Android.Graphics.Color.White);
-            //    Control.SetBackground(sld1);
-            //}
-            //Control.TextChanged -= Control_Click;
-            //Control.TextChanged += Control_UnClick;
-            //Control.Click -= Control_Click;
-            //Control.Click += Control_UnClick;
-        }
 
-        private void Control_UnClick(object sender, System.EventArgs e)
-        {
-            //Control.TextChanged += Control_Click;
-            //Control.TextChanged -= Control_UnClick;
-            //Control.Click -= Control_UnClick;
-            //Control.Click += Control_Click;
         }
 
         private void Control_LongClick(object sender, LongClickEventArgs e)
@@ -135,17 +118,24 @@ namespace ISIC_FMT_MMCP_App.Droid
         {
             foreach (var item in this)
             {
-                if (button == item)
+                try
                 {
-                    item.SetTextColor(Android.Graphics.Color.ParseColor("#64B22E"));
-                    item.SetBackground(sld2);
-                }
-                else
+                    if (button == item)
+                    {
+                        item.SetTextColor(Android.Graphics.Color.ParseColor("#64B22E"));
+                        item.SetBackground(sld2);
+                    }
+                    else
+                    {
+                        //NEED TO FIX THE DISPOSE PROBLEM!!!! ITEM IS DISPOSED WHEN POPING THE REMOTE CONTROL PAGE AND WHEN OPENNING THE PAGE AGAIN AND CLICK A MONITOR BUTTON, IT THROWS AN EXCEPTION!
+                        item.SetTextColor(Android.Graphics.Color.White);
+                        item.SetBackground(sld1);
+                    }
+                } catch (Exception e)
                 {
-                    //NEED TO FIX THE DISPOSE PROBLEM!!!! ITEM IS DISPOSED WHEN POPING THE REMOTE CONTROL PAGE AND WHEN OPENNING THE PAGE AGAIN AND CLICK A MONITOR BUTTON, IT THROWS AN EXCEPTION!
-                    item.SetTextColor(Android.Graphics.Color.White);
-                    item.SetBackground(sld1);
+                    IsicDebug.DebugException(String.Format("Item is null, it cannot be called - {0}", e));
                 }
+
             }
         }
     }

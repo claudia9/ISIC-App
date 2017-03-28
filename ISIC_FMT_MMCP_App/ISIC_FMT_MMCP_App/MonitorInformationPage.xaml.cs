@@ -48,6 +48,18 @@ namespace ISIC_FMT_MMCP_App
             Label Time = TimeInfo;
             Time.Text = "2.2";
             Time.Text += "t.";
+
+            Label Time60 = Time60Label;
+            Time60.Text += " 22";
+            Time60.Text += "t.";
+
+            Label Time65 = Time65Label;
+            Time65.Text += " 10";
+            Time65.Text += "t.";
+
+            Label Time70 = Time70Label;
+            Time70.Text += " 00";
+            Time70.Text += "t.";
         }
     }
 }

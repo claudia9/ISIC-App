@@ -97,7 +97,7 @@
 
     <!--MODES-->
     <Label x:Name="Mode" Text="ECDIS MODE" />
-    <Grid ColumnSpacing="25" Margin="40, 0, 0, 0">
+    <Grid ColumnSpacing="25" Margin="30, 0, 0, 0">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="70"/>
         <ColumnDefinition Width="70"/>
@@ -113,7 +113,7 @@
 
     <!--INPUT-->
     <Label x:Name="Input" Text="INPUT" />
-    <Grid ColumnSpacing="25" Margin="40, 0, 0, 0">
+    <Grid ColumnSpacing="25" Margin="30, 0, 0, 0">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="70"/>
         <ColumnDefinition Width="70"/>

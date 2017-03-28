@@ -21,7 +21,7 @@
   <StackLayout Padding="15">
 
 
-    <local:RoundedButton x:Name="BackButton" Text="Back"/>
+    <local:RoundedButton x:Name="BackButton" Text="Back" WidthRequest="60" Margin="0, 0, 50, 0"/>
     <Label x:Name="Title" HorizontalTextAlignment="Center" FontFamily="Calibri" FontAttributes="Bold" TextColor="White">Monitor 1</Label>
     <BoxView Color="White" HeightRequest="2"/>
 
@@ -35,15 +35,33 @@
         <RowDefinition/>
         <RowDefinition/>
         <RowDefinition/>
+        <RowDefinition/>
+        <RowDefinition/>
+        <RowDefinition/>
+        <RowDefinition/>
+        <RowDefinition/>
       </Grid.RowDefinitions>
       <Label x:Name="NameLabel" Grid.Column="0" Grid.Row="0">Name:</Label>
       <Label x:Name="NameInfo" Grid.Column="1" Grid.Row="0"></Label>
       <Label x:Name="RNLabel" Grid.Column="0" Grid.Row="1">R/N:</Label>
       <Label x:Name="RNInfo" Grid.Column="1" Grid.Row="1"></Label>
-      <Label x:Name="TempLabel" Grid.Column="0" Grid.Row="2">Temp:</Label>
-      <Label x:Name="TempInfo" Grid.Column="1" Grid.Row="2"></Label>
-      <Label x:Name="TimeLabel" Grid.Column="0" Grid.Row="3">Time on:</Label>
-      <Label x:Name="TimeInfo" Grid.Column="1" Grid.Row="3"></Label>
+      <Label x:Name="SNLabel" Grid.Column="0" Grid.Row="2">S/N:</Label>
+      <Label x:Name="SNInfo" Grid.Column="1" Grid.Row="2"></Label>
+      <Label x:Name="FirmwareLabel" Grid.Column="0" Grid.Row="3">Firmware:</Label>
+      <Label x:Name="FirmwareInfo" Grid.Column="1" Grid.Row="3"></Label>
+      <Label x:Name="BaudLabel" Grid.Column="0" Grid.Row="4">Baud:</Label>
+      <Label x:Name="BaudInfo" Grid.Column="1" Grid.Row="4"></Label>
+      <Label x:Name="TempLabel" Grid.Column="0" Grid.Row="5">Temp:</Label>
+      <Label x:Name="TempInfo" Grid.Column="1" Grid.Row="5"></Label>
+      <Label x:Name="LightLabel" Grid.Column="0" Grid.Row="6">Light sensor:</Label>
+      <Label x:Name="LightInfo" Grid.Column="1" Grid.Row="6"></Label>
+      <Label x:Name="TimeLabel" Grid.Column="0" Grid.Row="7">Total elapsed time:</Label>
+      <Label x:Name="TimeInfo" Grid.Column="1" Grid.Row="7"></Label>
+      <StackLayout Orientation="Horizontal" Spacing="20" Margin="20, 0" Grid.ColumnSpan="2" Grid.Row="8">
+        <Label x:Name="Time60Label">+60°C:</Label>
+        <Label x:Name="Time65Label">60-70°C:</Label>
+        <Label x:Name="Time70Label">+70°C:</Label>
+      </StackLayout>
     </Grid>
       <BoxView Color="White" HeightRequest="2"/>
     <Grid Margin="0, 10, 0, 10">
