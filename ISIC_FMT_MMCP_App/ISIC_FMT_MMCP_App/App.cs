@@ -13,7 +13,7 @@ namespace ISIC_FMT_MMCP_App
         public App()
         {
             MainPage = new NavigationPage(new DeviceList());
-            //CNC@ISIC 28-03-17 Changed in order to deploy to show the demo at Bo's phone
+            //CNC@ISIC 28-03-17 Changed in order to deploy to show as DEMO - Not connecting to any device!
             //MainPage = new NavigationPage(new RemoteControlPage(null));
         }
 

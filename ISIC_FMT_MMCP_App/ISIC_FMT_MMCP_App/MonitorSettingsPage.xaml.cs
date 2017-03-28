@@ -30,14 +30,12 @@ namespace ISIC_FMT_MMCP_App
                 UserDialogs.Instance.Toast("Please, turn on your Bluetooth to experience all the features of this DEMO.");
             }
             //Binding ScanAllbutton
-            this.BindingContext =saveViewModel;
+            this.BindingContext = saveViewModel;
 
             Back.Clicked += Back_Clicked;
             AdvSettingsButton.Clicked += AdvSettingsButton_Clicked;
 
             IsicDebug.DebugGeneral("On MonitorSettingsPage");
-            
-            //retrieveSettings();
         }
 
         private void AdvSettingsButton_Clicked(object sender, EventArgs e)
@@ -179,7 +177,6 @@ namespace ISIC_FMT_MMCP_App
 
             IsicDebug.DebugMonitor(String.Format("Setting property {0} to {1}", monIdentifier.ToString(), (sender as Picker).SelectedIndex));
             IsicDebug.DebugMonitor(String.Format("Setting Monitor {0}, address: {1}", monIdentifier, monitors[monIdentifier].MonAddr));
-            //IsicDebug.DebugGeneral(String.Format("General preference - Mon1Addr = {0}", Application.Current.Properties["Mon1Addr"]));
         }
         #endregion
 

@@ -28,11 +28,6 @@ namespace ISIC_FMT_MMCP_App
             BackButton.Clicked += BackButton_Clicked;
         }
 
-        private void BackButton_Clicked(object sender, EventArgs e)
-        {
-            Navigation.PopAsync();
-        }
-
         private void InitializeScreen()
         {
             NavigationPage.SetHasNavigationBar(this, false);
@@ -66,6 +61,11 @@ namespace ISIC_FMT_MMCP_App
             Time.Text = "22.5";
             Time.Text += " h.";
 
+        }
+
+        private void BackButton_Clicked(object sender, EventArgs e)
+        {
+            Navigation.PopAsync();
         }
     }
 }

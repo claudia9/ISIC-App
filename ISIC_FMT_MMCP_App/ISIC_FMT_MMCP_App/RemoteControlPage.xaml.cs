@@ -13,8 +13,6 @@ using Xamarin.Forms;
 
 namespace ISIC_FMT_MMCP_App
 {
-
-
     public partial class RemoteControlPage : ContentPage
     {
         private Dictionary<MonitorIdentifier, MonitorSettings> Monitors { get; set; }
@@ -31,12 +29,11 @@ namespace ISIC_FMT_MMCP_App
                 IsicDebug.DebugGeneral(String.Format("Initiliasing Remote Control Page with Device: {0}", CurrentDevice.Name));
             }
 
-            InitilizeScreen();             //Hide Navigation Bar
+            InitilizeScreen();              //Hide Navigation Bar
             InitializeComponent();          //Create visual interface
             InitializeBluetooth();          //Check characteristics of the BluetoothLe Device.
             InitializeDictionary();         //Create object of MonitorSettings for each monitor
             InitializeButtons();            //Create event handlers for each button
-
             InitiliazeMonitor();            //Create current monitor
             IsicDebug.DebugGeneral(String.Format("Finished initiliazations"));
         }
@@ -542,6 +539,7 @@ namespace ISIC_FMT_MMCP_App
             }
             Navigation.PopToRootAsync(true);
         }
+
         private void MonitorSettingsButton_Clicked(object sender, EventArgs e)
         {
             if (Monitor1.IsClicked)
