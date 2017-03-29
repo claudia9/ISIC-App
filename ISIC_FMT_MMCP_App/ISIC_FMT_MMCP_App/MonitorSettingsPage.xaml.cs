@@ -38,11 +38,6 @@ namespace ISIC_FMT_MMCP_App
             IsicDebug.DebugGeneral("On MonitorSettingsPage");
         }
 
-        private void AdvSettingsButton_Clicked(object sender, EventArgs e)
-        {
-            UserDialogs.Instance.Toast("This feature is not available for this DEMO version");
-        }
-
         private void InitializeScreen()
         {
             NavigationPage.SetHasNavigationBar(this, false);
@@ -53,6 +48,12 @@ namespace ISIC_FMT_MMCP_App
             SetPreferences();
             Navigation.PopAsync();
         }
+
+        private void AdvSettingsButton_Clicked(object sender, EventArgs e)
+        {
+            UserDialogs.Instance.Toast("This feature is not available for this DEMO version");
+        }
+
 
         private async void SetPreferences()
         {
@@ -71,14 +72,11 @@ namespace ISIC_FMT_MMCP_App
 
         private void InitializeComboBoxes()
         {
-            Picker mon1 = Mon1Addr;
-            Picker mon2 = Mon2Addr;
-            Picker mon3 = Mon3Addr;
             for (int i = 0; i < 255; i++)
             {
-                mon1.Items.Add(i.ToString());
-                mon2.Items.Add(i.ToString());
-                mon3.Items.Add(i.ToString());
+                Mon1Addr.Items.Add(i.ToString());
+                Mon2Addr.Items.Add(i.ToString());
+                Mon3Addr.Items.Add(i.ToString());
             }
 
             if (Application.Current.Properties.ContainsKey("Mon1Addr")) {
@@ -117,17 +115,16 @@ namespace ISIC_FMT_MMCP_App
             Mon2Addr.SelectedIndexChanged += Mon2Addr_SelectedIndexChanged;
             Mon3Addr.SelectedIndexChanged += Mon3Addr_SelectedIndexChanged;
 
-            Picker baud = Baud;
-            baud.Items.Add("9K6");
-            baud.Items.Add("19K2");
-            baud.Items.Add("115K2");
-            baud.Items.Add("460K8");
+            Baud.Items.Add("9K6");
+            Baud.Items.Add("19K2");
+            Baud.Items.Add("115K2");
+            Baud.Items.Add("460K8");
 
             if(Application.Current.Properties["Baud"] != null) {
-                baud.SelectedIndex = (int)Application.Current.Properties["Baud"];
+                Baud.SelectedIndex = (int)Application.Current.Properties["Baud"];
             }
 
-            baud.SelectedIndexChanged += Baud_SelectedIndexChanged;
+            Baud.SelectedIndexChanged += Baud_SelectedIndexChanged;
 
         }
 

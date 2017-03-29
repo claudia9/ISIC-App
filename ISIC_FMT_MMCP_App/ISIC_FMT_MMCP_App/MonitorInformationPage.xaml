@@ -39,7 +39,7 @@
         <ColumnDefinition/>
       </Grid.ColumnDefinitions>
 
-      <local:RoundedButton x:Name="BackButton" Text="Back" Grid.Column="0"/>
+      <local:RoundedButton x:Name="BackButton" Image="home_icon.png" Grid.Column="0"/>
     </Grid>
     <Label x:Name="Title" HorizontalTextAlignment="Center" FontFamily="Calibri" FontAttributes="Bold" TextColor="White">Monitor 1</Label>
     <BoxView Color="White" HeightRequest="2"/>
@@ -87,7 +87,6 @@
       <Label x:Name="BuzzerLabel" Style="{StaticResource LabelStyle}" Grid.Column="0" Grid.Row="0">Buzzer:</Label>
       <Switch x:Name="Buzzer" Grid.Column="1" Grid.Row="0" HorizontalOptions="CenterAndExpand"></Switch>
     </Grid>
-
 
 
   </StackLayout>

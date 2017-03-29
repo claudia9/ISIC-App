@@ -74,18 +74,14 @@ namespace ISIC_FMT_MMCP_App
             ScanAllButton.Clicked += (sender, e) =>
             {
                 CheckAvailabilityBluetooth(Ble.State);
+                DeleteOldConnections();
                 InitiliazeBluetooth();
             };
 
+            listView.ItemSelected += OnItemSelected;
+
+
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /*protected override void OnAppearing()
-        {
-        }*/
-
 
         /// <summary>
         /// 
@@ -116,6 +112,26 @@ namespace ISIC_FMT_MMCP_App
             }
         }
 
+        private void DeleteOldConnections()
+        {
+            //Delete any rests of the last Bluetooth scans
+            DevicesList.Clear();
+
+            if (Adapter.ConnectedDevices.Count >= 1)
+            {
+                foreach (IDevice device in Adapter.ConnectedDevices)
+                {
+                    Adapter.DisconnectDeviceAsync(device);
+                }
+            }
+
+            if (CurrentDevice != null)
+            {
+                CurrentDevice = null;
+            }
+        }
+
+
         private async void InitiliazeDefaultBluetooth()
         {
             //If we ever can pair to the devices -> Use this function to connect to the paired ones.!
@@ -135,8 +151,8 @@ namespace ISIC_FMT_MMCP_App
             {
                 try
                 {
-                    CurrentDevice = await Adapter.ConnectToKnownDeviceAsync(Guid.Parse("00000000-0000-0000-0000-f0c77f1c2065"));        //bleCACA
-                    //CurrentDevice = await Adapter.ConnectToKnownDeviceAsync(Guid.Parse("00000000-0000-0000-0000-a81b6aaec165"));        //HELLOMISTER
+                    //CurrentDevice = await Adapter.ConnectToKnownDeviceAsync(Guid.Parse("00000000-0000-0000-0000-f0c77f1c2065"));        //bleCACA
+                    CurrentDevice = await Adapter.ConnectToKnownDeviceAsync(Guid.Parse("00000000-0000-0000-0000-a81b6aaec165"));        //Isic Demo2
                     if (CurrentDevice != null)
                     {
 
@@ -160,21 +176,10 @@ namespace ISIC_FMT_MMCP_App
         {
             IsicDebug.DebugBluetooth(String.Format("BluetoothLE initiliased correctly."));
 
-            listView.ItemSelected += OnItemSelected;
-
-            //Delete any rests of the last Bluetooth scans
-            DevicesList.Clear();
             if (Adapter != null)
             {
-                if (CurrentDevice != null)
-                {
-                    IsicDebug.DebugBluetooth(String.Format("Disconnecting from current device: " + CurrentDevice.Name));
-                    Adapter.DisconnectDeviceAsync(CurrentDevice);
-                }
-
                 //Start scanning
                 StartScanning();
-
 
                 //Initiliase list of devices
                 Adapter.DeviceDiscovered += (s, a) =>
@@ -193,49 +198,65 @@ namespace ISIC_FMT_MMCP_App
 
         }
 
-        public async void OnItemSelected(object sender, SelectedItemChangedEventArgs e)
+        public void OnItemSelected(object sender, SelectedItemChangedEventArgs e)
         {
-            if (((ListView)sender).SelectedItem == null)
+            CurrentDevice = e.SelectedItem as IDevice;
+            if (CurrentDevice == null)
             {
                 return;
             }
-            //ble.IsOn && Ble.IsAvailable were taking too many resources and so, the app was slowing down a lot when connecting to a Device.
-            //We handle the problem of being disconnected in the next activity
+
             if (Adapter != null)
             {
                 StopScanning();
 
-                var selectedDevice = e.SelectedItem as IDevice;
-                if (selectedDevice != null)
+                ConnectToDevice();
+            }
+            else
+            {
+                IsicDebug.DebugBluetooth(String.Format("Adapter is null, checking availability of bluetooth"));
+                if (Ble != null)
                 {
-                    IsicDebug.DebugBluetooth(String.Format("Selected device: {0}", selectedDevice.Name));
-                    try
-                    {
-                        await Adapter.ConnectToDeviceAsync(selectedDevice);
-                        IsicDebug.DebugBluetooth(String.Format("Connected to device {0}", selectedDevice.Name));
-                    }
-                    catch (DeviceConnectionException ex)
-                    {
-                        IsicDebug.DebugException(String.Format("Could not connect to device. Exception: {0}", ex));
-                    }
-                    catch (Exception exep)
-                    {
-                        IsicDebug.DebugException(String.Format("General exception thrown when trying to connect to device. {0}", exep));
-                    }
-
-                    ((ListView)sender).SelectedItem = null;
-
-                    await Navigation.PushAsync(new RemoteControlPage(selectedDevice));
-                    DevicesList.Clear();
+                    CheckAvailabilityBluetooth(Ble.State);
                 }
-                else
+            }
+
+
+        }
+
+        public async void ConnectToDevice()
+        {
+            if (CurrentDevice != null)
+            {
+                IsicDebug.DebugBluetooth(String.Format("Selected device: {0}", CurrentDevice.Name));
+                try
                 {
-                    IsicDebug.DebugBluetooth(String.Format("CurrentDevice is null, checking availability of bluetooth"));
-                    if (Ble != null)
-                    {
-                        CheckAvailabilityBluetooth(Ble.State);
-                    }
+                    await Adapter.ConnectToDeviceAsync(CurrentDevice);
+                    IsicDebug.DebugBluetooth(String.Format("Connected to device {0}", CurrentDevice.Name));
+                    PushRemoteControlPage();
                 }
+                catch (DeviceConnectionException ex)
+                {
+                    IsicDebug.DebugException(String.Format("Could not connect to device. Exception: {0}", ex));
+                }
+                catch (Exception exep)
+                {
+                    IsicDebug.DebugException(String.Format("General exception thrown when trying to connect to device. {0}", exep));
+                }
+            }
+        }
+
+        private async void PushRemoteControlPage()
+        {
+            if (CurrentDevice != null && Adapter.ConnectedDevices.Contains(CurrentDevice))
+            {
+                await Navigation.PushAsync(new RemoteControlPage(CurrentDevice));
+                DevicesList.Clear();
+                CurrentDevice = null;
+            }
+            else
+            {
+                UserDialogs.Instance.Toast("The connection did not end succesfully, please, try again.");
             }
 
         }
@@ -272,13 +293,12 @@ namespace ISIC_FMT_MMCP_App
 
         }
 
-        void StopScanning()
+        async void StopScanning()
         {
-            IsicDebug.DebugBluetooth(String.Format("Is Adapter scanning? If yes -> Stop."));
-            if (Adapter != null && Adapter.IsScanning)
+            if (Adapter != null)
             {
                 IsicDebug.DebugBluetooth(String.Format("Stopping scan."));
-                Adapter.StopScanningForDevicesAsync();
+                await Adapter.StopScanningForDevicesAsync();
             }
         }
 

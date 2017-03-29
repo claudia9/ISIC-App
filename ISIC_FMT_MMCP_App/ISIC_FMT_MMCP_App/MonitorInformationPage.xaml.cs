@@ -28,6 +28,11 @@ namespace ISIC_FMT_MMCP_App
             BackButton.Clicked += BackButton_Clicked;
         }
 
+        private void BackButton_Clicked(object sender, EventArgs e)
+        {
+            Navigation.PopAsync();
+        }
+
         private void InitializeScreen()
         {
             NavigationPage.SetHasNavigationBar(this, false);
@@ -35,37 +40,24 @@ namespace ISIC_FMT_MMCP_App
 
         private void InitializeMonitorInfo()
         {
-            Label Name = NameInfo;
-            Name.Text = "DuraMON 24 Glassé";
+            NameInfo.Text = "DuraMON 24 Glassé";
+        
+            RNInfo.Text = "AA00TDX";
+            
+            SNInfo.Text = "76A1609001";
+            
+            FirmwareInfo.Text = "Transas 24'' Config";
+            
+            BaudInfo.Text = "19K2";
+            
+            TempInfo.Text = "25.2";
+            TempInfo.Text += "°C";
+            
+            LightInfo.Text = "60.520";
 
-            Label RN = RNInfo;
-            RN.Text = "AA00TDX";
+            TimeInfo.Text = "22.5";
+            TimeInfo.Text += " h.";
 
-            Label SN = SNInfo;
-            SN.Text = "76A1609001";
-
-            Label Firmware = FirmwareInfo;
-            Firmware.Text = "Transas 24'' Config";
-
-            Label Baud = BaudInfo;
-            Baud.Text = "19K2";
-
-            Label Temp = TempInfo;
-            Temp.Text = "25.2";
-            Temp.Text += "°C";
-
-            Label Light = LightInfo;
-            Light.Text = "60.520";
-
-            Label Time = TimeInfo;
-            Time.Text = "22.5";
-            Time.Text += " h.";
-
-        }
-
-        private void BackButton_Clicked(object sender, EventArgs e)
-        {
-            Navigation.PopAsync();
         }
     }
 }

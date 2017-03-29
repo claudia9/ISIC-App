@@ -29,6 +29,11 @@ namespace ISIC_FMT_MMCP_App.Droid
             {
                 Control.TextSize = 13;
                 Control.SetTypeface(Typeface.DefaultBold, TypefaceStyle.Bold);
+
+                //CNC@ISIC 29/03/17 -> Added this condition in order to fix error with Disposed object ButtonGroup.Instance when poping activity and pushing again.
+                if (ButtonGroup.Instance.Count == 4) {
+                    ButtonGroup.Instance.Clear();
+                }
                 ButtonGroup.Instance.Add(Control);
 
                 var button = e.NewElement;
@@ -104,6 +109,7 @@ namespace ISIC_FMT_MMCP_App.Droid
         }
         public static ButtonGroup Instance
         {
+            //NEED TO FIX THE DISPOSE PROBLEM!!!! ITEM IS DISPOSED WHEN POPING THE REMOTE CONTROL PAGE AND WHEN OPENNING THE PAGE AGAIN AND CLICK A MONITOR BUTTON, IT THROWS AN EXCEPTION!
             get
             {
                 if (_instance == null)
@@ -111,6 +117,11 @@ namespace ISIC_FMT_MMCP_App.Droid
                     _instance = new ButtonGroup();
                 }
                 return _instance;
+            }
+
+            set
+            {
+               _instance = value;
             }
         }
 
@@ -128,7 +139,6 @@ namespace ISIC_FMT_MMCP_App.Droid
                     }
                     else
                     {
-                        //NEED TO FIX THE DISPOSE PROBLEM!!!! ITEM IS DISPOSED WHEN POPING THE REMOTE CONTROL PAGE AND WHEN OPENNING THE PAGE AGAIN AND CLICK A MONITOR BUTTON, IT THROWS AN EXCEPTION!
                         item.SetTextColor(Android.Graphics.Color.White);
                         item.SetBackground(sld1);
                     }

@@ -29,5 +29,8 @@
 
   <style name="AppCompatDialogStyle" parent="Theme.AppCompat.Light.Dialog">
     <item name="colorAccent">#64B22E</item>
+    <item name="colorControlNormal">#808080</item>
+    <item name="colorControlHighlight">#64B22E</item>
+    <item name="colorSwitchThumbNormal">#64B22E</item>
   </style>
 </resources>
