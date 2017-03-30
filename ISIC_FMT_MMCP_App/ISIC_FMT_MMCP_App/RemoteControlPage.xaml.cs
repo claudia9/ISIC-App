@@ -305,7 +305,7 @@ namespace ISIC_FMT_MMCP_App
                 if (rArr != null)
                 {
                     IsicDebug.DebugSerial(String.Format("Received input Data: {0}", rArr.GetHexString()));
-                    currentInput = Convert.ToInt32(rArr.GetString().Substring(ISIC_SCP_IF.BYTE_INDEX_IHCHK + 3, 2), 16);
+                    currentInput = Convert.ToInt32(rArr.GetHexString().Substring(ISIC_SCP_IF.BYTE_INDEX_IHCHK + 3, 2), 16);
                     IsicDebug.DebugSerial(String.Format("Transpormed input data to value: {0}", currentInput));
                     return true;
                 }
@@ -516,7 +516,7 @@ namespace ISIC_FMT_MMCP_App
         }
         #endregion
 
-
+        #region Navigation Buttons Handlers
         private void SettingsButton_Clicked(object sender, EventArgs e)
         {
             Navigation.PushAsync(new MonitorSettingsPage(), true);
@@ -544,21 +544,22 @@ namespace ISIC_FMT_MMCP_App
         {
             if (Monitor1.IsClicked)
             {
-                Navigation.PushAsync(new MonitorInformationPage(Monitors[MonitorIdentifier.Monitor1]));
+                Navigation.PushAsync(new MonitorInformationPage(Monitors[MonitorIdentifier.Monitor1], CurrentCharacteristic));
             }
             else if (Monitor2.IsClicked)
             {
-                Navigation.PushAsync(new MonitorInformationPage(Monitors[MonitorIdentifier.Monitor2]));
+                Navigation.PushAsync(new MonitorInformationPage(Monitors[MonitorIdentifier.Monitor2], CurrentCharacteristic));
             }
             else if (Monitor3.IsClicked)
             {
-                Navigation.PushAsync(new MonitorInformationPage(Monitors[MonitorIdentifier.Monitor3]));
+                Navigation.PushAsync(new MonitorInformationPage(Monitors[MonitorIdentifier.Monitor3], CurrentCharacteristic));
             }
             else
             {
                 UserDialogs.Instance.Toast("Please, select a monitor to see its information", TimeSpan.FromSeconds(2.5));
             }
         }
+        #endregion
 
     }
 }

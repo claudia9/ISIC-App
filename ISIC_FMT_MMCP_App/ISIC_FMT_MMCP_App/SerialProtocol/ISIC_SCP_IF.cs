@@ -112,7 +112,7 @@ namespace Isic.SerialProtocol
         /// </summary>
         /// <param name="cmdReply"></param>
         /// <returns></returns>
-        public static String GetDataStringFromCmdReply(byte[] cmdReply)
+        public static byte[] GetDataStringFromCmdReply(byte[] cmdReply)
 		{
 			if (cmdReply == null)
 			{
@@ -123,7 +123,7 @@ namespace Isic.SerialProtocol
 				return null;
 				throw new IndexOutOfRangeException("cmdReply does not contain enough data to be a command with data");
 			}
-			return cmdReply.SubArray(7, cmdReply.Length - 8).GetString();
+			return cmdReply.SubArray(7, cmdReply.Length - 8);
 		}
 
         /// <summary>

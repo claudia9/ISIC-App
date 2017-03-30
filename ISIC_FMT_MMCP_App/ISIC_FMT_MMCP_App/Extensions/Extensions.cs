@@ -11,6 +11,11 @@ namespace ISIC_FMT_MMCP_App
 {
     public static class Extensions
     {
+
+        public static String GetString(this byte[] bArr)
+        {
+            return Encoding.UTF8.GetString(bArr, 0, bArr.Length);
+        }
         public static byte[] GetBytes(this string input)
         {
             byte[] copy = new byte[input.Length];
@@ -25,15 +30,15 @@ namespace ISIC_FMT_MMCP_App
             //return copy;
         }
 
-        public static String GetString(this byte[] input)
+        /*public static String GetHexString(this byte[] input)
         {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < input.Length; i++)
             {
-                sb.Append(input[i].ToString());
+                sb.Append(input[i].ToString("0x02x"));
             }
             return sb.ToString();
-        }
+        }*/
 
         public static String GetHexString(this byte[] bArr, char separator = ' ')
         {

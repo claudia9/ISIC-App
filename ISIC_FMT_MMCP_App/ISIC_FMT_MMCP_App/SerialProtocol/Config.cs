@@ -233,8 +233,8 @@ namespace Isic.SerialProtocol
 			Config other = obj as Config;
 			if (other != null)
 			{
-				int localAddr = Convert.ToInt16(Address.GetString(), 16);
-				int otherAddr = Convert.ToInt16(other.Address.GetString(), 16);
+				int localAddr = Convert.ToInt16(Address.GetHexString(), 16);
+				int otherAddr = Convert.ToInt16(other.Address.GetHexString(), 16);
 				return localAddr.CompareTo(otherAddr);
 			}
 			return -2;
@@ -242,7 +242,7 @@ namespace Isic.SerialProtocol
 
 		public override string ToString()
 		{
-			return String.Format("   {0}\tAddress: 0x{1}\tValue: 0x{2}", Name.PadRight(25, ' '), Address.GetString(), Value.GetString());
+			return String.Format("   {0}\tAddress: 0x{1}\tValue: 0x{2}", Name.PadRight(25, ' '), Address.GetHexString(), Value.GetHexString());
 		}
 
 		/// <summary>
@@ -254,7 +254,7 @@ namespace Isic.SerialProtocol
 		/// <returns></returns>
 		public string ToHtmlString()
 		{
-			return String.Format("<tr><td>{0}</td><td>Address:</td><td>0x{1}</td><td>Value:</td><td>0x{2}</td></tr>", Name.PadRight(25, ' '), Address.GetString(), Value.GetString());
+			return String.Format("<tr><td>{0}</td><td>Address:</td><td>0x{1}</td><td>Value:</td><td>0x{2}</td></tr>", Name.PadRight(25, ' '), Address.GetHexString(), Value.GetHexString());
 		}
 	}
 }

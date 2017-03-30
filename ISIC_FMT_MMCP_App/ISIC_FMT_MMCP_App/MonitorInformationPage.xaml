@@ -72,8 +72,6 @@
       <Label x:Name="BaudInfo" Style="{StaticResource InfoStyle}" Grid.Column="1" Grid.Row="4"></Label>
       <Label x:Name="TempLabel" Style="{StaticResource LabelStyle}" Grid.Column="0" Grid.Row="5">Temp:</Label>
       <Label x:Name="TempInfo" Style="{StaticResource InfoStyle}" Grid.Column="1" Grid.Row="5"></Label>
-      <Label x:Name="LightLabel" Style="{StaticResource LabelStyle}" Grid.Column="0" Grid.Row="6">Light sensor:</Label>
-      <Label x:Name="LightInfo" Style="{StaticResource InfoStyle}" Grid.Column="1" Grid.Row="6"></Label>
       <Label x:Name="TimeLabel" Style="{StaticResource LabelStyle}" Grid.Column="0" Grid.Row="7">Total elapsed time:</Label>
       <Label x:Name="TimeInfo" Style="{StaticResource InfoStyle}" Grid.Column="1" Grid.Row="7"></Label>
     </Grid>
