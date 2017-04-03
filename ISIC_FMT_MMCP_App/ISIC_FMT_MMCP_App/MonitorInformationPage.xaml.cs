@@ -1,4 +1,5 @@
-﻿using Isic.Debugger;
+﻿using Acr.UserDialogs;
+using Isic.Debugger;
 using Isic.SerialProtocol;
 using Plugin.BLE.Abstractions;
 using Plugin.BLE.Abstractions.Contracts;
@@ -31,46 +32,67 @@ namespace ISIC_FMT_MMCP_App
             InitializeMonitorInfo();
         }
 
-        private void InitializeButtons()
-        {
-            BackButton.Clicked += BackButton_Clicked;
-
-            CurrentCharacteristic.ValueUpdated += ReceivedData;
-        }
-
-
         private void InitializeScreen()
         {
             NavigationPage.SetHasNavigationBar(this, false);
         }
 
+        private void InitializeButtons()
+        {
+            BackButton.Clicked += BackButton_Clicked;
+
+            CurrentCharacteristic.ValueUpdated += ReceivedData;
+
+            Buzzer.Toggled += Buzzer_Toggled;
+        }
+
         private void InitializeMonitorInfo()
         {
-            QueryName();
-            QueryRN();
-            //QueryRN();
-            
-            /*QuerySN();
-            QueryFirmware();
-            QueryBaud();
-            QueryTemp();
-            QueryTime();
-            */
-        }
-
-        private bool NameIsCorrect()
-        {
-            return true;
-        }
-
-        private void QueryRN()
-        {
-            string rn = null;
-            while (rn == "Not available" || rn == null)
+            if (CheckAvailabilityMonitor() == true)
             {
-                rn = QueryData(ISIC_SCP_IF.CMD_REF);
+                try
+                {
+                    QueryName();
+                    QueryRN();
+                    QuerySN();
+                    QueryFirmware();
+                    QueryBaud();
+                    QueryTemp();
+                    QueryTime();
+                }
+                catch (Exception e)
+                {
+                    IsicDebug.DebugException(String.Format("Problem retrieving information. {0}", e));
+                }
             }
-            RNInfo.Text = rn;
+            else
+            {
+                UserDialogs.Instance.Toast("The connection with the monitor has been lost. Information cannot be retrieved.");
+            }
+
+        }
+
+        private bool CheckAvailabilityMonitor()
+        {
+            try
+            {
+                string result = QueryData(ISIC_SCP_IF.CMD_MAN);
+                if (result != null)
+                {
+                    IsicDebug.DebugSerial(String.Format("Monitor responding MAN command: {0}", result));
+                    return true;
+                }
+                else
+                {
+                    IsicDebug.DebugSerial(String.Format("Monitor NOT responding MAN command {0}", result));
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+                IsicDebug.DebugException(String.Format("Exception thrown when sending MAN command to monitor. {0}", e));
+                return false;
+            }
 
         }
 
@@ -80,11 +102,54 @@ namespace ISIC_FMT_MMCP_App
 
             NameInfo.Text = name;
         }
+        private void QueryRN()
+        {
+            string rn = QueryData(ISIC_SCP_IF.CMD_REF);
+            /*while (rn == "Not available" || rn == null)
+            {
+                rn = QueryData(ISIC_SCP_IF.CMD_REF);
+            }*/
+            RNInfo.Text = rn;
+        }
+
+        private void QuerySN()
+        {
+            string sn = QueryData(ISIC_SCP_IF.CMD_SNB);
+            SNInfo.Text = sn;
+        }
+
+        private void QueryFirmware()
+        {
+            string firmware = QueryData(ISIC_SCP_IF.CMD_VER);
+            FirmwareInfo.Text = firmware;
+        }
+
+        private void QueryBaud()
+        {
+            string baud = QueryData(ISIC_SCP_IF.CMD_EBR);   //Not sure about the command!!
+            BaudInfo.Text = baud;
+        }
+
+        private void QueryTemp()
+        {
+            string temperature = QueryData(ISIC_SCP_IF.CMD_TMP);
+            TempInfo.Text = temperature;
+        }
+
+        private void QueryTime()
+        {
+            string timeOn = QueryData(ISIC_SCP_IF.CMD_ETC);
+            TimeInfo.Text = timeOn;
+        }
+
+        private void Buzzer_Toggled(object sender, ToggledEventArgs e)
+        {
+            UserDialogs.Instance.Toast("Buzzer has been toggled.");
+        }
 
         private bool data_received = false;
         private string QueryData(string command)
         {
-
             IsicDebug.DebugSerial(String.Format("Received Data: {0}", CurrentCharacteristic.Value.GetHexString()));
             if (CurrentCharacteristic.CanRead)
             {
@@ -92,11 +157,13 @@ namespace ISIC_FMT_MMCP_App
                 {
                     CurrentCharacteristic.StartUpdatesAsync();
                     IsicDebug.DebugSerial(String.Format("Sending.....{0}", command));
-                    while (data_received != true)
+                    int tries = 0;
+                    while (data_received != true && tries < 5)
                     {
                         new Isic.SerialProtocol.Command(CurrentMonitor.MonAddr, command).Send(CurrentCharacteristic);
                         IsicDebug.DebugSerial(String.Format("Received Data: {0}", CurrentCharacteristic.Value.GetHexString()));
 
+                        tries++;
                     }
                     if (data_received == true)
                     {
@@ -122,7 +189,8 @@ namespace ISIC_FMT_MMCP_App
             if (e.Characteristic.Value[0] == 0x06)
             {
                 data_received = true;
-            } else
+            }
+            else
             {
                 data_received = false;
             }
@@ -144,7 +212,8 @@ namespace ISIC_FMT_MMCP_App
                     {
                         IsicDebug.DebugSerial(String.Format("Transformed Data to value: {0}", data));
                         return data;
-                    } else
+                    }
+                    else
                     {
                         return "SHIT";
                     }
@@ -154,7 +223,8 @@ namespace ISIC_FMT_MMCP_App
                     IsicDebug.DebugSerial(String.Format("Not receiving any Input data from the monitor"));
                     return "Not Available";
                 }
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 IsicDebug.DebugException(String.Format("Problem receiving data from monitor {0}", e));
                 return "Not Available";
