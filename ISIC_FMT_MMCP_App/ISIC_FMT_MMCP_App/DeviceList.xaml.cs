@@ -70,32 +70,31 @@ namespace ISIC_FMT_MMCP_App
             InitiliazeDefaultBluetooth();
 
 
+            bool blockScan = false;
             //Event handler for the Scan Button
-            ScanAllButton.Clicked += (sender, e) =>
+            ScanAllButton.Clicked += async (sender, e) =>
             {
-                CheckAvailabilityBluetooth(Ble.State);
-                DeleteOldConnections();
-                InitiliazeBluetooth();
+                if (blockScan == false)
+                {
+                    blockScan = true;
+                    CheckAvailabilityBluetooth(Ble.State);
+                    DeleteOldConnections();
+                    await InitiliazeBluetooth();
+                    blockScan = false;
+                }
             };
 
             listView.ItemSelected += OnItemSelected;
-
-
+            
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+ 
         private void InitializeScreen()
         {
             NavigationPage.SetHasNavigationBar(this, false);
             DevicesList.Clear();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="state"></param>
         private void CheckAvailabilityBluetooth(BluetoothState state)
         {
             if (state == BluetoothState.Off)
@@ -172,7 +171,7 @@ namespace ISIC_FMT_MMCP_App
 
         }
 
-        private void InitiliazeBluetooth()
+        private async Task InitiliazeBluetooth()
         {
             IsicDebug.DebugBluetooth(String.Format("BluetoothLE initiliased correctly."));
 

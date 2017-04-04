@@ -68,22 +68,29 @@
       <Label x:Name="SNInfo" Style="{StaticResource InfoStyle}" Grid.Column="1" Grid.Row="2"></Label>
       <Label x:Name="FirmwareLabel" Style="{StaticResource LabelStyle}" Grid.Column="0" Grid.Row="3">Firmware:</Label>
       <Label x:Name="FirmwareInfo" Style="{StaticResource InfoStyle}" Grid.Column="1" Grid.Row="3"></Label>
-      <Label x:Name="BaudLabel" Style="{StaticResource LabelStyle}" Grid.Column="0" Grid.Row="4">Baud:</Label>
-      <Label x:Name="BaudInfo" Style="{StaticResource InfoStyle}" Grid.Column="1" Grid.Row="4"></Label>
-      <Label x:Name="TempLabel" Style="{StaticResource LabelStyle}" Grid.Column="0" Grid.Row="5">Temp:</Label>
-      <Label x:Name="TempInfo" Style="{StaticResource InfoStyle}" Grid.Column="1" Grid.Row="5"></Label>
-      <Label x:Name="TimeLabel" Style="{StaticResource LabelStyle}" Grid.Column="0" Grid.Row="7">Total elapsed time:</Label>
-      <Label x:Name="TimeInfo" Style="{StaticResource InfoStyle}" Grid.Column="1" Grid.Row="7"></Label>
+      <Label x:Name="TempLabel" Style="{StaticResource LabelStyle}" Grid.Column="0" Grid.Row="4">Temperature:</Label>
+      <Label x:Name="TempInfo" Style="{StaticResource InfoStyle}" Grid.Column="1" Grid.Row="4"></Label>
+      <Label x:Name="TimeLabel" Style="{StaticResource LabelStyle}" Grid.Column="0" Grid.Row="5">Total elapsed time:</Label>
+      <Label x:Name="TimeInfo" Style="{StaticResource InfoStyle}" Grid.Column="1" Grid.Row="5"></Label>
     </Grid>
-      <BoxView Color="White" HeightRequest="2"/>
+    
+    <BoxView Color="White" HeightRequest="2"/>
+    
+    
     <Grid Margin="0, 10, 0, 10">
+      <Grid.RowDefinitions>
+        <RowDefinition/>
+        <RowDefinition/>
+      </Grid.RowDefinitions>
       <Grid.ColumnDefinitions>
-        <ColumnDefinition></ColumnDefinition>
-        <ColumnDefinition></ColumnDefinition>
+        <ColumnDefinition/>
+        <ColumnDefinition/>
       </Grid.ColumnDefinitions>
 
       <Label x:Name="BuzzerLabel" Style="{StaticResource LabelStyle}" Grid.Column="0" Grid.Row="0">Buzzer:</Label>
       <Switch x:Name="Buzzer" Grid.Column="1" Grid.Row="0" HorizontalOptions="CenterAndExpand"></Switch>
+      <Label x:Name="FanLabel" Style="{StaticResource LabelStyle}" Grid.Column="0" Grid.Row="1">Fan:</Label>
+      <Switch x:Name="Fan" Grid.Column="1" Grid.Row="1" HorizontalOptions="CenterAndExpand"></Switch>
     </Grid>
 
 

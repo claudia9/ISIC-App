@@ -145,57 +145,29 @@ namespace ISIC_FMT_MMCP_App
 
         private void Monitor1_Clicked(object sender, EventArgs e)
         {
-            if (Monitor1.IsClicked == true)
-            {
-                Monitor1.IsClicked = false;
-            }
-            else
-            {
-                Monitor1.IsClicked = true;
-                SetMonitor(MonitorIdentifier.Monitor1);
-                UserDialogs.Instance.Toast(String.Format("You are now controlling Monitor 1 at address: {0}", Monitors[MonitorIdentifier.Monitor1].MonAddr), TimeSpan.FromSeconds(2));
-            }
+            Monitor1.IsClicked = true;
+            SetMonitor(MonitorIdentifier.Monitor1);
+            UserDialogs.Instance.Toast(String.Format("You are now controlling Monitor 1 at address: {0}", Monitors[MonitorIdentifier.Monitor1].MonAddr), TimeSpan.FromSeconds(2));
         }
 
         private void Monitor2_Clicked(object sender, EventArgs e)
         {
-            if (Monitor2.IsClicked == true)
-            {
-                Monitor2.IsClicked = false;
-            }
-            else
-            {
-                Monitor2.IsClicked = true;
-                SetMonitor(MonitorIdentifier.Monitor2);
-                UserDialogs.Instance.Toast(String.Format("You are now controlling Monitor 2 at address: {0}", Monitors[MonitorIdentifier.Monitor2].MonAddr), TimeSpan.FromSeconds(2));
-            }
+            Monitor2.IsClicked = true;
+            SetMonitor(MonitorIdentifier.Monitor2);
+            UserDialogs.Instance.Toast(String.Format("You are now controlling Monitor 2 at address: {0}", Monitors[MonitorIdentifier.Monitor2].MonAddr), TimeSpan.FromSeconds(2));
         }
         private void Monitor3_Clicked(object sender, EventArgs e)
         {
-            if (Monitor3.IsClicked == true)
-            {
-                Monitor3.IsClicked = false;
-            }
-            else
-            {
-                Monitor3.IsClicked = true;
-                SetMonitor(MonitorIdentifier.Monitor3);
-                UserDialogs.Instance.Toast(String.Format("You are now controlling Monitor 3 at address: {0}", Monitors[MonitorIdentifier.Monitor3].MonAddr), TimeSpan.FromSeconds(2));
-            }
+            Monitor3.IsClicked = true;
+            SetMonitor(MonitorIdentifier.Monitor3);
+            UserDialogs.Instance.Toast(String.Format("You are now controlling Monitor 3 at address: {0}", Monitors[MonitorIdentifier.Monitor3].MonAddr), TimeSpan.FromSeconds(2));
         }
 
         private void MonitorAll_Clicked(object sender, EventArgs e)
         {
-            if (MonitorAll.IsClicked == true)
-            {
-                MonitorAll.IsClicked = false;
-            }
-            else
-            {
-                MonitorAll.IsClicked = true;
-                SetMonitor(MonitorIdentifier.MonitorBroadcast);
-                UserDialogs.Instance.Toast("You are now controlling all the monitors", TimeSpan.FromSeconds(2));
-            }
+            MonitorAll.IsClicked = true;
+            SetMonitor(MonitorIdentifier.MonitorBroadcast);
+            UserDialogs.Instance.Toast("You are now controlling all the monitors", TimeSpan.FromSeconds(2));
         }
 
         private void SetMonitor(MonitorIdentifier MonIdentifier)
@@ -519,7 +491,7 @@ namespace ISIC_FMT_MMCP_App
         #region Navigation Buttons Handlers
         private void SettingsButton_Clicked(object sender, EventArgs e)
         {
-            Navigation.PushAsync(new MonitorSettingsPage(), true);
+            Navigation.PushAsync(new MonitorSettingsPage(CurrentCharacteristic), true);
         }
 
 

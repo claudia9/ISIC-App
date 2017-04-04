@@ -24,8 +24,10 @@ namespace ISIC_FMT_MMCP_App
 
         public string Name { get; set; }
         public string RN { get; set; }
-        public double Temperature { get; set; }
-        public double TimeOn { get; set; }
+        public string SN { get; set; }
+        public string Firmware { get; set; }
+        public string Temperature { get; set; }
+        public string TimeOn { get; set; }
 
         public MonitorSettings()
         {
@@ -35,8 +37,10 @@ namespace ISIC_FMT_MMCP_App
 
             Name = "";
             RN = "";
-            Temperature = 25.0;
-            TimeOn = 0;
+            SN = "";
+            Firmware = "";
+            Temperature = "";
+            TimeOn = "";
         }
     }
 }

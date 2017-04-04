@@ -2,6 +2,7 @@
 using Isic.Debugger;
 using Isic.ViewModels;
 using Plugin.BLE;
+using Plugin.BLE.Abstractions.Contracts;
 using System;
 using System.Collections.Generic;
 
@@ -13,51 +14,48 @@ namespace ISIC_FMT_MMCP_App
     {
         private Dictionary<MonitorIdentifier, MonitorSettings> monitors { get; set; }
 
-        LoadingViewModel saveViewModel;
+        private IAdapter CurrentAdapter;
+        private ICharacteristic CurrentCharacteristic;
+        private LoadingViewModel saveViewModel;
 
-        public MonitorSettingsPage()
+        public MonitorSettingsPage(ICharacteristic characteristic)
         {
-            saveViewModel = new LoadingViewModel(UserDialogs.Instance);
-
             InitializeScreen();
             InitializeComponent();
+            InitializeButtons();
+            InitializeBluetooth(characteristic);
             InitializeDictionary();
             InitializeComboBoxes();
 
-            var ble = CrossBluetoothLE.Current;
-            if (ble.State == Plugin.BLE.Abstractions.Contracts.BluetoothState.Off)
-            {
-                UserDialogs.Instance.Toast("Please, turn on your Bluetooth to experience all the features of this DEMO.");
-            }
-            //Binding ScanAllbutton
-            this.BindingContext = saveViewModel;
-
-            Back.Clicked += Back_Clicked;
-            AdvSettingsButton.Clicked += AdvSettingsButton_Clicked;
-
             IsicDebug.DebugGeneral("On MonitorSettingsPage");
         }
-
         private void InitializeScreen()
         {
             NavigationPage.SetHasNavigationBar(this, false);
         }
 
-        private void Back_Clicked(object sender, EventArgs e)
+        private void InitializeButtons()
         {
-            SetPreferences();
-            Navigation.PopAsync();
+
+            saveViewModel = new LoadingViewModel(UserDialogs.Instance);
+
+            //Binding SavePreferences
+            this.BindingContext = saveViewModel;
+
+            Back.Clicked += Back_Clicked;
+            AdvSettingsButton.Clicked += AdvSettingsButton_Clicked;
         }
-
-        private void AdvSettingsButton_Clicked(object sender, EventArgs e)
+        private void InitializeBluetooth(ICharacteristic characteristic)
         {
-            UserDialogs.Instance.Toast("This feature is not available for this DEMO version");
-        }
+            CurrentCharacteristic = characteristic;
 
+            var ble = CrossBluetoothLE.Current;
+            CurrentAdapter = ble.Adapter;
+            if (ble.State == BluetoothState.Off)
+            {
+                UserDialogs.Instance.Toast("Please, turn on your Bluetooth to experience all the features of this DEMO.");
+            }
 
-        private async void SetPreferences()
-        {
-            await Application.Current.SavePropertiesAsync();
         }
 
         private void InitializeDictionary()
@@ -79,11 +77,13 @@ namespace ISIC_FMT_MMCP_App
                 Mon3Addr.Items.Add(i.ToString());
             }
 
-            if (Application.Current.Properties.ContainsKey("Mon1Addr")) {
+            if (Application.Current.Properties.ContainsKey("Mon1Addr"))
+            {
                 try
                 {
                     Mon1Addr.SelectedIndex = (int)Application.Current.Properties["Mon1Addr"];
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     IsicDebug.DebugException(String.Format("Giving address to comboboxes from the phone Properties", e));
                 }
@@ -120,14 +120,15 @@ namespace ISIC_FMT_MMCP_App
             Baud.Items.Add("115K2");
             Baud.Items.Add("460K8");
 
-            if(Application.Current.Properties["Baud"] != null) {
+            if (Application.Current.Properties["Baud"] != null)
+            {
                 Baud.SelectedIndex = (int)Application.Current.Properties["Baud"];
             }
 
             Baud.SelectedIndexChanged += Baud_SelectedIndexChanged;
 
         }
-
+      
 
         private void Baud_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -169,13 +170,31 @@ namespace ISIC_FMT_MMCP_App
                     break;
             }
 
-       
+
             monitors[monIdentifier].MonAddr = (Byte)(sender as Picker).SelectedIndex;
 
             IsicDebug.DebugMonitor(String.Format("Setting property {0} to {1}", monIdentifier.ToString(), (sender as Picker).SelectedIndex));
             IsicDebug.DebugMonitor(String.Format("Setting Monitor {0}, address: {1}", monIdentifier, monitors[monIdentifier].MonAddr));
         }
         #endregion
+
+
+        private void Back_Clicked(object sender, EventArgs e)
+        {
+            SetPreferences();
+            Navigation.PopAsync();
+        }
+        private async void SetPreferences()
+        {
+            await Application.Current.SavePropertiesAsync();
+        }
+
+
+        private async void AdvSettingsButton_Clicked(object sender, EventArgs e)
+        {
+            //UserDialogs.Instance.Toast("This feature is not available for this DEMO version");
+            await Navigation.PushAsync(new ChangeMonitorAddressPage(CurrentCharacteristic));
+        }
 
     }
 }
