@@ -59,7 +59,7 @@ namespace ISIC_FMT_MMCP_App
         private async void InitializeMonitorInfo()
         {
             Title.Text = "Monitor at address: " + CurrentMonitor.MonAddr.ToString();
-            UserDialogs.Instance.ShowLoading("Retrieving data - This can take some minutes", MaskType.Black);
+            UserDialogs.Instance.ShowLoading("Retrieving data - This can take some seconds", MaskType.Black);
             await getMonitorInfo();
             UserDialogs.Instance.HideLoading();
             
@@ -75,7 +75,7 @@ namespace ISIC_FMT_MMCP_App
                 }
                 else
                 {
-                    //await Task.Delay(2000);
+                    await Task.Delay(500);
                     QueryName();
                 }
 
@@ -85,7 +85,7 @@ namespace ISIC_FMT_MMCP_App
                 }
                 else
                 {
-                    //await Task.Delay(2000);
+                    await Task.Delay(500);
                     QueryRN();
                 }
 
@@ -95,7 +95,7 @@ namespace ISIC_FMT_MMCP_App
                 }
                 else
                 {
-                    //await Task.Delay(2000);
+                    await Task.Delay(500);
                     QuerySN();
                 }
 
@@ -105,7 +105,7 @@ namespace ISIC_FMT_MMCP_App
                 }
                 else
                 {
-                    //await Task.Delay(2000);
+                    await Task.Delay(500);
                     QueryFirmware();
                 }
 
@@ -116,7 +116,7 @@ namespace ISIC_FMT_MMCP_App
                 }
                 else
                 {
-                    //await Task.Delay(2000);
+                    await Task.Delay(500);
                     QueryTemp();
                 }
 
@@ -127,7 +127,7 @@ namespace ISIC_FMT_MMCP_App
                 }
                 else
                 {
-                    //await Task.Delay(2000);
+                    await Task.Delay(500);
                     QueryTime();
                 }
 
@@ -165,77 +165,97 @@ namespace ISIC_FMT_MMCP_App
         private void QueryName()
         {
             string name = QueryData(ISIC_SCP_IF.CMD_TYP);
-            NameInfo.Text = name;
 
-            if (name != "Not Available")
+            if (!String.IsNullOrEmpty(name))
             {
+                NameInfo.Text = name;
                 CurrentMonitor.Name = name;
+            }
+            else
+            {
+                NameInfo.Text = "Data not available";
             }
 
         }
         private void QueryRN()
         {
             string rn = QueryData(ISIC_SCP_IF.CMD_REF);
-            RNInfo.Text = rn;
 
-            if (rn != "Not Available")
+            if (!String.IsNullOrEmpty(rn) && Regex.IsMatch(rn, @"^\w{2}\d{2}\w{3}$"))
             {
+                SNInfo.Text = rn;
                 CurrentMonitor.RN = rn;
+            }
+            else
+            {
+                RNInfo.Text = "Data not available";
             }
         }
 
         private void QuerySN()
         {
             string sn = QueryData(ISIC_SCP_IF.CMD_SNB);
-            SNInfo.Text = sn;
 
-            if (sn != "Not Available")
+            if (!String.IsNullOrEmpty(sn) && Regex.IsMatch(sn, @"^\d{2}\w\d{7}$"))
             {
+                SNInfo.Text = sn;
                 CurrentMonitor.SN = sn;
+            }
+            else
+            {
+                SNInfo.Text = "Data not available";
             }
         }
 
         private void QueryFirmware()
         {
             string firmware = QueryData(ISIC_SCP_IF.CMD_VER);
-            FirmwareInfo.Text = firmware;
 
-            if (firmware != "Not Available")
+            if (!String.IsNullOrEmpty(firmware) && (Regex.IsMatch(firmware, @"^\d{5}-\d{3}\w$") || Regex.IsMatch(firmware, @"^\d{5}-\d{3}-\w$")))
             {
+                FirmwareInfo.Text = firmware;
                 CurrentMonitor.Firmware = firmware;
             }
+            else
+            {
+                FirmwareInfo.Text = "Data not available";
+            }
+
+
         }
 
         private void QueryTemp()
         {
             byte[] data = { 0x52 };
             string temperature = QueryData(ISIC_SCP_IF.CMD_TMP, data);
-            temperature = temperature.Substring(1, 3);
-            if (temperature != "Not Available")
+
+            if (!String.IsNullOrEmpty(temperature) && Regex.IsMatch(temperature, @"^\w\d{3}$"))
             {
+                temperature = temperature.Substring(1);
                 TempInfo.Text = temperature;
                 TempInfo.Text += "°C";
                 CurrentMonitor.Temperature = temperature;
-            }
-            else
+            } else
             {
-                TempInfo.Text = temperature;
+                TempInfo.Text = "Data not available";
             }
+          
         }
 
         private void QueryTime()
         {
             byte[] data = { 0x30 };
             string timeOn = QueryData(ISIC_SCP_IF.CMD_ETC, data);
-            if (timeOn != "Not Available")
+
+            if (!String.IsNullOrEmpty(timeOn) && Regex.IsMatch(timeOn, @"^\d{6}$"))
             {
-                TimeInfo.Text = timeOn.Substring(0, 6);
+                TimeInfo.Text = timeOn;
                 TimeInfo.Text += "h.";
                 CurrentMonitor.TimeOn = timeOn;
             }
             else
             {
-                TimeInfo.Text = timeOn;
+                TimeInfo.Text = "Data not available";
             }
         }
 
@@ -244,6 +264,7 @@ namespace ISIC_FMT_MMCP_App
             byte[] receivedData = null;
             int tries = 10;
             int internalTries = 10;
+            string result = null;
 
             Stopwatch sw = Stopwatch.StartNew();
             if (CurrentCharacteristic.CanRead)
@@ -272,7 +293,7 @@ namespace ISIC_FMT_MMCP_App
                         if (receivedData[0] == 0x06)
                         {
                             IsicDebug.DebugSerial(String.Format("Received Data: {0} - {1}", receivedData.GetHexString(), receivedData.GetString()));
-                            return RetrieveDataFromMonitor(receivedData);
+                            result = RetrieveDataFromMonitor(receivedData);
                         }
                         else
                         {
@@ -281,24 +302,23 @@ namespace ISIC_FMT_MMCP_App
                         }
                     
                     }
-                    return "Not Available";
                 }
                 catch (Exception ex)
                 {
                     IsicDebug.DebugException(String.Format("Not able to send or receive input data.", ex));
-                    return "Not Available";
                 }
             }
             else
             {
                 IsicDebug.DebugBluetooth("This characteristic cannot read data.");
-                return "Not Available";
             }
+            return result;
         }
 
         private string RetrieveDataFromMonitor(byte[] rArr)
         {
             string data = null;
+            string result = null;
             try
             {
                 data = ISIC_SCP_IF.GetDataStringFromCmdReply(rArr).GetString();
@@ -308,24 +328,19 @@ namespace ISIC_FMT_MMCP_App
                     if (data != null)
                     {
                         IsicDebug.DebugSerial(String.Format("Transformed Data to value: {0}", data));
-                        return data;
-                    }
-                    else
-                    {
-                        return "Not Available";
+                        result = data;
                     }
                 }
                 else
                 {
                     IsicDebug.DebugSerial(String.Format("Not receiving any Input data from the monitor"));
-                    return "Not Available";
                 }
             }
             catch (Exception e)
             {
                 IsicDebug.DebugException(String.Format("Problem receiving data from monitor {0}", e));
-                return "Not Available";
             }
+            return result;
         }
 
         bool activeBuzzer = false;
