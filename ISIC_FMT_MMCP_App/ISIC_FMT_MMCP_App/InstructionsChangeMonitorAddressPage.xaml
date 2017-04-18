@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<PopupPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ISIC_FMT_MMCP_App.InstructionsChangeMonitorAddressPage" >
+
+  <StackLayout BackgroundColor="White" VerticalOptions="Center" Margin="10, 0, 10, 0">
+    <Label x:Name="Title" Text="Welcome to this Tutorial" FontSize="18" TextColor="#444444" HorizontalTextAlignment="Center"></Label>
+    <Label x:Name="SubTitle" Text="Here you will learn how to change the address of the ISIC monitors" FontSize="14" TextColor="#444444" HorizontalTextAlignment="Center"></Label>
+    <ScrollView>
+      <StackLayout>
+        <Label LineBreakMode="WordWrap" FontFamily="Neucha" FontAttributes="Italic">In order to change the address of the monitors and success on the process, read and follow carefully these instructions:</Label>
+        <Label LineBreakMode="WordWrap" FontFamily="Neucha" FontAttributes="Italic">1. Turn off all the monitors except the one requiring to have a different address.</Label>
+        <Label LineBreakMode="WordWrap" FontFamily="Neucha" FontAttributes="Italic">2. Introduce the new address using the Address Box located in the page below.</Label>
+        <Label LineBreakMode="WordWrap" FontFamily="Neucha" FontAttributes="Italic">3. Click the Save button located in the page below. (Make sure that only the monitor needing to have a new address is on)</Label>
+        <Label LineBreakMode="WordWrap" FontFamily="Neucha" FontAttributes="Italic">4. Turn off all the monitors except the one that needs to have the address changed.</Label>
+      </StackLayout>
+    </ScrollView>
+    <Button x:Name="Close" Text="Close this"></Button>
+  </StackLayout>
+  
+</PopupPage>

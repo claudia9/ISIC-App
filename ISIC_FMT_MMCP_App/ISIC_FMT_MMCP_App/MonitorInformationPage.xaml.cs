@@ -21,6 +21,8 @@ namespace ISIC_FMT_MMCP_App
         private MonitorSettings CurrentMonitor;
         ICharacteristic CurrentCharacteristic;
 
+        IDescriptor CurrentDescriptor;
+
         LoadingViewModel loadingViewModel;
 
         public MonitorInformationPage(MonitorSettings monitor, ICharacteristic characteristic)
@@ -41,9 +43,10 @@ namespace ISIC_FMT_MMCP_App
             InitializeMonitorInfo();
         }
 
-        private void InitializeScreen()
+        private async void InitializeScreen()
         {
             NavigationPage.SetHasNavigationBar(this, false);
+            this.CurrentDescriptor = await CurrentCharacteristic.GetDescriptorAsync(Guid.Parse("00002902-0000-1000-8000-00805f9b34fb"));
         }
 
         private void InitializeButtons()
@@ -62,11 +65,12 @@ namespace ISIC_FMT_MMCP_App
             UserDialogs.Instance.ShowLoading("Retrieving data - This can take some seconds", MaskType.Black);
             await getMonitorInfo();
             UserDialogs.Instance.HideLoading();
-            
+
         }
 
         async Task getMonitorInfo()
         {
+            await CurrentCharacteristic.StartUpdatesAsync();
             try
             {
                 if (CurrentMonitor.Name != "")
@@ -75,7 +79,7 @@ namespace ISIC_FMT_MMCP_App
                 }
                 else
                 {
-                    await Task.Delay(500);
+                    //await Task.Delay(500);
                     QueryName();
                 }
 
@@ -85,7 +89,7 @@ namespace ISIC_FMT_MMCP_App
                 }
                 else
                 {
-                    await Task.Delay(500);
+                    await Task.Delay(50);
                     QueryRN();
                 }
 
@@ -95,7 +99,7 @@ namespace ISIC_FMT_MMCP_App
                 }
                 else
                 {
-                    await Task.Delay(500);
+                    await Task.Delay(50);
                     QuerySN();
                 }
 
@@ -105,7 +109,7 @@ namespace ISIC_FMT_MMCP_App
                 }
                 else
                 {
-                    await Task.Delay(500);
+                    await Task.Delay(50);
                     QueryFirmware();
                 }
 
@@ -116,7 +120,7 @@ namespace ISIC_FMT_MMCP_App
                 }
                 else
                 {
-                    await Task.Delay(500);
+                    await Task.Delay(50);
                     QueryTemp();
                 }
 
@@ -127,7 +131,7 @@ namespace ISIC_FMT_MMCP_App
                 }
                 else
                 {
-                    await Task.Delay(500);
+                    await Task.Delay(50);
                     QueryTime();
                 }
 
@@ -136,6 +140,7 @@ namespace ISIC_FMT_MMCP_App
             {
                 IsicDebug.DebugException(String.Format("Problem retrieving information. {0}", e));
             }
+            await CurrentCharacteristic.StopUpdatesAsync();
         }
 
         private bool CheckAvailabilityMonitor()
@@ -175,21 +180,24 @@ namespace ISIC_FMT_MMCP_App
             {
                 NameInfo.Text = "Data not available";
             }
-
         }
         private void QueryRN()
         {
             string rn = QueryData(ISIC_SCP_IF.CMD_REF);
 
+            //});
+            //t.Wait();
+            
             if (!String.IsNullOrEmpty(rn) && Regex.IsMatch(rn, @"^\w{2}\d{2}\w{3}$"))
             {
-                SNInfo.Text = rn;
+                RNInfo.Text = rn;
                 CurrentMonitor.RN = rn;
             }
             else
             {
                 RNInfo.Text = "Data not available";
             }
+
         }
 
         private void QuerySN()
@@ -227,7 +235,12 @@ namespace ISIC_FMT_MMCP_App
         private void QueryTemp()
         {
             byte[] data = { 0x52 };
-            string temperature = QueryData(ISIC_SCP_IF.CMD_TMP, data);
+            string temperature = null;
+
+            //Task t = Task.Run(() => {
+                temperature = QueryData(ISIC_SCP_IF.CMD_TMP, data);
+            //});
+            //t.Wait();
 
             if (!String.IsNullOrEmpty(temperature) && Regex.IsMatch(temperature, @"^\w\d{3}$"))
             {
@@ -245,7 +258,13 @@ namespace ISIC_FMT_MMCP_App
         private void QueryTime()
         {
             byte[] data = { 0x30 };
-            string timeOn = QueryData(ISIC_SCP_IF.CMD_ETC, data);
+            string timeOn = null;
+
+            //Task t = Task.Run(() => {
+                timeOn = QueryData(ISIC_SCP_IF.CMD_ETC, data);
+            //});
+            //t.Wait();
+
 
             if (!String.IsNullOrEmpty(timeOn) && Regex.IsMatch(timeOn, @"^\d{6}$"))
             {
@@ -262,57 +281,74 @@ namespace ISIC_FMT_MMCP_App
         private string QueryData(string command, params byte[] data)
         {
             byte[] receivedData = null;
-            int tries = 10;
+            int tries = 1000;
             int internalTries = 10;
             string result = null;
+            
 
             Stopwatch sw = Stopwatch.StartNew();
             if (CurrentCharacteristic.CanRead)
             {
                 try
                 {
-                    CurrentCharacteristic.StartUpdatesAsync();
                     IsicDebug.DebugSerial(String.Format("Sending.....{0}, {1}", command, sw.ElapsedMilliseconds));
                     sw.Restart();
                     while (receivedData == null && tries-- > 0)
                     {
+                        //Task.Delay(1000);
                         new Isic.SerialProtocol.Command(CurrentMonitor.MonAddr, command, data).Send(CurrentCharacteristic);
-                        IsicDebug.DebugSerial(String.Format("- Sent command: {0} TIME:{1}", command, sw.ElapsedMilliseconds));
+                        Task.Delay(1000);
+
+                        readData();
+
+                        if (CurrentCharacteristic.Value[0] == 0x06)
+                            {
+                                receivedData = CurrentCharacteristic.Value;
+                                break;
+                            }
+
+                        //Task.Delay(300);
+                        //IsicDebug.DebugSerial(String.Format("- Sent command: {0} TIME:{1}", command, sw.ElapsedMilliseconds));
                         sw.Restart();
 
-                        Task.Delay(400);
+                        //do
+                        //{
+                         //  Task.Delay(200);
+                        //}
+                        //while (receivedData[0] != 0x06 && --internalTries >= 0);
 
-                        do
-                        {
-                            receivedData = CurrentCharacteristic.Value;
-                            IsicDebug.DebugSerial(String.Format("DATA: {0} - {1}", receivedData.GetHexString(), receivedData.GetString()));
-                            Task.Delay(1);
-                        }
-                        while (receivedData[0] != 0x06 && --internalTries >= 0);
 
-                        if (receivedData[0] == 0x06)
-                        {
-                            IsicDebug.DebugSerial(String.Format("Received Data: {0} - {1}", receivedData.GetHexString(), receivedData.GetString()));
-                            result = RetrieveDataFromMonitor(receivedData);
-                        }
-                        else
-                        {
-                            receivedData = null;
-                            IsicDebug.DebugSerial(String.Format("Data in CurrentCharacteristic: {0} - {1}", CurrentCharacteristic.Value.GetHexString(), CurrentCharacteristic.Value.GetString()));
-                        }
-                    
+
+                    }
+                    if (receivedData[0] == 0x06)
+                    {
+                        IsicDebug.DebugSerial(String.Format("Received Data: {0} - {1}", receivedData.GetHexString(), receivedData.GetString()));
+                        result = RetrieveDataFromMonitor(receivedData);
                     }
                 }
+                
                 catch (Exception ex)
                 {
                     IsicDebug.DebugException(String.Format("Not able to send or receive input data.", ex));
                 }
+                
             }
             else
             {
                 IsicDebug.DebugBluetooth("This characteristic cannot read data.");
             }
             return result;
+        }
+
+        private async Task<byte[]> readData()
+        {
+            byte[] receivedData = null;
+            int tries = 1000;
+            while (CurrentCharacteristic.Value[0] != 0x06 && tries-- > 0)
+            {
+                receivedData = await CurrentCharacteristic.ReadAsync();
+            }
+            return receivedData;
         }
 
         private string RetrieveDataFromMonitor(byte[] rArr)
@@ -322,7 +358,7 @@ namespace ISIC_FMT_MMCP_App
             try
             {
                 data = ISIC_SCP_IF.GetDataStringFromCmdReply(rArr).GetString();
-                Array.Clear(CurrentCharacteristic.Value, 0, CurrentCharacteristic.Value.Length);
+                //Array.Clear(CurrentCharacteristic.Value, 0, CurrentCharacteristic.Value.Length);
                 if (rArr != null)
                 {
                     if (data != null)
@@ -351,13 +387,39 @@ namespace ISIC_FMT_MMCP_App
             {
                 activeBuzzer = true;
                 buzzerData = 0xFF;
-                QueryData(ISIC_SCP_IF.CMD_BZZ, buzzerData);
+                QueryBuzzer(ISIC_SCP_IF.CMD_BZZ, buzzerData);
+                //QueryData(ISIC_SCP_IF.CMD_BZZ, buzzerData);
             }
             else
             {                           //It's true -> Turn buzzer off: 0x00
                 activeBuzzer = false;
                 buzzerData = 0x00;
-                QueryData(ISIC_SCP_IF.CMD_BZZ, buzzerData);
+                QueryBuzzer(ISIC_SCP_IF.CMD_BZZ, buzzerData);
+                //QueryData(ISIC_SCP_IF.CMD_BZZ, buzzerData);
+            }
+        }
+        private void QueryBuzzer(string command, params byte[] data)
+        {
+
+            if (CurrentCharacteristic.CanRead)
+            {
+                try
+                {
+                    IsicDebug.DebugSerial(String.Format("Sending.....{0}", command));
+
+                    new Isic.SerialProtocol.Command(CurrentMonitor.MonAddr, command, data).Send(CurrentCharacteristic);
+                    Task.Delay(20);
+                }
+
+                catch (Exception ex)
+                {
+                    IsicDebug.DebugException(String.Format("Not able to send or receive input data.", ex));
+                }
+
+            }
+            else
+            {
+                IsicDebug.DebugBluetooth("This characteristic cannot read data.");
             }
         }
 

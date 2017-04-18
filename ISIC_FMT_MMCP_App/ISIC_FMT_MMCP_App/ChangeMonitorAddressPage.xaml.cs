@@ -1,6 +1,8 @@
 ﻿using Acr.UserDialogs;
 using Isic.Debugger;
+using Isic.SerialProtocol;
 using Plugin.BLE.Abstractions.Contracts;
+using Rg.Plugins.Popup.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +15,6 @@ namespace ISIC_FMT_MMCP_App
 {
     public partial class ChangeMonitorAddressPage : ContentPage
     {
-        private byte PreviousAddress;
         private byte AfterAddress;
 
         private bool locked;
@@ -30,16 +31,22 @@ namespace ISIC_FMT_MMCP_App
         }
         private void InitializeScreen()
         {
+
             NavigationPage.SetHasNavigationBar(this, false);
+            if ((bool)Application.Current.Properties["Show_Instructions_MonAddr"] == false)
+            {
+                Navigation.PushPopupAsync(new InstructionsChangeMonitorAddressPage());
+            } else
+            {
+
+                UserDialogs.Instance.Alert("Please, turn off all the monitors except the one willing to have another address.", null, "Done");
+            }
+
+
         }
 
         private void InitializeComboboxes()
         {
-            for (int i = 0; i < 254; i++)
-            {
-                Monitors.Items.Add("Monitor at address " + i.ToString());
-            }
-
             for (int i = 0; i < 254; i++)
             {
                 Addresses.Items.Add(i.ToString());
@@ -47,44 +54,46 @@ namespace ISIC_FMT_MMCP_App
         }
         private void InitializeButtons()
         {
-            UnlockLabel.IsVisible = false;
-            Monitors.SelectedIndexChanged += Monitors_SelectedIndexChanged;
-            Lock.Toggled += Lock_Toggled;
+            HelpButton.Clicked += HelpButton_Clicked;
+
+            SaveButton.Clicked += SaveButton_Clicked;
         }
 
-
-
-        private void Monitors_SelectedIndexChanged(object sender, EventArgs e)
+        private void SaveButton_Clicked(object sender, EventArgs e)
         {
-            PreviousAddress = (byte)((sender as Picker).SelectedIndex);
+            ChangeAddress();
         }
 
-        private void Lock_Toggled(object sender, ToggledEventArgs e)
+        private void ChangeAddress()
         {
-            if (locked == false)
-            {
-                locked = true;
-                UserDialogs.Instance.Toast(String.Format("Monitor at address: {0} is LOCKED", PreviousAddress));
-                LockMonitor();
-            }
-            else
-            {
-                locked = false;
-                UserDialogs.Instance.Toast(String.Format("Monitor at address: {0} is UNLOCKED", PreviousAddress));
-                UnLockMonitor();
-            }
-
+            string command = ISIC_SCP_IF.CMD_SDA;
+            byte[] data = Addresses.SelectedIndex.ToString().GetBytes();
+            SendCommand(command, data);
+            
         }
 
-        private void UnLockMonitor()
+        private void SendCommand(string command, byte[] data)
         {
-            throw new NotImplementedException();
+            try
+                {
+                    IsicDebug.DebugSerial(String.Format("Sending.....{0}", command));
+
+                    new Isic.SerialProtocol.Command(0xFF, command, data).Send(CurrentCharacteristic);
+                    Task.Delay(20);
+                }
+
+                catch (Exception ex)
+                {
+                    IsicDebug.DebugException(String.Format("Not able to send or receive input data.", ex));
+                }
         }
 
-        private void LockMonitor()
+        private void HelpButton_Clicked(object sender, EventArgs e)
         {
-
+            Navigation.PushPopupAsync(new InstructionsChangeMonitorAddressPage());
         }
+
+
 
         /*private string QueryData(string command, params byte[] data)
         {

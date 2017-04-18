@@ -31,6 +31,7 @@ namespace ISIC_FMT_MMCP_App
             AssignValues("MonAllAddr", (byte)250);
             AssignValues("Baud", 0);
             AssignValues("LastBluetooth", "");
+            AssignValues("Show_Instructions_MonAddr", true);
         }
 
         private void AssignValues(string key, object value)

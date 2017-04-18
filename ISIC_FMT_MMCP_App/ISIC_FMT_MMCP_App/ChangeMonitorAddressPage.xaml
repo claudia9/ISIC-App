@@ -8,7 +8,7 @@
   <ContentPage.Resources>
     <ResourceDictionary>
 
-      <Style TargetType="Label" x:Key="LabelStyle">
+      <Style TargetType="Label">
         <Setter Property="TextColor" Value="White"/>
         <Setter Property="FontSize" Value="Small"/>
         <Setter Property="FontFamily" Value="Calibry"/>
@@ -16,18 +16,12 @@
         <Setter Property="HorizontalTextAlignment" Value="Center"/>
         <Setter Property="VerticalTextAlignment" Value="Start" />
       </Style>
-      <Style TargetType="Label" x:Key="InfoStyle">
-        <Setter Property="TextColor" Value="White"/>
-        <Setter Property="FontSize" Value="Small"/>
-        <Setter Property="FontFamily" Value="Calibry"/>
-        <Setter Property="FontAttributes" Value="Italic" />
-        <Setter Property="HorizontalTextAlignment" Value="Center"/>
-        <Setter Property="VerticalTextAlignment" Value="Start" />
-      </Style>
+
 
     </ResourceDictionary>
   </ContentPage.Resources>
 
+  <StackLayout Padding="15" >
   <Grid>
     <Grid.ColumnDefinitions>
       <ColumnDefinition/>
@@ -37,25 +31,15 @@
     </Grid.ColumnDefinitions>
 
     <local:RoundedButton x:Name="BackButton" Image="home_icon.png" Grid.Column="0"/>
+
+    <local:RoundedButton x:Name="HelpButton" Image="help_icon.png" Grid.Column="3"/>
   </Grid>
 
-  <StackLayout Padding="15">
-
-    <Label x:Name="MonitorsLabel">Select a monitor to change its address</Label>
-    <Picker x:Name="Monitors" TextColor="White"/>
+      <Label x:Name="AddressLabel" Text="Select the new address" Margin="0, 40, 0, 10"/>
+      <Picker x:Name="Addresses" TextColor="White" Margin="100, 10"/>
     <BoxView Color="White" HeightRequest="2"/>
 
-    <Label x:Name="LockLabel">Lock the monitor before changing its address</Label>
-    <Switch x:Name="Lock" HorizontalOptions="CenterAndExpand"></Switch>
-    <BoxView Color="White" HeightRequest="2"/>
-
-    <Label x:Name="AddressLabel">Select the new address</Label>
-    <Picker x:Name="Addresses" TextColor="White"/>
-    <BoxView Color="White" HeightRequest="2"/>
-
-    <Label x:Name="UnlockLabel">Please, unlock the monitor before proceding</Label>
-
-    <local:RoundedButton x:Name="Save" Text="Save the new address" />
+    <local:RoundedButton x:Name="SaveButton" Text="Save the new address" Margin="0, 20"/>
     
   </StackLayout>
 </ContentPage>
