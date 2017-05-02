@@ -199,7 +199,13 @@ namespace ISIC_FMT_MMCP_App
 
         public void OnItemSelected(object sender, SelectedItemChangedEventArgs e)
         {
-            CurrentDevice = e.SelectedItem as IDevice;
+            SelectedItem(e.SelectedItem as IDevice);
+           
+        }
+
+        private void SelectedItem(IDevice device)
+        {
+            CurrentDevice = device;
             if (CurrentDevice == null)
             {
                 return;
@@ -219,8 +225,6 @@ namespace ISIC_FMT_MMCP_App
                     CheckAvailabilityBluetooth(Ble.State);
                 }
             }
-
-
         }
 
         public async void ConnectToDevice()

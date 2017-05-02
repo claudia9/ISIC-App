@@ -70,7 +70,6 @@ namespace ISIC_FMT_MMCP_App
                 {
                     IsicDebug.DebugException(String.Format("Could not find Characteristics. {0}", ex));
                     UserDialogs.Instance.Alert("This Bluetooth device does not allow to send Serial Data, please, choose another Bluetooth device of the list", null, "Ok");
-                    await Task.Delay(1000);
                     await Navigation.PopToRootAsync();
                 }
             }

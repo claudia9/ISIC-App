@@ -66,14 +66,14 @@ namespace ISIC_FMT_MMCP_App
                         LineBreakMode = LineBreakMode.WordWrap,
                         FontFamily = "Calibri",
                         FontAttributes = FontAttributes.Italic,
-                        Text = "4. Check that the monitor turns off and on again. - If so, the address has been changed successfuly"
+                        Text = "4.Turn the monitor off and on. - The address has been changed successfuly"
                     },
                     new Label
                     {
                         LineBreakMode = LineBreakMode.WordWrap,
                         FontFamily = "Calibri",
                         FontAttributes = FontAttributes.Italic,
-                        Text = "5. In order to change the address to another monitor, repeat the process starting from the instruction 1."
+                        Text = "5. In order to change the address of another monitor, repeat the process starting from the instruction 1."
                     }
                 }
             };
@@ -120,17 +120,10 @@ namespace ISIC_FMT_MMCP_App
                                 LineBreakMode = LineBreakMode.WordWrap,
                                 FontFamily = "Calibri",
                                 FontAttributes = FontAttributes.Italic,
-                                Text = "If you do not want this window to open again the next time, press the button on the right."
+                                Text = "Do not show this screen every time."
                             },
                             Not_Show
                         }
-                    },
-                    new Label()
-                    {
-                        HorizontalTextAlignment  = TextAlignment.Center,
-                        FontFamily = "Calibri",
-                        FontAttributes = FontAttributes.Italic,
-                        Text = "(You can always read again the instructions using the button located on the right-top of the screen)"
                     },
                     btnClose,
                 }

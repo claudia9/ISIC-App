@@ -25,6 +25,9 @@ namespace ISIC_FMT_MMCP_App
 
         LoadingViewModel loadingViewModel;
 
+        bool valueUpdated = false;
+
+
         public MonitorInformationPage(MonitorSettings monitor, ICharacteristic characteristic)
         {
             this.CurrentMonitor = monitor;
@@ -40,7 +43,14 @@ namespace ISIC_FMT_MMCP_App
             InitializeScreen();
             InitializeComponent();
             InitializeButtons();
+            InitializeBle();
+
             InitializeMonitorInfo();
+        }
+
+        private void InitializeBle()
+        {
+            CurrentCharacteristic.ValueUpdated += CurrentCharacteristic_ValueUpdated;
         }
 
         private async void InitializeScreen()
@@ -58,11 +68,11 @@ namespace ISIC_FMT_MMCP_App
             Fan.Toggled += Fan_Toggled;
         }
 
-
         private async void InitializeMonitorInfo()
         {
             Title.Text = "Monitor at address: " + CurrentMonitor.MonAddr.ToString();
             UserDialogs.Instance.ShowLoading("Retrieving data - This can take some seconds", MaskType.Black);
+            await Task.Delay(1500);
             await getMonitorInfo();
             UserDialogs.Instance.HideLoading();
 
@@ -70,85 +80,96 @@ namespace ISIC_FMT_MMCP_App
 
         async Task getMonitorInfo()
         {
-            await CurrentCharacteristic.StartUpdatesAsync();
-            try
+            //if (CheckAvailabilityMonitor())
+            if (true)
             {
-                if (CurrentMonitor.Name != "")
+                try
                 {
-                    NameInfo.Text = CurrentMonitor.Name;
-                }
-                else
-                {
-                    //await Task.Delay(500);
-                    QueryName();
-                }
+                    if (CurrentMonitor.Name != "")
+                    {
+                        NameInfo.Text = CurrentMonitor.Name;
+                    }
+                    else
+                    {
+                        QueryName();
+                    }
 
-                if (CurrentMonitor.RN != "")
-                {
-                    RNInfo.Text = CurrentMonitor.RN;
-                }
-                else
-                {
-                    await Task.Delay(50);
-                    QueryRN();
-                }
+                    if (CurrentMonitor.RN != "")
+                    {
+                        RNInfo.Text = CurrentMonitor.RN;
+                    }
+                    else
+                    {
+                        await Task.Delay(5);
+                        QueryRN();
+                    }
 
-                if (CurrentMonitor.SN != "")
-                {
-                    SNInfo.Text = CurrentMonitor.SN;
-                }
-                else
-                {
-                    await Task.Delay(50);
-                    QuerySN();
-                }
+                    if (CurrentMonitor.SN != "")
+                    {
+                        SNInfo.Text = CurrentMonitor.SN;
+                    }
+                    else
+                    {
+                        await Task.Delay(5);
+                        QuerySN();
+                    }
 
-                if (CurrentMonitor.Firmware != "")
-                {
-                    FirmwareInfo.Text = CurrentMonitor.Firmware;
-                }
-                else
-                {
-                    await Task.Delay(50);
-                    QueryFirmware();
-                }
+                    if (CurrentMonitor.Firmware != "")
+                    {
+                        FirmwareInfo.Text = CurrentMonitor.Firmware;
+                    }
+                    else
+                    {
+                        await Task.Delay(5);
+                        QueryFirmware();
+                    }
 
-                if (CurrentMonitor.Temperature != "")
-                {
-                    TempInfo.Text = CurrentMonitor.Temperature;
-                    TempInfo.Text += "°C";
-                }
-                else
-                {
-                    await Task.Delay(50);
-                    QueryTemp();
-                }
+                    if (CurrentMonitor.Temperature != "")
+                    {
+                        TempInfo.Text = CurrentMonitor.Temperature;
+                        TempInfo.Text += "°C";
+                    }
+                    else
+                    {
+                        await Task.Delay(5);
+                        QueryTemp();
+                    }
 
-                if (CurrentMonitor.TimeOn != "")
-                {
-                    TimeInfo.Text = CurrentMonitor.TimeOn;
-                    TimeInfo.Text += "h.";
-                }
-                else
-                {
-                    await Task.Delay(50);
-                    QueryTime();
-                }
+                    if (CurrentMonitor.TimeOn != "")
+                    {
+                        TimeInfo.Text = CurrentMonitor.TimeOn;
+                        TimeInfo.Text += "h.";
+                    }
+                    else
+                    {
+                        await Task.Delay(5);
+                        QueryTime();
+                    }
 
+                }
+                catch (Exception e)
+                {
+                    IsicDebug.DebugException(String.Format("Problem retrieving information. {0}", e));
+                }
             }
-            catch (Exception e)
+            else
             {
-                IsicDebug.DebugException(String.Format("Problem retrieving information. {0}", e));
+                UserDialogs.Instance.Alert("There is no connection with the Monitor - No data is retriable.");
             }
-            await CurrentCharacteristic.StopUpdatesAsync();
         }
 
+        //NOT IN USE
         private bool CheckAvailabilityMonitor()
         {
+            bool result = false;
             try
             {
-                string result = QueryData(ISIC_SCP_IF.CMD_MAN);
-                if (result != "Not Available")
+                int i = 10;
+                while (i-- > 0 && result == false)
+                {
+                    result = QuerySingleData(ISIC_SCP_IF.CMD_MAN);
+                }
+                if (result != false)
                 {
                     IsicDebug.DebugSerial(String.Format("Monitor responding MAN command: {0}", result));
                     return true;
@@ -169,10 +190,15 @@ namespace ISIC_FMT_MMCP_App
 
         private void QueryName()
         {
-            string name = QueryData(ISIC_SCP_IF.CMD_TYP);
+            string name = null;
+            //await Task.Factory.StartNew(() =>
+            //{
+            name = QueryData(ISIC_SCP_IF.CMD_TYP);
+            //});
 
             if (!String.IsNullOrEmpty(name))
             {
+
                 NameInfo.Text = name;
                 CurrentMonitor.Name = name;
             }
@@ -183,11 +209,9 @@ namespace ISIC_FMT_MMCP_App
         }
         private void QueryRN()
         {
-            string rn = QueryData(ISIC_SCP_IF.CMD_REF);
+            string rn = null;
+                rn = QueryData(ISIC_SCP_IF.CMD_REF);
 
-            //});
-            //t.Wait();
-            
             if (!String.IsNullOrEmpty(rn) && Regex.IsMatch(rn, @"^\w{2}\d{2}\w{3}$"))
             {
                 RNInfo.Text = rn;
@@ -202,7 +226,9 @@ namespace ISIC_FMT_MMCP_App
 
         private void QuerySN()
         {
-            string sn = QueryData(ISIC_SCP_IF.CMD_SNB);
+            string sn = null;
+            
+                sn = QueryData(ISIC_SCP_IF.CMD_SNB);
 
             if (!String.IsNullOrEmpty(sn) && Regex.IsMatch(sn, @"^\d{2}\w\d{7}$"))
             {
@@ -217,7 +243,9 @@ namespace ISIC_FMT_MMCP_App
 
         private void QueryFirmware()
         {
-            string firmware = QueryData(ISIC_SCP_IF.CMD_VER);
+            string firmware = null;
+
+            firmware = QueryData(ISIC_SCP_IF.CMD_VER);
 
             if (!String.IsNullOrEmpty(firmware) && (Regex.IsMatch(firmware, @"^\d{5}-\d{3}\w$") || Regex.IsMatch(firmware, @"^\d{5}-\d{3}-\w$")))
             {
@@ -237,10 +265,8 @@ namespace ISIC_FMT_MMCP_App
             byte[] data = { 0x52 };
             string temperature = null;
 
-            //Task t = Task.Run(() => {
-                temperature = QueryData(ISIC_SCP_IF.CMD_TMP, data);
-            //});
-            //t.Wait();
+            temperature = QueryData(ISIC_SCP_IF.CMD_TMP, data);
+            
 
             if (!String.IsNullOrEmpty(temperature) && Regex.IsMatch(temperature, @"^\w\d{3}$"))
             {
@@ -248,11 +274,12 @@ namespace ISIC_FMT_MMCP_App
                 TempInfo.Text = temperature;
                 TempInfo.Text += "°C";
                 CurrentMonitor.Temperature = temperature;
-            } else
+            }
+            else
             {
                 TempInfo.Text = "Data not available";
             }
-          
+
         }
 
         private void QueryTime()
@@ -260,10 +287,7 @@ namespace ISIC_FMT_MMCP_App
             byte[] data = { 0x30 };
             string timeOn = null;
 
-            //Task t = Task.Run(() => {
-                timeOn = QueryData(ISIC_SCP_IF.CMD_ETC, data);
-            //});
-            //t.Wait();
+            timeOn = QueryData(ISIC_SCP_IF.CMD_ETC, data);
 
 
             if (!String.IsNullOrEmpty(timeOn) && Regex.IsMatch(timeOn, @"^\d{6}$"))
@@ -278,60 +302,113 @@ namespace ISIC_FMT_MMCP_App
             }
         }
 
-        private string QueryData(string command, params byte[] data)
+        private bool QuerySingleData(string command)
         {
-            byte[] receivedData = null;
-            int tries = 1000;
-            int internalTries = 10;
-            string result = null;
-            
+            bool success = false;
 
-            Stopwatch sw = Stopwatch.StartNew();
-            if (CurrentCharacteristic.CanRead)
+            if (CurrentCharacteristic.CanWrite)
             {
+                Task.Delay(1000);
                 try
                 {
-                    IsicDebug.DebugSerial(String.Format("Sending.....{0}, {1}", command, sw.ElapsedMilliseconds));
-                    sw.Restart();
-                    while (receivedData == null && tries-- > 0)
+                    valueUpdated = false;
+                    IsicDebug.DebugSerial(String.Format("Sending.....{0}", command));
+                    Task.Delay(1000);
+
+                    int tries = 10;
+
+                    CurrentCharacteristic.StartUpdatesAsync();
+                    Task.Delay(1000);
+                    new Isic.SerialProtocol.Command(CurrentMonitor.MonAddr, command).Send(CurrentCharacteristic);
+                    Task.Delay(1000);
+
+                    while (tries-- > 0)
                     {
-                        //Task.Delay(1000);
-                        new Isic.SerialProtocol.Command(CurrentMonitor.MonAddr, command, data).Send(CurrentCharacteristic);
-                        Task.Delay(1000);
-
-                        readData();
-
-                        if (CurrentCharacteristic.Value[0] == 0x06)
-                            {
-                                receivedData = CurrentCharacteristic.Value;
-                                break;
-                            }
-
-                        //Task.Delay(300);
-                        //IsicDebug.DebugSerial(String.Format("- Sent command: {0} TIME:{1}", command, sw.ElapsedMilliseconds));
-                        sw.Restart();
-
-                        //do
-                        //{
-                         //  Task.Delay(200);
-                        //}
-                        //while (receivedData[0] != 0x06 && --internalTries >= 0);
-
-
+                        CurrentCharacteristic.ReadAsync();
+                        if (valueUpdated == true)
+                        {
+                            IsicDebug.DebugSerial(String.Format("Received something from monitor: {0}", CurrentCharacteristic.Value.GetHexString()));
+                            success = true;
+                            break;
+                        }
+                        else
+                        {
+                            IsicDebug.DebugSerial("Not able to read data.");
+                        }
 
                     }
-                    if (receivedData[0] == 0x06)
-                    {
-                        IsicDebug.DebugSerial(String.Format("Received Data: {0} - {1}", receivedData.GetHexString(), receivedData.GetString()));
-                        result = RetrieveDataFromMonitor(receivedData);
-                    }
+                    CurrentCharacteristic.StopUpdatesAsync();
                 }
-                
+
                 catch (Exception ex)
                 {
                     IsicDebug.DebugException(String.Format("Not able to send or receive input data.", ex));
                 }
-                
+
+            }
+            else
+            {
+                IsicDebug.DebugBluetooth("This characteristic cannot read data.");
+            }
+            return success;
+        }
+
+
+        private void CurrentCharacteristic_ValueUpdated(object sender, Plugin.BLE.Abstractions.EventArgs.CharacteristicUpdatedEventArgs e)
+        {
+            if (CurrentCharacteristic.Value[0] == 0x06)
+            {
+                valueUpdated = true;
+            }
+            else
+            {
+                valueUpdated = false;
+            }
+        }
+
+        private string QueryData(string command, params byte[] data)
+        {
+            byte[] receivedData = null;
+            int tries = 50;
+            int internaltries = 5;
+            string result = null;
+            valueUpdated = false;
+
+
+            CurrentCharacteristic.StartUpdatesAsync();
+            if (CurrentCharacteristic.CanWrite)
+            {
+                Task.Delay(5);
+                try
+                {
+
+
+                    while (tries-- > 0)
+                    {
+                        IsicDebug.DebugSerial(String.Format("Sending.....{0}", command));
+                        new Isic.SerialProtocol.Command(CurrentMonitor.MonAddr, command, data).Send(CurrentCharacteristic);
+                        Task.Delay(500);
+                        CurrentCharacteristic.ReadAsync();
+                        if (valueUpdated == true)
+                        {
+                            if (CurrentCharacteristic.Value[0] == 0x06)
+                            {
+                                receivedData = CurrentCharacteristic.Value;
+                                result = RetrieveDataFromMonitor(receivedData);
+                                IsicDebug.DebugSerial(String.Format("Received Data: {0} - {1}", receivedData.GetHexString(), receivedData.GetString()));
+                                break;
+                            }
+                        }
+
+                    }
+
+                }
+
+                catch (Exception ex)
+                {
+                    IsicDebug.DebugException(String.Format("Not able to send or receive input data.", ex));
+                }
+
             }
             else
             {
@@ -343,10 +420,13 @@ namespace ISIC_FMT_MMCP_App
         private async Task<byte[]> readData()
         {
             byte[] receivedData = null;
-            int tries = 1000;
-            while (CurrentCharacteristic.Value[0] != 0x06 && tries-- > 0)
+            if (CurrentCharacteristic.CanRead)
             {
-                receivedData = await CurrentCharacteristic.ReadAsync();
+                int tries = 50;
+                while (CurrentCharacteristic.Value[0] != 0x06 && tries-- > 0)
+                {
+                    receivedData = await CurrentCharacteristic.ReadAsync();
+                }
             }
             return receivedData;
         }
@@ -444,6 +524,14 @@ namespace ISIC_FMT_MMCP_App
         private void BackButton_Clicked(object sender, EventArgs e)
         {
             Navigation.PopAsync();
+
+        }
+
+        protected override bool OnBackButtonPressed()
+        {
+            Navigation.PopAsync();
+
+            return true;
         }
 
     }

@@ -46,7 +46,7 @@ namespace Isic.ViewModels
                 {
                     try
                     {
-                        await Task.Delay(TimeSpan.FromSeconds(3), cancelSrc.Token);
+                        await Task.Delay(TimeSpan.FromSeconds(2.5), cancelSrc.Token);
                     }
                     catch { }
                 }
@@ -86,7 +86,7 @@ namespace Isic.ViewModels
                 {
                     try
                     {
-                        await Task.Delay(TimeSpan.FromSeconds(1.5));
+                        await Task.Delay(TimeSpan.FromSeconds(0.5));
                     }
                     catch { }
 

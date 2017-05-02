@@ -115,31 +115,9 @@ namespace ISIC_FMT_MMCP_App
             Mon2Addr.SelectedIndexChanged += Mon2Addr_SelectedIndexChanged;
             Mon3Addr.SelectedIndexChanged += Mon3Addr_SelectedIndexChanged;
 
-            Baud.Items.Add("9K6");
-            Baud.Items.Add("19K2");
-            Baud.Items.Add("115K2");
-            Baud.Items.Add("460K8");
-
-            if (Application.Current.Properties["Baud"] != null)
-            {
-                Baud.SelectedIndex = (int)Application.Current.Properties["Baud"];
-            }
-
-            Baud.SelectedIndexChanged += Baud_SelectedIndexChanged;
 
         }
       
-
-        private void Baud_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            SetBaud(sender);
-        }
-
-        private void SetBaud(object sender)
-        {
-            Application.Current.Properties["Baud"] = (int)(sender as Picker).SelectedIndex;
-            IsicDebug.DebugMonitor(String.Format("Setting property Baud to {0}", (int)(sender as Picker).SelectedIndex));
-        }
         #region Set Addresses from ComboBoxes
         private void Mon1Addr_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -184,6 +162,15 @@ namespace ISIC_FMT_MMCP_App
             SetPreferences();
             Navigation.PopAsync();
         }
+
+        protected override bool OnBackButtonPressed()
+        {
+            SetPreferences();
+            base.OnBackButtonPressed();
+            return true;
+
+        }
+
         private async void SetPreferences()
         {
             await Application.Current.SavePropertiesAsync();

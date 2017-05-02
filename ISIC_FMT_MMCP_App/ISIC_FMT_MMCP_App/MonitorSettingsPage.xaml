@@ -59,21 +59,6 @@
 
     </Grid>
 
-    <Label x:Name="BaudLabel" Text="Baud" VerticalTextAlignment="Center"/>
-    <BoxView Color="White" HeightRequest="2"></BoxView>
-
-    <Grid ColumnSpacing="5">
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition />
-        <ColumnDefinition />
-      </Grid.ColumnDefinitions>
-      <Grid.RowDefinitions>
-        <RowDefinition />
-      </Grid.RowDefinitions>
-      <Label x:Name="BaudTitle" Text="Baud" Grid.Column="0" Grid.Row="0"/>
-      <Picker x:Name="Baud" TextColor="White" Grid.Column="1" Grid.Row="0" />
-
-    </Grid>
 
     <Label x:Name="AdvSettingsLabel" Text="Advanced Settings" VerticalTextAlignment="Center"/>
     <BoxView Color="White" HeightRequest="2"></BoxView>

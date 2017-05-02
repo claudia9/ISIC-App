@@ -169,33 +169,33 @@ namespace Isic.SerialProtocol
 		/// <returns>status of the transmission</returns>
 		public async void Send(ICharacteristic characteristic, Action<bool> callback = null)
 		{
-            if(characteristic.CanWrite)
-            {
                 try
                 {
                     Byte[] bytes = GetBytes();
                     IsicDebug.DebugSerial(String.Format("Sending: {0}, Characteristic Name: {1}, Id: {2}", bytes.GetHexString(), characteristic.Name, characteristic.Id));
                     //System.FormatException: Index (zero based) must be greater than or equal to zero and less than the size of the argument list.
+                    if (characteristic.CanWrite)
+                {
                     try
                     {
                         await characteristic.WriteAsync(bytes);
                         IsicDebug.DebugSerial(String.Format("Sent successfully"));
-                    } catch (Exception e)
+                    }
+                    catch (Exception e)
                     {
                         IsicDebug.DebugSerial(String.Format("Command not send! - " + e.Message));
                     }
-                    //callback?.Invoke(await characteristic.WriteAsync(bytes));
+                    callback?.Invoke(await characteristic.WriteAsync(bytes));
                     //Debug.WriteLine("After callback of WriteAsync.");
                 }
+
+            }
                 catch (Exception ex)
                 {
                     Debug.WriteLine("Error sending:\nMessage: {0}\nStackTrace:\n{1}\nInner ex:\n{2}\nData:\n{3}", ex.Message, ex.StackTrace, ex.InnerException, ex.Data);
                     //callback?.Invoke(false);
                 }
-            } else
-            {
-                Debug.WriteLine("Characteristic " + characteristic.Value + " cannot write right now.");
-            }
+
 		}
 
 		/// <summary>

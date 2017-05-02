@@ -16,7 +16,7 @@
       <Color x:Key="Label">#9C9C9C</Color>
 
       <Style TargetType="NavigationPage">
-        <Setter Property="BarBackgroundColor" Value="#FF1A1A1A" />
+        <Setter Property="BarBackgroundColor" Value="#FF1A1A" />
       </Style>
 
       <Style TargetType="Button">
@@ -51,7 +51,7 @@
         <Setter Property="FontAttributes" Value="Bold" />
         <Setter Property="HorizontalTextAlignment" Value="Center"/>
         <Setter Property="VerticalTextAlignment" Value="Start" />
-        <Setter Property="Margin" Value=" 0, 20, 0, 5" />
+        <Setter Property="Margin" Value=" 0, 10, 0, 5" />
       </Style>
 
     </ResourceDictionary>
@@ -71,7 +71,7 @@
         <RowDefinition Height="40"/>
       </Grid.RowDefinitions>
       <!--BLUETOOTH SCAN-->
-      <local:RoundedButton x:Name="ScanButton" Image="ble_icon.png" Style="{StaticResource ScanBtnStyle}" WidthRequest="60" HeightRequest="50" Grid.Row="0" Grid.Column="0"/>
+      <local:RoundedButton x:Name="ScanButton" Image="ble_icon.png" Style="{StaticResource ScanBtnStyle}" WidthRequest="60" HeightRequest="40" Grid.Row="0" Grid.Column="0"/>
       <!--ISIC LOGO-->
       <Image x:Name="Logo" Source="isic_logo.png"  Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0" Grid.RowSpan="2"/>
       <!--BLUETOOTH SETTINGS-->
@@ -82,15 +82,15 @@
 
     <!--MONITORS-->
     <Label x:Name="Monitor" Text="MONITOR"/>
-    <Grid ColumnSpacing="20">
+    <Grid ColumnSpacing="25">
       <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="70"/>
-        <ColumnDefinition Width="70"/>
-        <ColumnDefinition Width="70"/>
-        <ColumnDefinition  Width="70"/>
+        <ColumnDefinition Width="60"/>
+        <ColumnDefinition Width="60"/>
+        <ColumnDefinition Width="60"/>
+        <ColumnDefinition  Width="60"/>
       </Grid.ColumnDefinitions>
       <Grid.RowDefinitions>
-        <RowDefinition Height="70"/>
+        <RowDefinition Height="60"/>
       </Grid.RowDefinitions>
 
       <local:RoundedMonitorButton x:Name="Monitor1" Text="1" Grid.Column="0" Grid.Row="0"/>
@@ -102,14 +102,14 @@
 
     <!--MODES-->
     <Label x:Name="Mode" Text="ECDIS MODE" />
-    <Grid ColumnSpacing="25" Margin="30, 0, 0, 0">
+    <Grid ColumnSpacing="30" Margin="40, 0, 0, 0">
       <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="70"/>
-        <ColumnDefinition Width="70"/>
-        <ColumnDefinition Width="70"/>
+        <ColumnDefinition Width="65"/>
+        <ColumnDefinition Width="65"/>
+        <ColumnDefinition Width="65"/>
       </Grid.ColumnDefinitions>
       <Grid.RowDefinitions>
-        <RowDefinition Height="70"/>
+        <RowDefinition Height="60"/>
       </Grid.RowDefinitions>
       <local:RoundedButton x:Name="NightMode" Text="Night" Grid.Column="0" Grid.Row="0"/>
       <local:RoundedButton x:Name="DuskMode" Text="Dusk" Grid.Column="1" Grid.Row="0"/>
@@ -118,14 +118,14 @@
 
     <!--INPUT-->
     <Label x:Name="Input" Text="INPUT" />
-    <Grid ColumnSpacing="25" Margin="30, 0, 0, 0">
+    <Grid ColumnSpacing="30" Margin="40, 0, 0, 0">
       <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="70"/>
-        <ColumnDefinition Width="70"/>
-        <ColumnDefinition Width="70"/>
+        <ColumnDefinition Width="65"/>
+        <ColumnDefinition Width="65"/>
+        <ColumnDefinition Width="65"/>
       </Grid.ColumnDefinitions>
       <Grid.RowDefinitions>
-        <RowDefinition Height="70"/>
+        <RowDefinition Height="60"/>
       </Grid.RowDefinitions>
       <local:RoundedButton x:Name="VGA" Text="VGA" Grid.Column="0" Grid.Row="0"/>
       <local:RoundedButton x:Name="DVI" Text="DVI" Grid.Column="1" Grid.Row="0"/>

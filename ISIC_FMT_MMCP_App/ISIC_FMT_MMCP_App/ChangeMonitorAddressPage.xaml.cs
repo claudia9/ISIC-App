@@ -56,7 +56,19 @@ namespace ISIC_FMT_MMCP_App
         {
             HelpButton.Clicked += HelpButton_Clicked;
 
+            BackButton.Clicked += BackButton_Clicked;
+
             SaveButton.Clicked += SaveButton_Clicked;
+        }
+
+        private async void BackButton_Clicked(object sender, EventArgs e)
+        {
+            var confirm = await DisplayAlert("Did you save the new address?","Make sure to save the address before exiting this page.", "Ok", "Stay, please");
+            if (confirm == true)
+            {
+                await Navigation.PopAsync();
+            }
+            
         }
 
         private void SaveButton_Clicked(object sender, EventArgs e)
@@ -67,16 +79,17 @@ namespace ISIC_FMT_MMCP_App
         private void ChangeAddress()
         {
             string command = ISIC_SCP_IF.CMD_SDA;
-            byte[] data = Addresses.SelectedIndex.ToString().GetBytes();
+            byte data = (byte)Addresses.SelectedIndex;
+            IsicDebug.DebugGeneral(String.Format("Selected address: {0}, toString(): {1}, getBytes(): {2}", Addresses.SelectedIndex, (byte)Addresses.SelectedIndex, Addresses.SelectedIndex.ToString().GetBytes()[0]));
             SendCommand(command, data);
             
         }
 
-        private void SendCommand(string command, byte[] data)
+        private void SendCommand(string command, byte data)
         {
             try
                 {
-                    IsicDebug.DebugSerial(String.Format("Sending.....{0}", command));
+                    IsicDebug.DebugSerial(String.Format("Sending.....{0} - Address: {1}", command, data));
 
                     new Isic.SerialProtocol.Command(0xFF, command, data).Send(CurrentCharacteristic);
                     Task.Delay(20);
