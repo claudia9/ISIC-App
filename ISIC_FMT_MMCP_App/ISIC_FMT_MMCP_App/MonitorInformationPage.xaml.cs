@@ -191,10 +191,12 @@ namespace ISIC_FMT_MMCP_App
         private void QueryName()
         {
             string name = null;
-            //await Task.Factory.StartNew(() =>
-            //{
-            name = QueryData(ISIC_SCP_IF.CMD_TYP);
-            //});
+            int tries = 10;
+
+            while (String.IsNullOrEmpty(name) && tries-- > 0)
+            {
+                name = QueryData(ISIC_SCP_IF.CMD_TYP);
+            }
 
             if (!String.IsNullOrEmpty(name))
             {
@@ -210,7 +212,12 @@ namespace ISIC_FMT_MMCP_App
         private void QueryRN()
         {
             string rn = null;
+            int tries = 10;
+
+            while (String.IsNullOrEmpty(rn) && tries-- > 0)
+            {
                 rn = QueryData(ISIC_SCP_IF.CMD_REF);
+            }
 
             if (!String.IsNullOrEmpty(rn) && Regex.IsMatch(rn, @"^\w{2}\d{2}\w{3}$"))
             {
@@ -227,8 +234,12 @@ namespace ISIC_FMT_MMCP_App
         private void QuerySN()
         {
             string sn = null;
-            
+            int tries = 10;
+
+            while (String.IsNullOrEmpty(sn) && tries-- > 0)
+            {
                 sn = QueryData(ISIC_SCP_IF.CMD_SNB);
+            }
 
             if (!String.IsNullOrEmpty(sn) && Regex.IsMatch(sn, @"^\d{2}\w\d{7}$"))
             {
@@ -244,8 +255,12 @@ namespace ISIC_FMT_MMCP_App
         private void QueryFirmware()
         {
             string firmware = null;
+            int tries = 10;
 
-            firmware = QueryData(ISIC_SCP_IF.CMD_VER);
+            while (String.IsNullOrEmpty(firmware) && tries-- > 0)
+            {
+                firmware = QueryData(ISIC_SCP_IF.CMD_VER);
+            }
 
             if (!String.IsNullOrEmpty(firmware) && (Regex.IsMatch(firmware, @"^\d{5}-\d{3}\w$") || Regex.IsMatch(firmware, @"^\d{5}-\d{3}-\w$")))
             {
@@ -264,8 +279,12 @@ namespace ISIC_FMT_MMCP_App
         {
             byte[] data = { 0x52 };
             string temperature = null;
+            int tries = 10;
 
-            temperature = QueryData(ISIC_SCP_IF.CMD_TMP, data);
+            while (String.IsNullOrEmpty(temperature) && tries-- > 0)
+            {
+                temperature = QueryData(ISIC_SCP_IF.CMD_TMP, data);
+            }
             
 
             if (!String.IsNullOrEmpty(temperature) && Regex.IsMatch(temperature, @"^\w\d{3}$"))
@@ -286,8 +305,12 @@ namespace ISIC_FMT_MMCP_App
         {
             byte[] data = { 0x30 };
             string timeOn = null;
+            int tries = 10;
 
-            timeOn = QueryData(ISIC_SCP_IF.CMD_ETC, data);
+            while (String.IsNullOrEmpty(timeOn) && tries-- > 0)
+            {
+                timeOn = QueryData(ISIC_SCP_IF.CMD_ETC, data);
+            }
 
 
             if (!String.IsNullOrEmpty(timeOn) && Regex.IsMatch(timeOn, @"^\d{6}$"))
@@ -368,26 +391,56 @@ namespace ISIC_FMT_MMCP_App
 
         private string QueryData(string command, params byte[] data)
         {
+
+
+            bool flagRead = false;
+            bool flagWrite = false;
             byte[] receivedData = null;
             int tries = 50;
-            int internaltries = 5;
             string result = null;
             valueUpdated = false;
-
+            
 
             CurrentCharacteristic.StartUpdatesAsync();
             if (CurrentCharacteristic.CanWrite)
             {
-                Task.Delay(5);
+                flagWrite = true;
+                flagRead = false;
+            } else
+            {
+                IsicDebug.DebugException(String.Format("Characteristic cannot send data."));
+            }
+
+
+            if (flagWrite)
+            {
+                IsicDebug.DebugSerial(String.Format("Sending.....{0}", command));
                 try
                 {
+                    new Isic.SerialProtocol.Command(CurrentMonitor.MonAddr, command, data).Send(CurrentCharacteristic);
+                    Task.Delay(2000);
+                } catch (Exception e)
+                {
+                    IsicDebug.DebugException(String.Format("Exception when sending... {0}", e));
+                }
+            }
 
+            if (CurrentCharacteristic.CanRead)
+            {
+                flagRead = true;
+                flagWrite = false;
+            } else
+            {
+                IsicDebug.DebugException(String.Format("Characteristic cannot receive data."));
+            }
 
+            if (flagRead)
+            {
+                IsicDebug.DebugSerial(String.Format("Reading....."));
+                try
+                {
                     while (tries-- > 0)
                     {
-                        IsicDebug.DebugSerial(String.Format("Sending.....{0}", command));
-                        new Isic.SerialProtocol.Command(CurrentMonitor.MonAddr, command, data).Send(CurrentCharacteristic);
-                        Task.Delay(500);
                         CurrentCharacteristic.ReadAsync();
                         if (valueUpdated == true)
                         {
@@ -399,20 +452,11 @@ namespace ISIC_FMT_MMCP_App
                                 break;
                             }
                         }
-
                     }
-
-                }
-
-                catch (Exception ex)
+                } catch (Exception e)
                 {
-                    IsicDebug.DebugException(String.Format("Not able to send or receive input data.", ex));
+                    IsicDebug.DebugException(String.Format("Exception when receiving... {0}", e));
                 }
-
-            }
-            else
-            {
-                IsicDebug.DebugBluetooth("This characteristic cannot read data.");
             }
             return result;
         }
@@ -481,14 +525,12 @@ namespace ISIC_FMT_MMCP_App
         private void QueryBuzzer(string command, params byte[] data)
         {
 
-            if (CurrentCharacteristic.CanRead)
+            if (CurrentCharacteristic.CanWrite)
             {
                 try
                 {
                     IsicDebug.DebugSerial(String.Format("Sending.....{0}", command));
-
                     new Isic.SerialProtocol.Command(CurrentMonitor.MonAddr, command, data).Send(CurrentCharacteristic);
-                    Task.Delay(20);
                 }
 
                 catch (Exception ex)
@@ -499,7 +541,7 @@ namespace ISIC_FMT_MMCP_App
             }
             else
             {
-                IsicDebug.DebugBluetooth("This characteristic cannot read data.");
+                IsicDebug.DebugBluetooth("This characteristic cannot write data.");
             }
         }
 

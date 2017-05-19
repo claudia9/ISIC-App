@@ -1,4 +1,5 @@
 ﻿using Acr.UserDialogs;
+using Android;
 using Android.Content;
 using Android.Preferences;
 using Isic.Debugger;

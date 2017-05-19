@@ -81,7 +81,7 @@
     </Grid>
 
     <!--MONITORS-->
-    <Label x:Name="Monitor" Text="MONITOR"/>
+    <Label x:Name="Monitor" Text="MONITOR" Margin="0, 20, 0, 0"/>
     <Grid ColumnSpacing="25">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="60"/>
